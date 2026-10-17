@@ -969,19 +969,85 @@ local function mark(parent, size, color)
     local holder = new("Frame", {Name="OpenHubMark", BackgroundTransparency=1, Size=UDim2.fromOffset(size,size), Visible=false}, parent)
     return holder
 end
-local function icon(parent, kind, numberOverride)
-    local h = new("Frame", {BackgroundTransparency=1, Size=UDim2.fromOffset(20,20)}, parent)
-    if kind == "close" then line(h,3,9,14,1,45); line(h,3,9,14,1,-45)
-    elseif kind == "menu" then for _,y in ipairs({5,10,15}) do line(h,3,y,14,1) end
-    elseif kind == "search" then
-        local circle = new("Frame", {Position=UDim2.fromOffset(3,2),Size=UDim2.fromOffset(10,10),BackgroundTransparency=1},h)
-        round(circle,10); stroke(circle,C.Muted,1.4); line(h,12,13,6,1,45)
-    elseif kind == "minus" then line(h,4,10,12,1)
-    else
-        local symbols = {Inicio="01",Aimbot="02",["Kill All"]="03",Visuales="04",Movimiento="05",
-            AutoFarm="06",["Gráficos"]="07",Sonidos="08",Animaciones="09",Apariencia="10",["Generar Armas"]="11",["Configuración"]="12",["Créditos"]="13"}
-        label(h, numberOverride or symbols[kind] or "·", 10, C.Muted, {Font=Enum.Font.Code,TextXAlignment=Enum.TextXAlignment.Center})
+local ICONS = {
+    close = "rbxassetid://110786993356448",
+    minus = "rbxassetid://118026365011536",
+    search = "rbxassetid://121018724060431",
+    menu = "rbxassetid://77021539815611",
+    house = "rbxassetid://98755624629571",
+    settings = "rbxassetid://80758916183665",
+    ["settings-2"] = "rbxassetid://135684703553372",
+    eye = "rbxassetid://100033680381365",
+    crosshair = "rbxassetid://134242818164054",
+    target = "rbxassetid://87563802520297",
+    zap = "rbxassetid://130551565616516",
+    sword = "rbxassetid://124448418211665",
+    shield = "rbxassetid://110987169760162",
+    user = "rbxassetid://81589895647169",
+    users = "rbxassetid://115398113982385",
+    palette = "rbxassetid://86350350950064",
+    image = "rbxassetid://112751259236831",
+    music = "rbxassetid://113343203848535",
+    ["volume-2"] = "rbxassetid://89344380902620",
+    play = "rbxassetid://135609604299893",
+    ["gamepad-2"] = "rbxassetid://92483947987410",
+    cpu = "rbxassetid://77549309870247",
+    sparkles = "rbxassetid://138635884129147",
+    check = "rbxassetid://93898873302694",
+    ["chevron-down"] = "rbxassetid://134243273101015",
+    ["layout-dashboard"] = "rbxassetid://139929981863901",
+    ["sliders-horizontal"] = "rbxassetid://85538382643347",
+    bell = "rbxassetid://97392696311902",
+    info = "rbxassetid://124560466474914",
+    star = "rbxassetid://136141469398409",
+    flame = "rbxassetid://98218034436456",
+    droplets = "rbxassetid://140111846025180",
+    moon = "rbxassetid://83380517901735",
+    sun = "rbxassetid://110150589884127",
+    wrench = "rbxassetid://112148279212860",
+    box = "rbxassetid://101768155599700",
+    package = "rbxassetid://97261141732706",
+    rocket = "rbxassetid://87412317685854",
+    activity = "rbxassetid://94212016861936",
+    power = "rbxassetid://96479131758775",
+    lock = "rbxassetid://134724289526879",
+    ["trash-2"] = "rbxassetid://109843431391323",
+    ["arrow-right"] = "rbxassetid://113692007244654",
+    move = "rbxassetid://116138709011735",
+    keyboard = "rbxassetid://121474456068237",
+    plus = "rbxassetid://111774323017047",
+}
+local ICON_ALIASES = {
+    close = "close", minus = "minus", search = "search", menu = "menu",
+    Inicio = "house", Home = "house", Main = "layout-dashboard",
+    Aimbot = "crosshair", ["Kill All"] = "target", Visuales = "eye", Visual = "eye",
+    Movimiento = "move", Movement = "move", AutoFarm = "zap", Farm = "zap",
+    ["Gráficos"] = "image", Graphics = "image", Sonidos = "volume-2", Sounds = "volume-2",
+    Animaciones = "play", Animations = "play", Apariencia = "user", Appearance = "user",
+    ["Generar Armas"] = "sword", Weapons = "sword", ["Configuración"] = "settings",
+    Settings = "settings", Config = "settings", ["Créditos"] = "star", Credits = "star",
+    Launcher = "rocket", Extra = "sparkles", Theme = "palette", Themes = "palette",
+}
+local function resolveIcon(kind)
+    if type(kind) ~= "string" then return ICONS.activity end
+    if kind:match("^rbxassetid://") or kind:match("^%d+$") then
+        return kind:match("^%d+$") and ("rbxassetid://" .. kind) or kind
     end
+    local key = ICON_ALIASES[kind] or string.lower(kind)
+    return ICONS[key] or ICONS[kind] or ICONS.activity
+end
+local function icon(parent, kind, numberOverride)
+    local h = new("Frame", {BackgroundTransparency=1, Size=UDim2.fromOffset(18,18)}, parent)
+    local img = new("ImageLabel", {
+        Name = "Icon",
+        BackgroundTransparency = 1,
+        Size = UDim2.fromScale(1, 1),
+        Position = UDim2.fromScale(0, 0),
+        Image = resolveIcon(kind),
+        ImageColor3 = C.Muted,
+        ScaleType = Enum.ScaleType.Fit,
+    }, h)
+    h.IconImage = img
     return h
 end
 local function scroll(parent, props)
@@ -1068,24 +1134,44 @@ end
 function Control:ApplyTheme()
     if self.Destroyed then return self end
     local light = (self.Window and self.Window.ThemeName == "Blanco") or CURRENT_THEME_NAME == "Blanco"
-    if self.ElementFrame and self.ElementFrame.Parent then
-        self.ElementFrame.BackgroundColor3 = light and (self.LightColor or C.Row) or (self.DarkColor or C.Row)
+    local v = (self.Window and self.Window.ThemeDef and self.Window.ThemeDef.Visuals) or CURRENT_THEME.Visuals
+    if self.ElementFrame and self.ElementFrame.Parent and self.__type ~= "Section" and self.__type ~= "Divider" then
+        self.ElementFrame.BackgroundColor3 = C.Row
+        self.ElementFrame.BackgroundTransparency = Glass.Row
     end
     if self.RowStroke and self.RowStroke.Parent then
-        self.RowStroke.Color = light and (self.LightStrokeColor or C.Border) or (self.DarkStrokeColor or THEMES.OpenHub.Visuals.ControlStroke)
+        self.RowStroke.Color = v.ControlStroke or C.Border
     end
     if self.TitleLabel and self.TitleLabel.Parent then
         if self.Locked then
             self.TitleLabel.TextColor3 = C.Faint
+        elseif self.__type == "Section" then
+            self.TitleLabel.TextColor3 = C.Muted
         else
-            self.TitleLabel.TextColor3 = light and (self.LightTitleColor or C.Text) or (self.DarkTitleColor or C.Text)
+            self.TitleLabel.TextColor3 = C.Text
         end
     end
     if self.DescLabel and self.DescLabel.Parent then
-        self.DescLabel.TextColor3 = light and (self.LightDescColor or C.Muted) or (self.DarkDescColor or C.Muted)
+        self.DescLabel.TextColor3 = C.Muted
     end
     if self.PictureStroke and self.PictureStroke.Parent then
-        self.PictureStroke.Color = light and (self.LightImageStrokeColor or C.Border) or (self.DarkImageStrokeColor or C.Text)
+        self.PictureStroke.Color = C.Border
+    end
+    if self.BodyField and self.BodyField.Parent then
+        if self.BodyField:IsA("TextBox") or self.BodyField:IsA("TextButton") then
+            self.BodyField.BackgroundColor3 = C.Field
+            self.BodyField.BackgroundTransparency = Glass.Field
+            if self.BodyField:IsA("TextBox") then
+                self.BodyField.TextColor3 = C.Text
+                self.BodyField.PlaceholderColor3 = C.Faint
+            end
+            local bs = self.BodyField:FindFirstChildOfClass("UIStroke")
+            if bs then bs.Color = C.Border end
+        end
+    end
+    if self.Interactive and self.Interactive.Parent and self.Interactive:IsA("GuiObject") then
+        local ist = self.Interactive:FindFirstChildOfClass("UIStroke")
+        if ist then ist.Color = C.Border end
     end
     if self._applyThemeExtras then self:_applyThemeExtras(light) end
     return self
@@ -1172,15 +1258,15 @@ function Tab:_control(kind, options)
     local darkStrokeColor = o.StrokeColor or THEMES.OpenHub.Visuals.ControlStroke
     local lightStrokeColor = o.LightStrokeColor or THEMES.Blanco.Visuals.ControlStroke
     local slot = new("Frame", {Name="Slot",BackgroundTransparency=1,
-        Size=UDim2.new(1,-4,0,0),LayoutOrder=self._order},self.Content)
-    local row = new("Frame", {Name=kind,BackgroundColor3=lightTheme and lightColor or darkColor,BackgroundTransparency=Glass.Row,
+        Size=UDim2.new(1,-2,0,0),LayoutOrder=self._order},self.Content)
+    local row = new("Frame", {Name=kind,BackgroundColor3=C.Row,BackgroundTransparency=Glass.Row,
         Size=UDim2.new(1,0,0,0),LayoutOrder=self._order,ClipsDescendants=true},slot)
-    round(row,11); local rowStroke=stroke(row,lightTheme and lightStrokeColor or darkStrokeColor); rowStroke.Transparency=.18
+    round(row,12); local rowStroke=stroke(row,CURRENT_THEME.Visuals.ControlStroke or C.Border,1); rowStroke.Transparency=.22
     local head = new("Frame", {Name="Heading",BackgroundTransparency=1,
         Size=UDim2.new(1,0,0,0),LayoutOrder=1},row)
     local copy = new("Frame", {Name="Copy",BackgroundTransparency=1,
         Size=UDim2.new(1,0,0,0)},head)
-    local title = label(copy,plain(o.Title or kind),12,C.Text,{Font=MEDIUM,TextWrapped=true,
+    local title = label(copy,plain(o.Title or kind),13,C.Text,{Font=MEDIUM,TextWrapped=true,
         TextYAlignment=Enum.TextYAlignment.Top,Size=UDim2.new(1,0,0,18),LayoutOrder=1})
     local desc = label(copy,plain(o.Desc),11,C.Muted,{TextWrapped=true,AutomaticSize=Enum.AutomaticSize.Y,
         Size=UDim2.new(1,0,0,0),LayoutOrder=2,Visible=o.Desc ~= nil and o.Desc ~= ""})
@@ -1202,10 +1288,11 @@ function Tab:Section(options)
     self._groupTitle = plain(o.Title)
     local c = self:_control("Section",o)
     c.ElementFrame.BackgroundTransparency = 1
-    c.ElementFrame.UIStroke:Destroy(); c.RowStroke=nil
-    c.DarkTitleColor=THEMES.OpenHub.Colors.Muted; c.LightTitleColor=THEMES.Blanco.Colors.Muted
-    c.TitleLabel.TextColor3=C.Muted; c.TitleLabel.TextSize=10; c.TitleLabel.Font=BOLD
-    local rule = new("Frame",{Size=UDim2.new(1,0,0,1),BackgroundColor3=C.Border,LayoutOrder=3},c.ElementFrame)
+    if c.ElementFrame:FindFirstChildOfClass("UIStroke") then c.ElementFrame:FindFirstChildOfClass("UIStroke"):Destroy() end
+    c.RowStroke=nil
+    c.TitleLabel.TextColor3=C.Faint; c.TitleLabel.TextSize=10; c.TitleLabel.Font=BOLD
+    c.TitleLabel.Text = string.upper(c.Title)
+    local rule = new("Frame",{Size=UDim2.new(1,0,0,1),BackgroundColor3=C.Border,BackgroundTransparency=.45,LayoutOrder=3},c.ElementFrame)
     c.Rule = rule
     return c
 end
@@ -1290,10 +1377,11 @@ function Tab:Paragraph(options)
 end
 function Tab:Button(options)
     local c = self:_control("Button",options)
-    c.Reserve=34; c.HeadMinimum=28
-    local hit = button(c.Head,"→",{Name="Action",BackgroundColor3=C.Panel,BackgroundTransparency=Glass.Button,TextSize=14,
-        Position=UDim2.new(1,-26,0,0),Size=UDim2.fromOffset(26,26)})
-    round(hit,8); stroke(hit,C.Border); hover(c.Window,hit,C.Field)
+    c.Reserve=36; c.HeadMinimum=30
+    local hit = button(c.Head,"",{Name="Action",BackgroundColor3=C.Field,BackgroundTransparency=Glass.Button,
+        Position=UDim2.new(1,-30,0,0),Size=UDim2.fromOffset(28,28)})
+    round(hit,9); local hs=stroke(hit,C.Border,1); hs.Transparency=.2; hover(c.Window,hit,C.Hover)
+    local arrow = icon(hit, "arrow-right"); arrow.Position=UDim2.fromOffset(6,6); arrow.Size=UDim2.fromOffset(16,16)
     local titleHit=button(c.Copy,"",{Name="Activate",BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ZIndex=3})
     local function activate() if not c.Locked and not c.Destroyed then invoke(c.Callback) end end
     connect(c.Window,hit.Activated,activate); connect(c.Window,titleHit.Activated,activate)
@@ -1302,23 +1390,24 @@ function Tab:Button(options)
 end
 function Tab:Toggle(options)
     local o = options or {}; local c = self:_control("Toggle",o)
-    c.Reserve=46; c.HeadMinimum=28
+    c.Reserve=48; c.HeadMinimum=30
     local target=button(c.Head,"",{Name="ToggleHit",BackgroundTransparency=1,
-        Position=UDim2.new(1,-38,0,0),Size=UDim2.fromOffset(38,26)})
+        Position=UDim2.new(1,-42,0,0),Size=UDim2.fromOffset(42,28)})
     local hit=new("Frame",{Name="Switch",BackgroundColor3=C.Border,
-        Position=UDim2.fromOffset(4,4),Size=UDim2.fromOffset(30,18)},target)
-    round(hit,7)
-    local knob=new("Frame",{Name="Thumb",BackgroundColor3=C.Muted,Position=UDim2.fromOffset(4,4),
-        Size=UDim2.fromOffset(10,10)},hit); round(knob,4)
-    local tick=label(knob,"",11,C.Window,{TextXAlignment=Enum.TextXAlignment.Center,Size=UDim2.fromScale(1,1)})
+        Position=UDim2.fromOffset(2,5),Size=UDim2.fromOffset(36,18)},target)
+    round(hit,9)
+    local knob=new("Frame",{Name="Thumb",BackgroundColor3=C.Text,Position=UDim2.fromOffset(3,3),
+        Size=UDim2.fromOffset(12,12)},hit); round(knob,6)
     c.Interactive=target
     function c:Set(value,silent)
         if self.Destroyed then return self end
         value=value == true
         local changed=self.Value ~= value; self.Value=value
-        softTween(hit,{BackgroundColor3=value and C.White or C.Border},0.18)
-        softTween(knob,{BackgroundColor3=value and C.Window or C.Muted,Position=UDim2.fromOffset(value and 16 or 4,4)},0.22,Enum.EasingStyle.Back)
-        tick.Text=value and "·" or ""; tick.TextColor3=C.White
+        softTween(hit,{BackgroundColor3=value and C.Text or C.Border},0.18)
+        softTween(knob,{
+            BackgroundColor3=value and C.Window or C.Muted,
+            Position=UDim2.fromOffset(value and 21 or 3,3),
+        },0.22,Enum.EasingStyle.Back)
         if changed and not silent then invoke(self.Callback,value) end
         return self
     end
@@ -1330,8 +1419,8 @@ end
 local function field(parent, placeholder)
     local box=new("TextBox",{Name="Field",Text="",PlaceholderText=placeholder or "",
         PlaceholderColor3=C.Faint,BackgroundColor3=C.Field,BackgroundTransparency=Glass.Field,ClearTextOnFocus=false,
-        TextXAlignment=Enum.TextXAlignment.Left,TextSize=11,Size=UDim2.new(1,0,0,28),LayoutOrder=2},parent)
-    round(box,8); stroke(box,C.Border); padding(box,9,0)
+        TextXAlignment=Enum.TextXAlignment.Left,TextSize=12,Size=UDim2.new(1,0,0,30),LayoutOrder=2},parent)
+    round(box,9); local fs=stroke(box,C.Border,1); fs.Transparency=.2; padding(box,10,0)
     return box
 end
 function Tab:Input(options)
@@ -1368,14 +1457,14 @@ function Tab:Slider(options)
     local sliderVisuals=c.Window.ThemeDef.Visuals
     local box=field(c.Head,"")
     box.Name="Value"
-    box.Size=UDim2.fromOffset(58,26)
+    box.Size=UDim2.fromOffset(56,28)
     box.Position=UDim2.new(1,-58,0,0)
     box.TextXAlignment=Enum.TextXAlignment.Center
     box.BackgroundColor3=sliderVisuals.SliderValueBackground
     box.TextColor3=sliderVisuals.SliderValueText
     box.Font=MEDIUM
-    box.TextSize=10
-    if box:FindFirstChildOfClass("UICorner") then box:FindFirstChildOfClass("UICorner").CornerRadius=UDim.new(0,9) end
+    box.TextSize=11
+    if box:FindFirstChildOfClass("UICorner") then box:FindFirstChildOfClass("UICorner").CornerRadius=UDim.new(0,8) end
     local boxStroke=box:FindFirstChildOfClass("UIStroke")
     if boxStroke then boxStroke.Color=sliderVisuals.SliderValueStroke; boxStroke.Transparency=.12 end
 
@@ -1476,9 +1565,10 @@ function Tab:Dropdown(options)
     local o=options or {}; local c=self:_control("Dropdown",o)
     c.Values=table.clone(o.Values or {}); c.Multi=o.Multi==true or o.MultiSelect==true
     local hit=button(c.ElementFrame,"",{Name="Dropdown",BackgroundColor3=C.Field,BackgroundTransparency=Glass.Field,
-        Size=UDim2.new(1,0,0,28),LayoutOrder=2}); round(hit,8); stroke(hit,C.Border)
-    local valueLabel=label(hit,"",11,C.Text,{Position=UDim2.fromOffset(8,0),Size=UDim2.new(1,-30,1,0),TextWrapped=true})
-    label(hit,"⌄",14,C.Muted,{Position=UDim2.new(1,-24,0,0),Size=UDim2.new(0,16,1,0),TextXAlignment=Enum.TextXAlignment.Center})
+        Size=UDim2.new(1,0,0,30),LayoutOrder=2}); round(hit,9); local ds=stroke(hit,C.Border,1); ds.Transparency=.2
+    local valueLabel=label(hit,"",12,C.Text,{Position=UDim2.fromOffset(10,0),Size=UDim2.new(1,-34,1,0),TextWrapped=true})
+    local chev=icon(hit,"chevron-down"); chev.Position=UDim2.new(1,-24,0.5,-7); chev.Size=UDim2.fromOffset(14,14)
+    chev.AnchorPoint=Vector2.new(0,0)
     c.Interactive=hit; c.BodyField=hit; c.ValueLabel=valueLabel
     function c:Set(value,silent,force)
         if self.Destroyed then return self end
@@ -1524,11 +1614,15 @@ function Tab:Dropdown(options)
                         local selected=self.Multi and table.find(self.Value,value)~=nil or (not self.Multi and self.Value==value)
                         local choiceHeight=math.max(32,textHeight(tostring(value),12,FONT,math.max(60,panel.AbsoluteSize.X-78))+12)
                         local choice=button(list,"",{Name="Option",Size=UDim2.new(1,-4,0,choiceHeight),LayoutOrder=count,
-                            BackgroundColor3=selected and C.Text or C.Row})
-                        round(choice,8)
-                        label(choice,tostring(value),13,selected and C.Window or C.Text,{Position=UDim2.fromOffset(12,0),
-                            Size=UDim2.new(1,-38,1,0),TextWrapped=true})
-                        label(choice,selected and "✓" or "",12,C.Window,{Position=UDim2.new(1,-28,0,0),Size=UDim2.new(0,20,1,0)})
+                            BackgroundColor3=selected and C.Text or C.Row,BackgroundTransparency=selected and 0 or Glass.Row})
+                        round(choice,10)
+                        label(choice,tostring(value),12,selected and C.Window or C.Text,{Position=UDim2.fromOffset(12,0),
+                            Size=UDim2.new(1,-38,1,0),TextWrapped=true,Font=MEDIUM})
+                        if selected then
+                            local ck=icon(choice,"check"); ck.Position=UDim2.new(1,-26,0.5,-7); ck.Size=UDim2.fromOffset(14,14)
+                            local cki=ck:FindFirstChild("Icon")
+                            if cki then cki.ImageColor3=C.Window end
+                        end
                         connect(window,choice.Activated,function()
                             if self.Multi then
                                 local arr=table.clone(self.Value); local i=table.find(arr,value)
@@ -1562,22 +1656,22 @@ function Tab:Colorpicker(options)
     c.HeadMinimum = 40
     local hit = button(c.Head, "", {
         Name = "Color",
-        Position = UDim2.new(1, -56, 0, 0),
-        Size = UDim2.fromOffset(56, 36),
+        Position = UDim2.new(1, -52, 0, 0),
+        Size = UDim2.fromOffset(48, 32),
     })
-    round(hit, 11)
-    local hitStroke = stroke(hit, C.Border, 1.2)
-    hitStroke.Transparency = 0.05
+    round(hit, 10)
+    local hitStroke = stroke(hit, C.Border, 1)
+    hitStroke.Transparency = 0.15
     local hitRing = new("Frame", {
         Name = "Ring",
         BackgroundTransparency = 1,
-        Size = UDim2.new(1, -8, 1, -8),
-        Position = UDim2.fromOffset(4, 4),
+        Size = UDim2.new(1, -6, 1, -6),
+        Position = UDim2.fromOffset(3, 3),
         ZIndex = 2,
     }, hit)
-    round(hitRing, 8)
+    round(hitRing, 7)
     local hitRingStroke = stroke(hitRing, Color3.new(1, 1, 1), 1)
-    hitRingStroke.Transparency = 0.75
+    hitRingStroke.Transparency = 0.7
     c.Interactive = hit
 
     function c:Set(value, silent)
@@ -1871,13 +1965,13 @@ function Tab:Keybind(options)
         BackgroundTransparency = Glass.Field,
         TextSize = 11,
         Font = MEDIUM,
-        Size = UDim2.fromOffset(84, 26),
-        Position = UDim2.new(1, -84, 0, 1),
+        Size = UDim2.fromOffset(88, 28),
+        Position = UDim2.new(1, -90, 0, 0),
         TextXAlignment = Enum.TextXAlignment.Center,
     })
-    round(hit, 8)
+    round(hit, 9)
     local hitStroke = stroke(hit, C.Border, 1)
-    hitStroke.Transparency = 0.12
+    hitStroke.Transparency = 0.2
     c.Interactive = hit
     c.Listening = false
 
@@ -2477,7 +2571,7 @@ function OpenHub:CreateWindow(options)
     local surface=new("Frame",{Name="Surface",BackgroundTransparency=1,Size=UDim2.fromScale(1,1)},gui)
     local root=new("Frame",{Name="OpenHubPanel",BackgroundColor3=w.ThemeDef.Visuals.RootBase,BackgroundTransparency=Glass.Root,AnchorPoint=Vector2.new(.5,.5),
         Position=UDim2.fromScale(.5,.5),Size=UDim2.fromOffset(680,430),ClipsDescendants=true},surface)
-    round(root,20); local rootStroke=stroke(root,w.ThemeDef.Visuals.RootStroke)
+    round(root,18); local rootStroke=stroke(root,w.ThemeDef.Visuals.RootStroke,1.2)
     local rootGradient=new("UIGradient",{Rotation=22,Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,w.ThemeDef.Visuals.RootGradient[1]),
         ColorSequenceKeypoint.new(.52,w.ThemeDef.Visuals.RootGradient[2]),
@@ -2545,12 +2639,23 @@ function OpenHub:CreateWindow(options)
     function w:SetIcon(source)
         w._customIcon = source
         applyIconAsset(logo, logoImage, source, (w.Narrow and 24) or 28)
-        applyIconAsset(openIcon, openIconImage, source, 24)
-        openIconImage.AnchorPoint = Vector2.new(0.5, 0.5)
-        openIconImage.Position = UDim2.fromScale(0.5, 0.5)
+        applyIconAsset(openIcon, openIconImage, source, 18)
+        openIconImage.AnchorPoint = Vector2.new(0, 0)
         local hasIcon = source and source ~= "" and source ~= false
-        openLetter.TextTransparency = hasIcon and 1 or 0
-        openIconImage.Visible = hasIcon and true or false
+        if hasIcon then
+            openIconImage.Position = UDim2.fromOffset(12, 11)
+            openIconImage.Visible = true
+            openLabel.Position = UDim2.fromOffset(36, 4)
+            openHint.Position = UDim2.fromOffset(36, 22)
+            openLabel.Size = UDim2.new(1, -48, 0, 18)
+            openHint.Size = UDim2.new(1, -48, 0, 12)
+        else
+            openIconImage.Visible = false
+            openLabel.Position = UDim2.fromOffset(14, 4)
+            openHint.Position = UDim2.fromOffset(14, 22)
+            openLabel.Size = UDim2.new(1, -28, 0, 18)
+            openHint.Size = UDim2.new(1, -28, 0, 12)
+        end
         return self
     end
 
@@ -2566,7 +2671,10 @@ function OpenHub:CreateWindow(options)
         openIcon.Visible = false
         openIconImage.Visible = false
         openIconImage.Image = ""
-        openLetter.TextTransparency = 0
+        openLabel.Position = UDim2.fromOffset(14, 4)
+        openHint.Position = UDim2.fromOffset(14, 22)
+        openLabel.Size = UDim2.new(1, -28, 0, 18)
+        openHint.Size = UDim2.new(1, -28, 0, 12)
         return self
     end
 
@@ -2584,7 +2692,7 @@ function OpenHub:CreateWindow(options)
 
     local titleCluster=new("Frame",{Name="TitleCluster",BackgroundTransparency=1,
         Position=UDim2.fromOffset(50,9),Size=UDim2.fromOffset(290,24)},top)
-    local brand=label(titleCluster,w._brandBaseTitle,16,C.Text,{Position=UDim2.fromOffset(0,0),
+    local brand=label(titleCluster,w._brandBaseTitle,15,C.Text,{Position=UDim2.fromOffset(0,0),
         Size=UDim2.fromOffset(120,22),Font=BOLD})
     local statusLabel=label(titleCluster,"-- activos",12,C.Muted,{Position=UDim2.fromOffset(126,0),
         Size=UDim2.fromOffset(96,22),Font=BOLD})
@@ -2594,21 +2702,21 @@ function OpenHub:CreateWindow(options)
     local author=label(top,w.Author,11,C.Muted,{Position=UDim2.new(1,-248,0,27),Size=UDim2.fromOffset(104,20),TextXAlignment=Enum.TextXAlignment.Right})
     local controls=new("Frame",{BackgroundTransparency=1,Position=UDim2.new(1,-76,0,8),Size=UDim2.fromOffset(64,28)},top)
     local menu=button(controls,"",{Name="Menu",Size=UDim2.fromOffset(1,1),Visible=false,Active=false})
-    local minimize=button(controls,"",{Name="Minimize",Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(28,28)}); round(minimize,8)
-    icon(minimize,"minus").Position=UDim2.fromOffset(4,4)
-    local close=button(controls,"",{Name="Close",Position=UDim2.fromOffset(32,0),Size=UDim2.fromOffset(28,28)}); round(close,8)
-    icon(close,"close").Position=UDim2.fromOffset(4,4)
+    local minimize=button(controls,"",{Name="Minimize",Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(28,28),BackgroundColor3=C.Row,BackgroundTransparency=Glass.Button}); round(minimize,9)
+    local minIcon=icon(minimize,"minus"); minIcon.Position=UDim2.fromOffset(5,5); minIcon.Size=UDim2.fromOffset(16,16)
+    local close=button(controls,"",{Name="Close",Position=UDim2.fromOffset(32,0),Size=UDim2.fromOffset(28,28),BackgroundColor3=C.Row,BackgroundTransparency=Glass.Button}); round(close,9)
+    local closeIcon=icon(close,"close"); closeIcon.Position=UDim2.fromOffset(5,5); closeIcon.Size=UDim2.fromOffset(16,16)
     hover(w,minimize); hover(w,close)
     local topRule=line(root,14,57,784,1,0,C.Border); topRule.Size=UDim2.new(1,-28,0,1)
     local sidebar=new("Frame",{Name="Navigation",BackgroundColor3=w.ThemeDef.Visuals.SidebarBase,BackgroundTransparency=Glass.Sidebar,Position=UDim2.fromOffset(12,70),
-        Size=UDim2.new(0,154,1,-82),ZIndex=12},root); round(sidebar,12); local sidebarStroke=stroke(sidebar,w.ThemeDef.Visuals.SidebarStroke)
+        Size=UDim2.new(0,154,1,-82),ZIndex=12},root); round(sidebar,14); local sidebarStroke=stroke(sidebar,w.ThemeDef.Visuals.SidebarStroke,1)
     local nav=scroll(sidebar,{Name="Tabs",Position=UDim2.fromOffset(8,10),Size=UDim2.new(1,-16,1,-58),ScrollBarThickness=0})
     vertical(nav,6)
     local navFooter=label(sidebar,"",8,C.Faint,{Position=UDim2.new(0,12,1,-28),Size=UDim2.new(1,-24,0,16),Font=Enum.Font.Code})
     local drawerShade=button(root,"",{Name="DrawerBackdrop",BackgroundTransparency=1,
         Position=UDim2.fromOffset(0,70),Size=UDim2.new(1,0,1,-70),Visible=false,Active=false,ZIndex=11})
     local content=new("Frame",{Name="Content",BackgroundTransparency=1,Position=UDim2.fromOffset(182,70),Size=UDim2.new(1,-194,1,-82),ZIndex=4},root)
-    local pageTitle=label(content,"Inicio",20,C.Text,{Size=UDim2.new(1,-90,0,26),Font=BOLD})
+    local pageTitle=label(content,"Inicio",18,C.Text,{Size=UDim2.new(1,-90,0,24),Font=BOLD})
     local pageDesc=label(content,DESCRIPTIONS.Inicio,10,C.Muted,{Position=UDim2.fromOffset(0,24),Size=UDim2.new(1,0,0,20),TextWrapped=true,TextYAlignment=Enum.TextYAlignment.Top})
     local count=label(content,"0 opciones",9,C.Faint,{Position=UDim2.new(1,-96,0,5),Size=UDim2.fromOffset(96,16),TextXAlignment=Enum.TextXAlignment.Right,Font=Enum.Font.Code})
     w.CountLabel=count
@@ -2626,30 +2734,32 @@ function OpenHub:CreateWindow(options)
     local pages=new("Frame",{Name="Pages",BackgroundTransparency=1,Position=UDim2.fromOffset(0,34),Size=UDim2.new(1,0,1,-34)},content)
     local footer=label(root,"",8,C.Faint,{Position=UDim2.new(0,18,1,-24),Size=UDim2.new(.6,0,0,14),Font=Enum.Font.Code})
     local shortcut=label(root,"",8,C.Faint,{Position=UDim2.new(.4,0,1,-24),Size=UDim2.new(.6,-18,0,14),TextXAlignment=Enum.TextXAlignment.Right,Font=Enum.Font.Code})
-    local openGlow=new("Frame",{Name="OpenGlow",AnchorPoint=Vector2.new(.5,.5),Position=UDim2.new(1,-40,1,-40),Size=UDim2.fromOffset(72,72),BackgroundColor3=C.Text,BackgroundTransparency=.88,ZIndex=19,Visible=false},launcherSurface)
-    round(openGlow,99)
-    local openButton=button(launcherSurface,"",{Name="OpenOpenHub",AnchorPoint=Vector2.new(.5,.5),Position=UDim2.new(1,-40,1,-40),Size=UDim2.fromOffset(52,52),BackgroundColor3=w.ThemeDef.Visuals.OpenButtonBase,BackgroundTransparency=0.08,ZIndex=20})
-    round(openButton,99); local openStroke=stroke(openButton,w.ThemeDef.Visuals.OpenStroke,1.4); openStroke.Transparency=.15
+    local openGlow=new("Frame",{Name="OpenGlow",AnchorPoint=Vector2.new(.5,.5),Position=UDim2.new(.5,0,1,-36),Size=UDim2.fromOffset(148,48),BackgroundColor3=C.Text,BackgroundTransparency=.92,ZIndex=19,Visible=false},launcherSurface)
+    round(openGlow,14)
+    local openButton=button(launcherSurface,"",{Name="OpenOpenHub",AnchorPoint=Vector2.new(.5,.5),Position=UDim2.new(.5,0,1,-36),Size=UDim2.fromOffset(132,40),BackgroundColor3=w.ThemeDef.Visuals.OpenButtonBase,BackgroundTransparency=0.06,ZIndex=20})
+    round(openButton,12); local openStroke=stroke(openButton,w.ThemeDef.Visuals.OpenStroke,1); openStroke.Transparency=.18
     local openScale=new("UIScale",{Scale=1},openButton)
-    local openIcon=mark(openButton,22); openIcon.Visible=false
+    local openIcon=mark(openButton,18); openIcon.Visible=false
     local openIconImage=new("ImageLabel",{
-        Name="OpenIconImage",BackgroundTransparency=1,AnchorPoint=Vector2.new(.5,.5),Size=UDim2.fromOffset(24,24),
-        Position=UDim2.fromScale(.5,.5),Image="",ScaleType=Enum.ScaleType.Fit,Visible=false,ZIndex=21,
+        Name="OpenIconImage",BackgroundTransparency=1,Size=UDim2.fromOffset(18,18),
+        Position=UDim2.fromOffset(14,11),Image="",ScaleType=Enum.ScaleType.Fit,Visible=false,ZIndex=21,
     },openButton)
-    round(openIconImage,6)
-    local openLetter=label(openButton,string.upper(string.sub(plain(o.Title or "O"),1,1)),18,C.Text,{
-        AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),Size=UDim2.fromScale(1,1),
-        Font=BOLD,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=22})
-    local openLabel=openLetter
-    local openHint=openLetter
+    round(openIconImage,4)
+    local openLetter=label(openButton,"",1,C.Text,{Visible=false,Size=UDim2.fromOffset(0,0)})
+    local openLabel=label(openButton,plain(o.Title or "OpenHub"),13,C.Text,{
+        Position=UDim2.fromOffset(14,4),Size=UDim2.new(1,-28,0,18),Font=BOLD,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=22})
+    local openHint=label(openButton,"OPEN PANEL",9,C.Muted,{
+        Position=UDim2.fromOffset(14,22),Size=UDim2.new(1,-28,0,12),Font=MEDIUM,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=22})
     connect(w,openButton.MouseEnter,function()
         if w.Opened then return end
-        softTween(openScale,{Scale=1.08},0.18,Enum.EasingStyle.Back)
-        softTween(openGlow,{BackgroundTransparency=.78,Size=UDim2.fromOffset(80,80)},0.2)
+        softTween(openScale,{Scale=1.04},0.16,Enum.EasingStyle.Quad)
+        softTween(openGlow,{BackgroundTransparency=.86,Size=UDim2.fromOffset(156,52)},0.18)
+        softTween(openButton,{BackgroundTransparency=0.02},0.15)
     end)
     connect(w,openButton.MouseLeave,function()
-        softTween(openScale,{Scale=1},0.18)
-        softTween(openGlow,{BackgroundTransparency=.88,Size=UDim2.fromOffset(72,72)},0.2)
+        softTween(openScale,{Scale=1},0.16)
+        softTween(openGlow,{BackgroundTransparency=.92,Size=UDim2.fromOffset(148,48)},0.18)
+        softTween(openButton,{BackgroundTransparency=0.06},0.15)
     end)
     w.OpenButton=openButton; w._launcherMoved=false; w.UIElements={Main=root,Title=brand,ActiveStatus=statusLabel,SideBar=sidebar,MainBar=content,Pages=pages,Search=searchBox,Topbar=top}
     local desired=o.Size or UDim2.fromOffset(680,430)
@@ -2728,10 +2838,11 @@ function OpenHub:CreateWindow(options)
         local layer=button(surface,"",{Name="ModalBackdrop",BackgroundColor3=Color3.new(),BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ZIndex=50})
         launcherGui.Enabled=false
         local panel=button(layer,"",{Name="Modal",BackgroundColor3=C.Panel,BackgroundTransparency=1,AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),Size=UDim2.fromOffset(width,height),ZIndex=2,ClipsDescendants=true})
-        round(panel,16); stroke(panel,C.Border)
-        local pScale=new("UIScale",{Scale=0.94},panel)
-        label(panel,title,14,C.Text,{Position=UDim2.fromOffset(16,17),Size=UDim2.new(1,-62,0,22),Font=BOLD,TextTruncate=Enum.TextTruncate.AtEnd})
-        local dismiss=button(panel,"×",{Position=UDim2.new(1,-50,0,7),Size=UDim2.fromOffset(40,40),TextSize=18}); round(dismiss,8)
+        round(panel,18); local ps=stroke(panel,C.Border,1.2); ps.Transparency=.12
+        local pScale=new("UIScale",{Scale=0.92},panel)
+        label(panel,title,15,C.Text,{Position=UDim2.fromOffset(18,16),Size=UDim2.new(1,-64,0,24),Font=BOLD,TextTruncate=Enum.TextTruncate.AtEnd})
+        local dismiss=button(panel,"",{Position=UDim2.new(1,-42,0,10),Size=UDim2.fromOffset(30,30),BackgroundColor3=C.Row,BackgroundTransparency=Glass.Button})
+        round(dismiss,8); local dicon=icon(dismiss,"close"); dicon.Position=UDim2.fromOffset(7,7); dicon.Size=UDim2.fromOffset(16,16)
         local function fit()
             panel.Size=UDim2.fromOffset(math.max(100,math.min(width,surface.AbsoluteSize.X-24)),math.max(100,math.min(height,surface.AbsoluteSize.Y-24)))
         end
@@ -2781,16 +2892,18 @@ function OpenHub:CreateWindow(options)
         openGlow.Visible=shouldShow and (not ghosted)
         if ghosted then
             openButton.BackgroundTransparency=1
-            openLetter.TextTransparency=1
+            openLabel.TextTransparency=1
+            openHint.TextTransparency=1
             openIconImage.ImageTransparency=1
             if openStroke then openStroke.Transparency=1 end
             openGlow.BackgroundTransparency=1
         else
-            openButton.BackgroundTransparency=0.08
-            openLetter.TextTransparency=openIconImage.Visible and 1 or 0
+            openButton.BackgroundTransparency=0.06
+            openLabel.TextTransparency=0
+            openHint.TextTransparency=0
             openIconImage.ImageTransparency=0
-            if openStroke then openStroke.Transparency=0.15 end
-            openGlow.BackgroundTransparency=0.88
+            if openStroke then openStroke.Transparency=0.18 end
+            openGlow.BackgroundTransparency=0.92
         end
     end
     local function fit(skipContentLayout)
@@ -2942,15 +3055,15 @@ function OpenHub:CreateWindow(options)
                 tab.SelectionBar.Visible=(w.CurrentTab==tab)
                 tab.SelectionBar.BackgroundTransparency=(w.CurrentTab==tab) and 0 or 1
             end
-            local glyph=tab.NavButton and tab.NavButton:FindFirstChildOfClass("Frame")
-            if glyph then
-                glyph.Position=UDim2.fromOffset(phone and 4 or 6,phone and 5 or 4)
-                glyph.Visible=sidebarWidth>=76
+            if tab.NavIcon then
+                tab.NavIcon.Position=UDim2.fromOffset(phone and 6 or 8,phone and 6 or 5)
+                tab.NavIcon.Size=UDim2.fromOffset(phone and 14 or 16,phone and 14 or 16)
+                tab.NavIcon.Visible=sidebarWidth>=70
             end
             if tab.NavTitle then
-                tab.NavTitle.Position=UDim2.fromOffset(phone and 23 or 26,0)
-                tab.NavTitle.Size=UDim2.new(1,phone and -25 or -30,1,0)
-                tab.NavTitle.TextSize=phone and 9 or 10
+                tab.NavTitle.Position=UDim2.fromOffset(phone and 24 or 28,0)
+                tab.NavTitle.Size=UDim2.new(1,phone and -26 or -32,1,0)
+                tab.NavTitle.TextSize=phone and 10 or 11
             end
         end
         for _,section in ipairs(w.Groups) do
@@ -2964,13 +3077,14 @@ function OpenHub:CreateWindow(options)
             end
         end
 
-        openButton.Size=UDim2.fromOffset(52,52)
-        openGlow.Size=UDim2.fromOffset(72,72)
-        openLetter.Text=string.upper(string.sub(plain(w._brandBaseTitle or "O"),1,1))
-        openLetter.TextSize=18
+        openButton.Size=UDim2.fromOffset(132,40)
+        openGlow.Size=UDim2.fromOffset(148,48)
+        openLabel.Text=plain(w._brandBaseTitle or "OpenHub")
+        openLabel.TextSize=13
+        openHint.Text="OPEN PANEL"
         if not w._launcherMoved then
-            openButton.Position=UDim2.new(1,-40,1,-40)
-            openGlow.Position=UDim2.new(1,-40,1,-40)
+            openButton.Position=UDim2.new(.5,0,1,-36)
+            openGlow.Position=UDim2.new(.5,0,1,-36)
         else
             openGlow.Position=openButton.Position
         end
@@ -2996,17 +3110,23 @@ function OpenHub:CreateWindow(options)
             if selected then
                 softTween(tab.NavButton,{BackgroundColor3=C.Row,BackgroundTransparency=Glass.NavActive},0.2)
                 softTween(tab.NavTitle,{TextColor3=C.Text},0.2)
-                if tab.Number then softTween(tab.Number,{TextColor3=C.Text},0.2) end
                 if tab.SelectionBar then
                     tab.SelectionBar.Visible=true
                     softTween(tab.SelectionBar,{BackgroundTransparency=0},0.2)
                 end
+                if tab.NavIcon then
+                    local ic = tab.NavIcon:FindFirstChild("Icon")
+                    if ic then softTween(ic,{ImageColor3=C.Text},0.2) end
+                end
             else
                 softTween(tab.NavButton,{BackgroundColor3=self.ThemeDef.Visuals.NavButtonIdle,BackgroundTransparency=Glass.NavIdle},0.2)
                 softTween(tab.NavTitle,{TextColor3=C.Muted},0.2)
-                if tab.Number then softTween(tab.Number,{TextColor3=C.Faint},0.2) end
                 if tab.SelectionBar then
                     softTween(tab.SelectionBar,{BackgroundTransparency=1},0.15)
+                end
+                if tab.NavIcon then
+                    local ic = tab.NavIcon:FindFirstChild("Icon")
+                    if ic then softTween(ic,{ImageColor3=C.Muted},0.2) end
                 end
             end
         end
@@ -3024,16 +3144,17 @@ function OpenHub:CreateWindow(options)
         local tab=setmetatable({Window=self,Title=title,Desc=opt.Desc or DESCRIPTIONS[title] or "Personaliza tus opciones.",
             Elements={},_order=0,Query="",Index=index},Tab)
         local page=new("Frame",{Name=title,BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Visible=false},pages)
-        local list=scroll(page,{Name="Options",AutomaticCanvasSize=Enum.AutomaticSize.None}); vertical(list,5); padding(list,2,4)
-        local empty=label(page,"Sin coincidencias. Prueba otra búsqueda.",12,C.Muted,{Position=UDim2.fromOffset(12,18),Size=UDim2.new(1,-24,0,50),TextWrapped=true,Visible=false})
-        local navButton=button(holder or nav,"",{Name=title,Size=UDim2.new(1,0,0,28),BackgroundColor3=self.ThemeDef.Visuals.NavButtonIdle,BackgroundTransparency=Glass.NavIdle,LayoutOrder=index})
-        round(navButton,8)
+        local list=scroll(page,{Name="Options",AutomaticCanvasSize=Enum.AutomaticSize.None}); vertical(list,6); padding(list,3,6)
+        local empty=label(page,"No options here.",12,C.Muted,{Position=UDim2.fromOffset(12,18),Size=UDim2.new(1,-24,0,50),TextWrapped=true,Visible=false})
+        local navButton=button(holder or nav,"",{Name=title,Size=UDim2.new(1,0,0,32),BackgroundColor3=self.ThemeDef.Visuals.NavButtonIdle,BackgroundTransparency=Glass.NavIdle,LayoutOrder=index})
+        round(navButton,10)
         local selectionBar=new("Frame",{Name="Selected",Position=UDim2.fromOffset(1,5),Size=UDim2.fromOffset(2,18),
             BackgroundColor3=C.Text,BackgroundTransparency=0,Visible=false,ZIndex=3},navButton); round(selectionBar,2)
-        local glyph=icon(navButton,title,string.format("%02d",index)); glyph.Position=UDim2.fromOffset(6,4)
-        local titleLabel=label(navButton,title,10,C.Muted,{Position=UDim2.fromOffset(26,0),Size=UDim2.new(1,-30,1,0),Font=MEDIUM,TextTruncate=Enum.TextTruncate.AtEnd})
+        local glyph=icon(navButton,opt.Icon or title); glyph.Position=UDim2.fromOffset(8,5); glyph.Size=UDim2.fromOffset(16,16)
+        local titleLabel=label(navButton,title,11,C.Muted,{Position=UDim2.fromOffset(28,0),Size=UDim2.new(1,-32,1,0),Font=MEDIUM,TextTruncate=Enum.TextTruncate.AtEnd})
         tab.Page,tab.Content,tab.Empty=page,list,empty; tab.NavButton,tab.NavTitle=navButton,titleLabel
-        tab.Number=glyph:FindFirstChildOfClass("TextLabel"); tab.SelectionBar=selectionBar
+        tab.Number=nil; tab.SelectionBar=selectionBar
+        tab.NavIcon=glyph
         table.insert(self.Tabs,tab)
         connect(self,navButton.Activated,function() self:SelectTab(tab) end)
         connect(self,navButton.MouseEnter,function()
@@ -3128,7 +3249,7 @@ function OpenHub:CreateWindow(options)
     function w:EditOpenButton(config)
         if config.Enabled~=nil then self:SetOpenButtonVisible(config.Enabled) end
         if config.Ghosted~=nil then self:SetOpenButtonGhosted(config.Ghosted) end
-        if config.Title then openLetter.Text=string.upper(string.sub(plain(config.Title),1,1)) end
+        if config.Title then openLabel.Text=plain(config.Title) end
         return self
     end
     function w:GetTheme()
@@ -3169,9 +3290,11 @@ function OpenHub:CreateWindow(options)
         searchBox.BackgroundTransparency = Glass.Field
         searchStroke.Color = themeDef.Visuals.SearchStroke
         openButton.BackgroundColor3 = themeDef.Visuals.OpenButtonBase
-        openButton.BackgroundTransparency = 0.08
+        openButton.BackgroundTransparency = 0.06
         openStroke.Color = themeDef.Visuals.OpenStroke
         openGlow.BackgroundColor3 = C.Text
+        openLabel.TextColor3 = C.Text
+        openHint.TextColor3 = C.Muted
         for _, grip in ipairs(resizeVisuals) do
             grip.BackgroundColor3 = C.Text
             grip.BackgroundTransparency = themeDef.Visuals.ResizeGuideTransparency
@@ -3182,14 +3305,45 @@ function OpenHub:CreateWindow(options)
         end
         applyThemeRolesRecursive(gui)
         applyThemeRolesRecursive(launcherGui)
+        brand.TextColor3 = C.Text
+        statusLabel.TextColor3 = C.Muted
+        pageTitle.TextColor3 = C.Text
+        pageDesc.TextColor3 = C.Muted
+        count.TextColor3 = C.Faint
+        footer.TextColor3 = C.Faint
+        shortcut.TextColor3 = C.Faint
+        author.TextColor3 = C.Muted
+        subtitle.TextColor3 = C.Faint
+        openLetter.TextColor3 = C.Text
+        openGlow.BackgroundColor3 = C.Text
+        topRule.BackgroundColor3 = C.Border
         for _, tab in ipairs(self.Tabs) do
+            local selected = self.CurrentTab == tab
+            if tab.NavTitle then tab.NavTitle.TextColor3 = selected and C.Text or C.Muted end
+            if tab.NavButton then
+                tab.NavButton.BackgroundColor3 = selected and C.Row or themeDef.Visuals.NavButtonIdle
+                tab.NavButton.BackgroundTransparency = selected and Glass.NavActive or Glass.NavIdle
+            end
+            if tab.SelectionBar then tab.SelectionBar.BackgroundColor3 = C.Text end
+            local glyph = tab.NavButton and tab.NavButton:FindFirstChildOfClass("Frame")
+            if glyph then
+                local iconImg = glyph:FindFirstChild("Icon")
+                if iconImg and iconImg:IsA("ImageLabel") then
+                    iconImg.ImageColor3 = selected and C.Text or C.Muted
+                end
+            end
             for _, control in ipairs(tab.Elements or {}) do
                 if control.ApplyTheme then control:ApplyTheme() end
             end
         end
-        if not silent and OpenHub.Notify and OpenHub.Window == self then
-            OpenHub:Notify({Title = "Theme", Content = tostring(resolved)})
+        for _, d in ipairs(gui:GetDescendants()) do
+            if d:IsA("ImageLabel") and d.Name == "Icon" then
+                if not (d.Parent and d.Parent.Parent and d.Parent.Parent:IsA("TextButton") and self.CurrentTab and d.Parent.Parent == self.CurrentTab.NavButton) then
+                    d.ImageColor3 = C.Muted
+                end
+            end
         end
+        if self.CurrentTab then self:SelectTab(self.CurrentTab) end
         return self
     end
     function w:RegisterScript(config)
@@ -3267,8 +3421,8 @@ function OpenHub:CreateWindow(options)
         label(body,plain(cfg.Content or cfg.Desc),13,C.Muted,{Size=UDim2.new(1,-6,0,0),AutomaticSize=Enum.AutomaticSize.Y,TextWrapped=true,TextYAlignment=Enum.TextYAlignment.Top})
         local buttons=cfg.Buttons or {{Title="Aceptar"}}
         for i,entry in ipairs(buttons) do
-            local b=button(panel,entry.Title or "Aceptar",{Position=UDim2.new((i-1)/#buttons,16,1,-54),Size=UDim2.new(1/#buttons,-22,0,36)})
-            round(b,8)
+            local b=button(panel,entry.Title or "Aceptar",{Position=UDim2.new((i-1)/#buttons,16,1,-52),Size=UDim2.new(1/#buttons,-20,0,34),BackgroundColor3=C.Row,BackgroundTransparency=Glass.Button,Font=MEDIUM,TextSize=13})
+            round(b,10); local bst=stroke(b,C.Border,1); bst.Transparency=.25
             connect(self,b.Activated,function() self:_closePopup(); invoke(entry.Callback) end,self._popupConnections)
         end
         return {Close=function() self:_closePopup() end}
@@ -3488,64 +3642,68 @@ function OpenHub:Notify(options)
     local o = options or {}
     if w.Destroyed then return end
     w._notices = w._notices or {}
-    local duration = math.clamp(tonumber(o.Duration) or 3, 1, 12)
+    local duration = math.clamp(tonumber(o.Duration) or 2.5, 1, 8)
     local holder = new("Frame", {
         Name = "OpenHubNotice",
-        BackgroundColor3 = C.Window,
+        BackgroundColor3 = C.Panel,
         AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, 40, 0, 0),
-        Size = UDim2.fromOffset(300, 0),
+        Position = UDim2.new(1, 24, 0, 0),
+        Size = UDim2.fromOffset(220, 0),
         AutomaticSize = Enum.AutomaticSize.Y,
         ZIndex = 120,
-        BackgroundTransparency = 0.04,
+        BackgroundTransparency = 0.06,
     }, w.ScreenGui)
-    new("UISizeConstraint", { MaxSize = Vector2.new(340, math.huge) }, holder)
-    round(holder, 14)
+    new("UISizeConstraint", { MaxSize = Vector2.new(240, 120) }, holder)
+    round(holder, 10)
     local st = stroke(holder, C.Border, 1)
-    st.Transparency = 0.15
-    padding(holder, 14, 12)
-    vertical(holder, 6)
+    st.Transparency = 0.25
+    padding(holder, 10, 8)
+    vertical(holder, 3)
 
     local accent = new("Frame", {
         Name = "Accent",
         BackgroundColor3 = (typeof(o.Color) == "Color3" and o.Color) or C.Text,
-        Size = UDim2.new(0, 3, 1, 0),
+        Size = UDim2.new(0, 2, 1, 0),
         Position = UDim2.fromOffset(0, 0),
         ZIndex = 121,
     }, holder)
-    round(accent, 2)
+    round(accent, 1)
 
-    label(holder, plain(o.Title or "OpenHub"), 13, C.Text, { Font = BOLD, LayoutOrder = 1, Size = UDim2.new(1, -8, 0, 18) })
-    label(holder, plain(o.Content or o.Desc or ""), 12, C.Muted, {
-        Size = UDim2.new(1, -8, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
-        TextWrapped = true,
-        LayoutOrder = 2,
-    })
+    local titleText = plain(o.Title or "OpenHub")
+    local bodyText = plain(o.Content or o.Desc or "")
+    label(holder, titleText, 11, C.Text, { Font = BOLD, LayoutOrder = 1, Size = UDim2.new(1, -4, 0, 14) })
+    if bodyText ~= "" then
+        label(holder, bodyText, 10, C.Muted, {
+            Size = UDim2.new(1, -4, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.Y,
+            TextWrapped = true,
+            LayoutOrder = 2,
+        })
+    end
 
     local barBg = new("Frame", {
         Name = "BarBg",
         BackgroundColor3 = C.Border,
-        BackgroundTransparency = 0.5,
-        Size = UDim2.new(1, 0, 0, 3),
+        BackgroundTransparency = 0.55,
+        Size = UDim2.new(1, 0, 0, 2),
         LayoutOrder = 3,
     }, holder)
-    round(barBg, 2)
+    round(barBg, 1)
     local bar = new("Frame", {
         Name = "Bar",
         BackgroundColor3 = (typeof(o.Color) == "Color3" and o.Color) or C.Text,
         Size = UDim2.fromScale(1, 1),
         BorderSizePixel = 0,
     }, barBg)
-    round(bar, 2)
+    round(bar, 1)
 
     local function layoutNotices()
-        local y = 16
+        local y = 12
         for i = #w._notices, 1, -1 do
             local item = w._notices[i]
             if item and item.Parent then
-                softTween(item, { Position = UDim2.new(1, -16, 0, y) }, 0.22)
-                y = y + item.AbsoluteSize.Y + 10
+                softTween(item, { Position = UDim2.new(1, -12, 0, y) }, 0.18)
+                y = y + item.AbsoluteSize.Y + 6
             else
                 table.remove(w._notices, i)
             end
@@ -3555,7 +3713,7 @@ function OpenHub:Notify(options)
     table.insert(w._notices, holder)
     task.defer(function()
         layoutNotices()
-        softTween(holder, { Position = UDim2.new(1, -16, 0, holder.Position.Y.Offset) }, 0.28)
+        softTween(holder, { Position = UDim2.new(1, -12, 0, holder.Position.Y.Offset) }, 0.22)
         softTween(bar, { Size = UDim2.fromScale(0, 1) }, duration, Enum.EasingStyle.Linear)
     end)
 
@@ -3563,8 +3721,8 @@ function OpenHub:Notify(options)
     local function close()
         if closed then return end
         closed = true
-        softTween(holder, { Position = UDim2.new(1, 40, 0, holder.Position.Y.Offset), BackgroundTransparency = 1 }, 0.2)
-        task.delay(0.22, function()
+        softTween(holder, { Position = UDim2.new(1, 28, 0, holder.Position.Y.Offset), BackgroundTransparency = 1 }, 0.16)
+        task.delay(0.18, function()
             if holder.Parent then holder:Destroy() end
             for i, item in ipairs(w._notices) do
                 if item == holder then
@@ -3579,6 +3737,7 @@ function OpenHub:Notify(options)
     task.delay(duration, close)
     return { Close = close }
 end
+
 
 OpenHub:SetTheme("OpenHub")
 return OpenHub

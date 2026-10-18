@@ -157,6 +157,17 @@ OpenHubUI.Themes = {
     }
 }
 
+OpenHubUI.DefaultThemes = {
+    Midnight = true,
+    Obsidian = true,
+    Aurora = true,
+    Crimson = true,
+    Sapphire = true,
+    Sakura = true,
+    Light = true,
+    Ember = true
+}
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -559,6 +570,32 @@ function OpenHubUI:CreateWindow(config)
     }, header)
     corner(searchBox, 8)
     stroke(searchBox, theme.Accent, 0.7, 1)
+    local searchClear = make("ImageButton", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -120, 0, 26),
+        Size = UDim2.fromOffset(16, 16),
+        BackgroundTransparency = 1,
+        Image = assetId("x"),
+        ImageColor3 = theme.Muted,
+        AutoButtonColor = false,
+        Visible = false,
+        ZIndex = 7
+    }, header)
+    local searchStatus = make("TextLabel", {
+        BackgroundColor3 = theme.Panel,
+        BackgroundTransparency = 0.04,
+        Position = UDim2.fromOffset(174, 58),
+        Size = UDim2.fromOffset(220, 28),
+        Text = "No matches found",
+        Font = Enum.Font.GothamMedium,
+        TextSize = 11,
+        TextColor3 = theme.Muted,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Visible = false,
+        ZIndex = 100
+    }, root)
+    corner(searchStatus, 8)
+    stroke(searchStatus, theme.Accent, 0.82, 1)
 
     local function objectMatches(object, query)
         local needle = string.lower(query or "")
@@ -576,16 +613,29 @@ function OpenHubUI:CreateWindow(config)
     local function filterSearch(query)
         query = tostring(query or "")
         local firstMatch
+        local totalMatches = 0
         for _, tabItem in ipairs(state.Tabs) do
-            local tabMatch = objectMatches(tabItem.Page, query)
+            local groupMatch = tabItem.Group and objectMatches(tabItem.Group.Instance, query) or false
+            local tabMatch = groupMatch or objectMatches(tabItem.Page, query)
             for _, child in ipairs(tabItem.Page:GetChildren()) do
                 if child:IsA("GuiObject") and not child:IsA("UIListLayout") then
                     child.Visible = query == "" or objectMatches(child, query)
                 end
             end
             tabItem.Button.Visible = query == "" or tabMatch
-            if tabMatch and not firstMatch then firstMatch = tabItem end
+            if tabMatch then
+                totalMatches = totalMatches + 1
+                if not firstMatch then firstMatch = tabItem end
+            end
         end
+        for _, group in ipairs(state.Groups) do
+            local groupVisible = query == "" or objectMatches(group.Instance, query)
+            for _, tabItem in ipairs(group.Tabs) do
+                if tabItem.Button.Visible then groupVisible = true end
+            end
+            group.Instance.Visible = groupVisible
+        end
+        searchStatus.Visible = query ~= "" and totalMatches == 0
         if query ~= "" and firstMatch and firstMatch.Select then firstMatch.Select() end
     end
 
@@ -593,6 +643,7 @@ function OpenHubUI:CreateWindow(config)
     searchButton.MouseButton1Click:Connect(function()
         searchOpen = not searchOpen
         searchBox.Visible = searchOpen
+        searchClear.Visible = searchOpen
         if searchOpen then
             searchBox:CaptureFocus()
         else
@@ -603,6 +654,21 @@ function OpenHubUI:CreateWindow(config)
     searchBox:GetPropertyChangedSignal("Text"):Connect(function()
         filterSearch(searchBox.Text)
     end)
+    searchClear.MouseButton1Click:Connect(function()
+        searchBox.Text = ""
+        searchBox:CaptureFocus()
+    end)
+    local searchKeyConn = UserInputService.InputBegan:Connect(function(input, processed)
+        if processed or not searchOpen then return end
+        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Escape then
+            searchOpen = false
+            searchBox.Visible = false
+            searchClear.Visible = false
+            searchBox.Text = ""
+            filterSearch("")
+        end
+    end)
+    table.insert(state.Connections, searchKeyConn)
 
     close.MouseEnter:Connect(function()
         tween(close, 0.15, {BackgroundColor3 = Color3.fromRGB(255, 80, 90), BackgroundTransparency = 0.15})
@@ -727,8 +793,14 @@ function OpenHubUI:CreateWindow(config)
         end
     end
 
-    openButton.MouseButton1Click:Connect(function() setOpen(not state.Open) end)
-    openIcon.MouseButton1Click:Connect(function() setOpen(not state.Open) end)
+    local suppressOpenClick = false
+    openButton.MouseButton1Click:Connect(function()
+        if suppressOpenClick then
+            suppressOpenClick = false
+            return
+        end
+        setOpen(not state.Open)
+    end)
     close.MouseButton1Click:Connect(function() setOpen(false) end)
 
     minimize.MouseButton1Click:Connect(function()
@@ -743,13 +815,17 @@ function OpenHubUI:CreateWindow(config)
     end)
 
     local openDragging = false
+    local openDragMoved = false
     local openDragStart
     local openStartPosition
+    local openStartAbsolute
     openIcon.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             openDragging = true
+            openDragMoved = false
             openDragStart = input.Position
             openStartPosition = openButton.Position
+            openStartAbsolute = openButton.AbsolutePosition
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then openDragging = false end
             end)
@@ -758,21 +834,25 @@ function OpenHubUI:CreateWindow(config)
     UserInputService.InputChanged:Connect(function(input)
         if openDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - openDragStart
-            openButton.Position = UDim2.new(
-                openStartPosition.X.Scale,
-                openStartPosition.X.Offset + delta.X,
-                openStartPosition.Y.Scale,
-                openStartPosition.Y.Offset + delta.Y
-            )
+            if delta.Magnitude > 4 then openDragMoved = true end
+            local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
+            local size = openButton.AbsoluteSize
+            local x = openStartAbsolute.X + size.X / 2 + delta.X
+            local y = openStartAbsolute.Y + delta.Y
+            x = math.clamp(x, size.X / 2, math.max(size.X / 2, viewport.X - size.X / 2))
+            y = math.clamp(y, 0, math.max(0, viewport.Y - size.Y))
+            openButton.Position = UDim2.fromOffset(x, y)
+            if openDragMoved then suppressOpenClick = true end
         end
     end)
 
-    local dragging, dragStart, startPos
+    local dragging, dragStart, startPos, rootStartAbsolute
     header.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = root.Position
+            rootStartAbsolute = root.AbsolutePosition
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
@@ -782,10 +862,13 @@ function OpenHubUI:CreateWindow(config)
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            root.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
+            local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
+            local size = root.AbsoluteSize
+            local x = rootStartAbsolute.X + size.X / 2 + delta.X
+            local y = rootStartAbsolute.Y + size.Y / 2 + delta.Y
+            x = math.clamp(x, size.X / 2, math.max(size.X / 2, viewport.X - size.X / 2))
+            y = math.clamp(y, size.Y / 2, math.max(size.Y / 2, viewport.Y - size.Y / 2))
+            root.Position = UDim2.fromOffset(x, y)
         end
     end)
 
@@ -893,7 +976,7 @@ function OpenHubUI:CreateWindow(config)
         root.BackgroundTransparency = state.Transparency
         darkOverlay.BackgroundColor3 = theme.Background
         darkOverlay.BackgroundTransparency = state.Acrylic
-        rootStroke.Color = Color3.new(1, 1, 1)
+        rootStroke.Color = theme.Stroke or Color3.new(1, 1, 1)
         title.TextColor3 = theme.Text
         subtitle.TextColor3 = theme.Muted
         close.TextColor3 = theme.Text
@@ -907,6 +990,9 @@ function OpenHubUI:CreateWindow(config)
         searchBox.BackgroundColor3 = theme.Surface
         searchBox.TextColor3 = theme.Text
         searchBox.PlaceholderColor3 = theme.Muted
+        searchClear.ImageColor3 = theme.Muted
+        searchStatus.BackgroundColor3 = theme.Panel
+        searchStatus.TextColor3 = theme.Muted
         nav.ScrollBarImageColor3 = theme.Accent
         content.BackgroundColor3 = theme.Panel
         content.BackgroundTransparency = state.Glass
@@ -932,6 +1018,7 @@ function OpenHubUI:CreateWindow(config)
     end
 
     function state:CreateCustomTheme(name, values)
+        name = tostring(name or "Custom")
         local custom = deepCopy(theme)
         for k, v in pairs(values or {}) do
             if custom[k] ~= nil then custom[k] = v end
@@ -939,6 +1026,19 @@ function OpenHubUI:CreateWindow(config)
         OpenHubUI.Themes[name] = custom
         applyTheme(custom, name)
         return custom
+    end
+
+    function state:GetThemes()
+        return deepCopy(OpenHubUI.Themes)
+    end
+
+    function state:DeleteCustomTheme(name)
+        if OpenHubUI.Themes[name] and not OpenHubUI.DefaultThemes[name] then
+            OpenHubUI.Themes[name] = nil
+            if state.ThemeName == name then applyTheme(OpenHubUI.Themes.Midnight, "Midnight") end
+            return true
+        end
+        return false
     end
 
     function state:SetTransparency(value)
@@ -1154,9 +1254,18 @@ function OpenHubUI:CreateWindow(config)
         local item = {Instance = frame, Button = button, Label = lbl, Icon = groupIcon, Arrow = arrow, Tabs = {}, Expanded = true}
         function item:SetExpanded(value)
             item.Expanded = value == true
-            arrow.Image = assetId(item.Expanded and "chevron-up" or "chevron-down")
+            tween(arrow, 0.28, {Rotation = item.Expanded and 0 or 180})
             for _, tab in ipairs(item.Tabs) do
-                tab.Button.Visible = item.Expanded
+                if item.Expanded then
+                    tab.Button.Visible = true
+                    tab.Button.Size = UDim2.new(1, 0, 0, 0)
+                    tween(tab.Button, 0.28, {Size = UDim2.new(1, 0, 0, 34)})
+                else
+                    tween(tab.Button, 0.28, {Size = UDim2.new(1, 0, 0, 0)})
+                    task.delay(0.3, function()
+                        if not item.Expanded and tab.Button.Parent then tab.Button.Visible = false end
+                    end)
+                end
             end
         end
         button.MouseButton1Click:Connect(function()
@@ -2621,6 +2730,8 @@ function OpenHubUI:CreateWindow(config)
 
     function Window:SetTheme(name) state:SetTheme(name) end
     function Window:CreateCustomTheme(name, values) return state:CreateCustomTheme(name, values) end
+    function Window:GetThemes() return state:GetThemes() end
+    function Window:DeleteCustomTheme(name) return state:DeleteCustomTheme(name) end
     function Window:SetBackground(source, options) return state:SetBackground(source, options) end
     function Window:SetTransparency(value) state:SetTransparency(value) end
     function Window:SetAcrylic(value) state:SetAcrylic(value) end

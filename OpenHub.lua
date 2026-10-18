@@ -1,5 +1,54 @@
 local OpenHubUI = {}
 OpenHubUI.Version = "3.0.0"
+OpenHubUI.Icons = {}
+OpenHubUI.IconSources = {
+    "https://raw.githubusercontent.com/Styx-ui/Openhub/refs/heads/main/Icons.lua",
+    "https://raw.githubusercontent.com/Styx-ui/Openhub/refs/heads/main/Icons2.lua",
+    "https://raw.githubusercontent.com/Styx-ui/Openhub/refs/heads/main/Icons3.lua",
+    "https://raw.githubusercontent.com/Styx-ui/Openhub/refs/heads/main/Icons4.lua"
+}
+OpenHubUI._IconsLoaded = false
+
+local function normalizeIconName(value)
+    return tostring(value):lower():gsub("%s+", "-"):gsub("_", "-")
+end
+
+local function registerIconCatalog(catalog)
+    if type(catalog) ~= "table" then return end
+    for name, id in pairs(catalog) do
+        if type(name) == "string" and (typeof(id) == "string" or typeof(id) == "number") then
+            local asset = typeof(id) == "number" and "rbxassetid://" .. tostring(id) or id
+            OpenHubUI.Icons[name] = asset
+            OpenHubUI.Icons[normalizeIconName(name)] = asset
+        end
+    end
+end
+
+function OpenHubUI:LoadIcons()
+    if self._IconsLoaded then return self.Icons end
+    self._IconsLoaded = true
+    local compiler = loadstring or load
+    if not compiler or not game or not game.HttpGet then return self.Icons end
+    for _, source in ipairs(self.IconSources) do
+        pcall(function()
+            local code = game:HttpGet(source)
+            local chunk = compiler(code)
+            if type(chunk) == "function" then
+                local ok, catalog = pcall(chunk)
+                if ok then registerIconCatalog(catalog) end
+            end
+        end)
+    end
+    return self.Icons
+end
+
+function OpenHubUI:GetIcon(name)
+    if typeof(name) ~= "string" then return nil end
+    local direct = self.Icons[name] or self.Icons[normalizeIconName(name)]
+    if direct then return direct end
+    self:LoadIcons()
+    return self.Icons[name] or self.Icons[normalizeIconName(name)]
+end
 
 OpenHubUI.Themes = {
     Midnight = {
@@ -146,7 +195,11 @@ end
 local function assetId(value)
     if typeof(value) == "number" then return "rbxassetid://" .. value end
     if typeof(value) ~= "string" then return "" end
+    if value == "" then return "" end
+    if value:match("^rbxassetid://") or value:match("^https?://") then return value end
     if value:match("^%d+$") then return "rbxassetid://" .. value end
+    local icon = OpenHubUI:GetIcon(value)
+    if icon then return icon end
     return value
 end
 
@@ -1681,6 +1734,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
                 AutoButtonColor = false,
+                Active = true,
                 ZIndex = 526
             }, svBox)
 
@@ -1722,6 +1776,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
                 AutoButtonColor = false,
+                Active = true,
                 ZIndex = 523
             }, hueTrack)
 
@@ -1774,6 +1829,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
                 AutoButtonColor = false,
+                Active = true,
                 ZIndex = 524
             }, alphaTrack)
 
@@ -1901,10 +1957,15 @@ function OpenHubUI:CreateWindow(config)
 
             local svDrag, hueDrag, alphaDrag = false, false, false
 
+            local function pointerPosition(input)
+                local p = input.Position
+                return Vector2.new(p.X, p.Y)
+            end
+
             svHit.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     svDrag = true
-                    local rel = input.Position - svBox.AbsolutePosition
+                    local rel = pointerPosition(input) - svBox.AbsolutePosition
                     s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
                     v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
                     applyColor(true)
@@ -1914,7 +1975,7 @@ function OpenHubUI:CreateWindow(config)
             hueHit.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     hueDrag = true
-                    local rel = input.Position - hueTrack.AbsolutePosition
+                    local rel = pointerPosition(input) - hueTrack.AbsolutePosition
                     h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 end
@@ -1923,7 +1984,7 @@ function OpenHubUI:CreateWindow(config)
             alphaHit.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     alphaDrag = true
-                    local rel = input.Position - alphaTrack.AbsolutePosition
+                    local rel = pointerPosition(input) - alphaTrack.AbsolutePosition
                     a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 end
@@ -1932,16 +1993,16 @@ function OpenHubUI:CreateWindow(config)
             UserInputService.InputChanged:Connect(function(input)
                 if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
                 if svDrag then
-                    local rel = input.Position - svBox.AbsolutePosition
+                    local rel = pointerPosition(input) - svBox.AbsolutePosition
                     s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
                     v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
                     applyColor(true)
                 elseif hueDrag then
-                    local rel = input.Position - hueTrack.AbsolutePosition
+                    local rel = pointerPosition(input) - hueTrack.AbsolutePosition
                     h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 elseif alphaDrag then
-                    local rel = input.Position - alphaTrack.AbsolutePosition
+                    local rel = pointerPosition(input) - alphaTrack.AbsolutePosition
                     a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 end

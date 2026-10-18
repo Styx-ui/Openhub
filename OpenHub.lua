@@ -520,17 +520,25 @@ function OpenHubUI:CreateWindow(config)
     local searchButton = make("ImageButton", {
         Name = "SearchButton",
         AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -80, 0, 14),
-        Size = UDim2.fromOffset(24, 24),
+        Position = UDim2.new(1, -80, 0, 12),
+        Size = UDim2.fromOffset(28, 28),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 0.92,
-        Image = assetId("search"),
-        ImageColor3 = theme.Text,
+        Image = "",
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
-    corner(searchButton, 7)
+    corner(searchButton, 8)
     stroke(searchButton, Color3.new(1, 1, 1), 0.88, 1)
+    local searchGlyph = make("ImageLabel", {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
+        Size = UDim2.fromOffset(15, 15),
+        BackgroundTransparency = 1,
+        Image = assetId("search"),
+        ImageColor3 = theme.Text,
+        ZIndex = 6
+    }, searchButton)
 
     local searchBox = make("TextBox", {
         Name = "SearchBox",
@@ -895,7 +903,7 @@ function OpenHubUI:CreateWindow(config)
         openTitle.TextColor3 = theme.Text
         openIcon.ImageColor3 = theme.Accent
         searchButton.BackgroundColor3 = theme.Panel
-        searchButton.ImageColor3 = theme.Text
+        searchGlyph.ImageColor3 = theme.Text
         searchBox.BackgroundColor3 = theme.Surface
         searchBox.TextColor3 = theme.Text
         searchBox.PlaceholderColor3 = theme.Muted

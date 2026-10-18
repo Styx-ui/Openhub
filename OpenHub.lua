@@ -155,9 +155,26 @@ local function resolveAsset(path)
     if path:match("^rbxassetid://") or path:match("^https?://") then return path end
     if getcustomasset then
         local ok, result = pcall(getcustomasset, path)
-        if ok then return result end
+        if ok and result and result ~= "" then return result end
+    end
+    if getcustomassetmacked then
+        local ok, result = pcall(getcustomassetmacked, path)
+        if ok and result and result ~= "" then return result end
     end
     return nil
+end
+
+local function loadLocalImage(path, data)
+    if typeof(path) ~= "string" then return "" end
+    if path:match("^rbxassetid://") then return path end
+    if path:match("%.png$") or path:match("%.jpg$") or path:match("%.jpeg$") or path:match("%.gif$") then
+        if data and writefile then
+            pcall(writefile, path, data)
+        end
+        local resolved = resolveAsset(path)
+        if resolved then return resolved end
+    end
+    return assetId(path)
 end
 
 local function deepCopy(source)
@@ -572,8 +589,6 @@ function OpenHubUI:CreateWindow(config)
 
     makeCornerMark("BR", Vector2.new(1, 1), UDim2.new(1, -2, 1, -2), 0)
     makeCornerMark("BL", Vector2.new(0, 1), UDim2.new(0, 2, 1, -2), 90)
-    makeCornerMark("TR", Vector2.new(1, 0), UDim2.new(1, -2, 0, 2), -90)
-    makeCornerMark("TL", Vector2.new(0, 0), UDim2.new(0, 2, 0, 2), 180)
 
     local function makeEdgeHandle(name, anchor, pos, size)
         local h = make("Frame", {
@@ -713,7 +728,12 @@ function OpenHubUI:CreateWindow(config)
 
     function state:SetBackground(source, options)
         options = options or {}
-        local image = options.Local and (resolveAsset(source) or "") or assetId(source)
+        local image
+        if options.Local then
+            image = loadLocalImage(source, options.Data)
+        else
+            image = assetId(source)
+        end
         bg.Image = image or ""
         bg.ImageTransparency = math.clamp(tonumber(options.Transparency) or 0.7, 0, 1)
         bg.ScaleType = options.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop
@@ -1470,16 +1490,19 @@ function OpenHubUI:CreateWindow(config)
                 expanded = true
                 local abs = chosen.AbsolutePosition
                 local absSize = chosen.AbsoluteSize
-                local h = math.min(#options, 6) * 31 + 14
-                local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+                local popupH = math.min(#options, 6) * 31 + 14
+                local popupW = math.max(absSize.X, 160)
+                local rAbs = root.AbsolutePosition
+                local rSz = root.AbsoluteSize
                 local px = abs.X
                 local py = abs.Y + absSize.Y + 6
-                if py + h > screen.Y - 12 then py = abs.Y - h - 6 end
-                if px + absSize.X > screen.X - 12 then px = screen.X - absSize.X - 12 end
+                if py + popupH > rAbs.Y + rSz.Y - 8 then py = abs.Y - popupH - 6 end
+                px = math.clamp(px, rAbs.X + 4, rAbs.X + rSz.X - popupW - 4)
+                py = math.clamp(py, rAbs.Y + 54, rAbs.Y + rSz.Y - popupH - 4)
                 list.Position = UDim2.fromOffset(px, py)
-                list.Size = UDim2.fromOffset(math.max(absSize.X, 140), 0)
+                list.Size = UDim2.fromOffset(popupW, 0)
                 list.Visible = true
-                tween(list, 0.18, {Size = UDim2.fromOffset(math.max(absSize.X, 140), h)})
+                tween(list, 0.18, {Size = UDim2.fromOffset(popupW, popupH)})
             end
 
             chosen.MouseButton1Click:Connect(function()
@@ -1580,7 +1603,9 @@ function OpenHubUI:CreateWindow(config)
         function tab:CreateColorPicker(cfg)
             cfg = cfg or {}
             local color = cfg.Color or theme.Accent
-            local h, s, v = color:ToHSV()
+            local h, s, v, a = color:ToHSV(), 1
+            h, s, v = color:ToHSV()
+            a = 1
 
             local frame = elementFrame(cfg.Name or "Color", 44)
             local label = make("TextLabel", {
@@ -1598,7 +1623,7 @@ function OpenHubUI:CreateWindow(config)
             local swatch = make("TextButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
-                Size = UDim2.fromOffset(36, 22),
+                Size = UDim2.fromOffset(44, 24),
                 BackgroundColor3 = color,
                 Text = "",
                 AutoButtonColor = false,
@@ -1607,21 +1632,27 @@ function OpenHubUI:CreateWindow(config)
             corner(swatch, 7)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
+            local PW, PH = 220, 268
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
-                Size = UDim2.fromOffset(200, 200),
+                Size = UDim2.fromOffset(PW, PH),
                 BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.06,
+                BackgroundTransparency = 0.05,
                 BorderSizePixel = 0,
                 Visible = false,
-                ZIndex = 520
+                ZIndex = 520,
+                ClipsDescendants = false
             }, gui)
             corner(popup, 12)
-            stroke(popup, Color3.new(1, 1, 1), 0.8, 1)
-            pad(popup, 12, 12, 12, 12)
+            stroke(popup, Color3.new(1, 1, 1), 0.78, 1)
+
+            local PAD = 12
+            local SVW = PW - PAD * 2
+            local SVH = 130
 
             local svBox = make("Frame", {
-                Size = UDim2.fromOffset(176, 120),
+                Position = UDim2.fromOffset(PAD, PAD),
+                Size = UDim2.fromOffset(SVW, SVH),
                 BackgroundColor3 = Color3.fromHSV(h, 1, 1),
                 BorderSizePixel = 0,
                 ZIndex = 521
@@ -1660,24 +1691,27 @@ function OpenHubUI:CreateWindow(config)
             local svKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new(s, 0, 1 - v, 0),
-                Size = UDim2.fromOffset(14, 14),
+                Size = UDim2.fromOffset(16, 16),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 ZIndex = 525
             }, svBox)
-            corner(svKnob, 7)
-            stroke(svKnob, Color3.new(0, 0, 0), 0.3, 1.5)
+            corner(svKnob, 8)
+            stroke(svKnob, Color3.new(0, 0, 0), 0.25, 1.5)
 
             local svHit = make("TextButton", {
-                BackgroundTransparency = 1,
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.999,
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
+                AutoButtonColor = false,
                 ZIndex = 526
             }, svBox)
 
+            local HUE_Y = PAD + SVH + 10
             local hueTrack = make("Frame", {
-                Position = UDim2.fromOffset(0, 130),
-                Size = UDim2.fromOffset(176, 14),
+                Position = UDim2.fromOffset(PAD, HUE_Y),
+                Size = UDim2.fromOffset(SVW, 14),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 ZIndex = 521
@@ -1685,65 +1719,200 @@ function OpenHubUI:CreateWindow(config)
             corner(hueTrack, 5)
             make("UIGradient", {
                 Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+                    ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 0, 0)),
                     ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
                     ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
-                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+                    ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(0, 255, 255)),
                     ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
                     ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+                    ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 0, 0))
                 })
             }, hueTrack)
 
             local hueKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new(h, 0, 0.5, 0),
-                Size = UDim2.fromOffset(8, 18),
+                Size = UDim2.fromOffset(10, 20),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 ZIndex = 522
             }, hueTrack)
-            corner(hueKnob, 3)
+            corner(hueKnob, 4)
             stroke(hueKnob, Color3.new(0, 0, 0), 0.2, 1)
 
             local hueHit = make("TextButton", {
-                BackgroundTransparency = 1,
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.999,
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
+                AutoButtonColor = false,
                 ZIndex = 523
             }, hueTrack)
 
-            local hexLbl = make("TextLabel", {
+            local ALPHA_Y = HUE_Y + 24
+            local alphaTrack = make("Frame", {
+                Position = UDim2.fromOffset(PAD, ALPHA_Y),
+                Size = UDim2.fromOffset(SVW, 14),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                ZIndex = 521
+            }, popup)
+            corner(alphaTrack, 5)
+
+            local alphaChecker = make("Frame", {
+                Size = UDim2.fromScale(1, 1),
+                BackgroundColor3 = Color3.fromRGB(180, 180, 180),
+                BorderSizePixel = 0,
+                ZIndex = 521
+            }, alphaTrack)
+            corner(alphaChecker, 5)
+
+            local alphaFill = make("Frame", {
+                Size = UDim2.fromScale(1, 1),
+                BackgroundColor3 = color,
+                BorderSizePixel = 0,
+                ZIndex = 522
+            }, alphaTrack)
+            corner(alphaFill, 5)
+            make("UIGradient", {
+                Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),
+                    NumberSequenceKeypoint.new(1, 0)
+                })
+            }, alphaFill)
+
+            local alphaKnob = make("Frame", {
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.new(a, 0, 0.5, 0),
+                Size = UDim2.fromOffset(10, 20),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                ZIndex = 523
+            }, alphaTrack)
+            corner(alphaKnob, 4)
+            stroke(alphaKnob, Color3.new(0, 0, 0), 0.2, 1)
+
+            local alphaHit = make("TextButton", {
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.999,
+                Size = UDim2.fromScale(1, 1),
+                Text = "",
+                AutoButtonColor = false,
+                ZIndex = 524
+            }, alphaTrack)
+
+            local PREVIEW_Y = ALPHA_Y + 24
+            local previewRow = make("Frame", {
+                Position = UDim2.fromOffset(PAD, PREVIEW_Y),
+                Size = UDim2.fromOffset(SVW, 28),
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(0, 154),
-                Size = UDim2.fromOffset(176, 18),
-                Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)),
+                BorderSizePixel = 0,
+                ZIndex = 521
+            }, popup)
+
+            local previewSwatch = make("Frame", {
+                Size = UDim2.fromOffset(36, 28),
+                BackgroundColor3 = color,
+                BorderSizePixel = 0,
+                ZIndex = 522
+            }, previewRow)
+            corner(previewSwatch, 6)
+            stroke(previewSwatch, Color3.new(1, 1, 1), 0.75, 1)
+
+            local hexBox = make("TextBox", {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromOffset(44, 14),
+                Size = UDim2.fromOffset(SVW - 44, 24),
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.6,
+                Text = string.format("#%02X%02X%02X", math.floor(color.R*255), math.floor(color.G*255), math.floor(color.B*255)),
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
                 TextColor3 = theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Center,
-                ZIndex = 521
+                ClearTextOnFocus = false,
+                BorderSizePixel = 0,
+                ZIndex = 523
+            }, previewRow)
+            corner(hexBox, 6)
+            pad(hexBox, 8, 8, 0, 0)
+
+            local RGB_Y = PREVIEW_Y + 36
+            local rBox = make("TextBox", {
+                Position = UDim2.fromOffset(PAD, RGB_Y),
+                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
+                BackgroundColor3 = Color3.new(0,0,0),
+                BackgroundTransparency = 0.6,
+                Text = tostring(math.floor(color.R * 255)),
+                Font = Enum.Font.Gotham,
+                TextSize = 11,
+                TextColor3 = theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                ClearTextOnFocus = false,
+                BorderSizePixel = 0,
+                ZIndex = 523
             }, popup)
+            corner(rBox, 5)
+
+            local gBox = make("TextBox", {
+                Position = UDim2.fromOffset(PAD + SVW/3 + 2, RGB_Y),
+                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
+                BackgroundColor3 = Color3.new(0,0,0),
+                BackgroundTransparency = 0.6,
+                Text = tostring(math.floor(color.G * 255)),
+                Font = Enum.Font.Gotham,
+                TextSize = 11,
+                TextColor3 = theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                ClearTextOnFocus = false,
+                BorderSizePixel = 0,
+                ZIndex = 523
+            }, popup)
+            corner(gBox, 5)
+
+            local bBox = make("TextBox", {
+                Position = UDim2.fromOffset(PAD + (SVW/3)*2 + 4, RGB_Y),
+                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
+                BackgroundColor3 = Color3.new(0,0,0),
+                BackgroundTransparency = 0.6,
+                Text = tostring(math.floor(color.B * 255)),
+                Font = Enum.Font.Gotham,
+                TextSize = 11,
+                TextColor3 = theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Center,
+                ClearTextOnFocus = false,
+                BorderSizePixel = 0,
+                ZIndex = 523
+            }, popup)
+            corner(bBox, 5)
 
             local function applyColor(fire)
                 color = Color3.fromHSV(h, s, v)
                 swatch.BackgroundColor3 = color
+                previewSwatch.BackgroundColor3 = color
                 svBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
                 svKnob.Position = UDim2.new(s, 0, 1 - v, 0)
                 hueKnob.Position = UDim2.new(h, 0, 0.5, 0)
-                hexLbl.Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
-                if fire and cfg.Callback then task.spawn(cfg.Callback, color) end
+                alphaKnob.Position = UDim2.new(a, 0, 0.5, 0)
+                alphaFill.BackgroundColor3 = color
+                local hex = string.format("#%02X%02X%02X", math.floor(color.R*255), math.floor(color.G*255), math.floor(color.B*255))
+                hexBox.Text = hex
+                rBox.Text = tostring(math.floor(color.R * 255))
+                gBox.Text = tostring(math.floor(color.G * 255))
+                bBox.Text = tostring(math.floor(color.B * 255))
+                if fire and cfg.Callback then task.spawn(cfg.Callback, color, a) end
             end
 
             local function positionPopup()
                 local abs = swatch.AbsolutePosition
                 local absSize = swatch.AbsoluteSize
-                local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
-                local px = abs.X + absSize.X - 200
+                local rAbs = root.AbsolutePosition
+                local rSz = root.AbsoluteSize
+                local px = abs.X + absSize.X - PW
                 local py = abs.Y + absSize.Y + 8
-                if px < 10 then px = 10 end
-                if py + 200 > screen.Y - 10 then py = abs.Y - 208 end
-                if px + 200 > screen.X - 10 then px = screen.X - 210 end
+                if py + PH > rAbs.Y + rSz.Y - 8 then py = abs.Y - PH - 8 end
+                px = math.clamp(px, rAbs.X + 4, rAbs.X + rSz.X - PW - 4)
+                py = math.clamp(py, rAbs.Y + 54, rAbs.Y + rSz.Y - PH - 4)
                 popup.Position = UDim2.fromOffset(px, py)
             end
 
@@ -1754,7 +1923,7 @@ function OpenHubUI:CreateWindow(config)
                 if open then positionPopup() end
             end)
 
-            local svDrag, hueDrag = false, false
+            local svDrag, hueDrag, alphaDrag = false, false, false
 
             svHit.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -1775,6 +1944,15 @@ function OpenHubUI:CreateWindow(config)
                 end
             end)
 
+            alphaHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    alphaDrag = true
+                    local rel = input.Position - alphaTrack.AbsolutePosition
+                    a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
+                end
+            end)
+
             UserInputService.InputChanged:Connect(function(input)
                 if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
                 if svDrag then
@@ -1786,6 +1964,10 @@ function OpenHubUI:CreateWindow(config)
                     local rel = input.Position - hueTrack.AbsolutePosition
                     h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
+                elseif alphaDrag then
+                    local rel = input.Position - alphaTrack.AbsolutePosition
+                    a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
                 end
             end)
 
@@ -1793,16 +1975,43 @@ function OpenHubUI:CreateWindow(config)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     svDrag = false
                     hueDrag = false
+                    alphaDrag = false
                 end
             end)
+
+            hexBox.FocusLost:Connect(function()
+                local hex = hexBox.Text:gsub("#", ""):gsub("%s", "")
+                if #hex == 6 then
+                    local r = tonumber(hex:sub(1,2), 16)
+                    local g = tonumber(hex:sub(3,4), 16)
+                    local b = tonumber(hex:sub(5,6), 16)
+                    if r and g and b then
+                        color = Color3.fromRGB(r, g, b)
+                        h, s, v = color:ToHSV()
+                        applyColor(true)
+                    end
+                end
+            end)
+
+            local function parseRGB()
+                local r = math.clamp(tonumber(rBox.Text) or 0, 0, 255)
+                local g = math.clamp(tonumber(gBox.Text) or 0, 0, 255)
+                local b = math.clamp(tonumber(bBox.Text) or 0, 0, 255)
+                color = Color3.fromRGB(r, g, b)
+                h, s, v = color:ToHSV()
+                applyColor(true)
+            end
+            rBox.FocusLost:Connect(parseRGB)
+            gBox.FocusLost:Connect(parseRGB)
+            bBox.FocusLost:Connect(parseRGB)
 
             local outsideConn = UserInputService.InputBegan:Connect(function(input)
                 if not open then return end
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     local pos = input.Position
                     local function inside(obj)
-                        local a, sz = obj.AbsolutePosition, obj.AbsoluteSize
-                        return pos.X >= a.X and pos.X <= a.X + sz.X and pos.Y >= a.Y and pos.Y <= a.Y + sz.Y
+                        local a2, sz = obj.AbsolutePosition, obj.AbsoluteSize
+                        return pos.X >= a2.X and pos.X <= a2.X + sz.X and pos.Y >= a2.Y and pos.Y <= a2.Y + sz.Y
                     end
                     if not inside(popup) and not inside(swatch) then
                         open = false
@@ -1821,11 +2030,15 @@ function OpenHubUI:CreateWindow(config)
                 end
             end
             function item:Get() return color end
+            function item:GetAlpha() return a end
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 popup.BackgroundColor3 = t.Panel
-                hexLbl.TextColor3 = t.Text
+                hexBox.TextColor3 = t.Text
+                rBox.TextColor3 = t.Text
+                gBox.TextColor3 = t.Text
+                bBox.TextColor3 = t.Text
             end
             return addElement(item)
         end
@@ -1905,18 +2118,22 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateImage(cfg)
             cfg = type(cfg) == "table" and cfg or {Image = cfg}
+            local imgSrc = cfg.Image or ""
+            local resolved = (cfg.Local and loadLocalImage(imgSrc, cfg.Data)) or assetId(imgSrc)
             local frame = elementFrame(cfg.Name or "Image", cfg.Height or 130)
             local image = make("ImageLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(6, 6),
                 Size = UDim2.new(1, -12, 1, -12),
-                Image = assetId(cfg.Image or ""),
+                Image = resolved,
                 ScaleType = cfg.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop,
                 ZIndex = 6
             }, frame)
             corner(image, 8)
             local item = {Instance = frame}
-            function item:Set(v) image.Image = assetId(v) end
+            function item:Set(v, local_)
+                image.Image = local_ and loadLocalImage(v) or assetId(v)
+            end
             function item:UpdateTheme(t) frame.BackgroundColor3 = t.Surface end
             return addElement(item)
         end
@@ -2070,14 +2287,19 @@ function OpenHubUI:CreateWindow(config)
                     expanded = true
                     local abs = chosen.AbsolutePosition
                     local absSize = chosen.AbsoluteSize
-                    local h = math.min(#options, 6) * 31 + 14
-                    local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
-                    local px, py = abs.X, abs.Y + absSize.Y + 6
-                    if py + h > screen.Y - 12 then py = abs.Y - h - 6 end
+                    local popupH = math.min(#options, 6) * 31 + 14
+                    local popupW = math.max(absSize.X, 160)
+                    local rAbs = root.AbsolutePosition
+                    local rSz = root.AbsoluteSize
+                    local px = abs.X
+                    local py = abs.Y + absSize.Y + 6
+                    if py + popupH > rAbs.Y + rSz.Y - 8 then py = abs.Y - popupH - 6 end
+                    px = math.clamp(px, rAbs.X + 4, rAbs.X + rSz.X - popupW - 4)
+                    py = math.clamp(py, rAbs.Y + 54, rAbs.Y + rSz.Y - popupH - 4)
                     popup.Position = UDim2.fromOffset(px, py)
-                    popup.Size = UDim2.fromOffset(math.max(absSize.X, 140), 0)
+                    popup.Size = UDim2.fromOffset(popupW, 0)
                     popup.Visible = true
-                    tween(popup, 0.18, {Size = UDim2.fromOffset(math.max(absSize.X, 140), h)})
+                    tween(popup, 0.18, {Size = UDim2.fromOffset(popupW, popupH)})
                 end
             end)
 

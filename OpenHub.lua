@@ -1,90 +1,97 @@
 local OpenHubUI = {}
-OpenHubUI.Version = "2.1.0"
+OpenHubUI.Version = "3.0.0"
 
 OpenHubUI.Themes = {
     Midnight = {
-        Background = Color3.fromRGB(7, 8, 14),
-        Panel = Color3.fromRGB(12, 14, 22),
-        Surface = Color3.fromRGB(18, 21, 32),
-        Accent = Color3.fromRGB(120, 95, 255),
-        Accent2 = Color3.fromRGB(75, 170, 255),
-        Text = Color3.fromRGB(242, 245, 255),
-        Muted = Color3.fromRGB(145, 152, 175),
-        Stroke = Color3.fromRGB(55, 60, 85),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(8, 9, 16),
+        Panel = Color3.fromRGB(14, 16, 26),
+        Surface = Color3.fromRGB(22, 25, 38),
+        Accent = Color3.fromRGB(130, 105, 255),
+        Accent2 = Color3.fromRGB(90, 180, 255),
+        Text = Color3.fromRGB(245, 247, 255),
+        Muted = Color3.fromRGB(155, 160, 185),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.22,
+        Acrylic = 0.45,
+        Glass = 0.55
     },
     Obsidian = {
-        Background = Color3.fromRGB(3, 4, 6),
-        Panel = Color3.fromRGB(9, 10, 13),
-        Surface = Color3.fromRGB(15, 16, 20),
-        Accent = Color3.fromRGB(232, 232, 240),
-        Accent2 = Color3.fromRGB(145, 150, 165),
-        Text = Color3.fromRGB(248, 248, 252),
-        Muted = Color3.fromRGB(135, 138, 148),
-        Stroke = Color3.fromRGB(48, 50, 60),
-        Transparency = 0.06,
-        Acrylic = 0.14
+        Background = Color3.fromRGB(4, 5, 7),
+        Panel = Color3.fromRGB(10, 11, 14),
+        Surface = Color3.fromRGB(16, 17, 22),
+        Accent = Color3.fromRGB(235, 235, 242),
+        Accent2 = Color3.fromRGB(150, 155, 168),
+        Text = Color3.fromRGB(250, 250, 252),
+        Muted = Color3.fromRGB(145, 147, 155),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.18,
+        Acrylic = 0.40,
+        Glass = 0.50
     },
     Aurora = {
-        Background = Color3.fromRGB(3, 10, 13),
-        Panel = Color3.fromRGB(6, 16, 20),
-        Surface = Color3.fromRGB(10, 24, 30),
-        Accent = Color3.fromRGB(55, 225, 180),
-        Accent2 = Color3.fromRGB(70, 165, 255),
-        Text = Color3.fromRGB(230, 255, 248),
-        Muted = Color3.fromRGB(120, 165, 160),
-        Stroke = Color3.fromRGB(35, 100, 95),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(4, 12, 14),
+        Panel = Color3.fromRGB(8, 18, 22),
+        Surface = Color3.fromRGB(12, 28, 32),
+        Accent = Color3.fromRGB(60, 230, 185),
+        Accent2 = Color3.fromRGB(80, 175, 255),
+        Text = Color3.fromRGB(235, 255, 250),
+        Muted = Color3.fromRGB(130, 170, 165),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Crimson = {
-        Background = Color3.fromRGB(11, 4, 6),
-        Panel = Color3.fromRGB(18, 7, 10),
-        Surface = Color3.fromRGB(28, 12, 16),
-        Accent = Color3.fromRGB(255, 60, 90),
-        Accent2 = Color3.fromRGB(255, 130, 90),
-        Text = Color3.fromRGB(255, 242, 246),
-        Muted = Color3.fromRGB(170, 125, 135),
-        Stroke = Color3.fromRGB(100, 40, 55),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(14, 5, 8),
+        Panel = Color3.fromRGB(22, 9, 13),
+        Surface = Color3.fromRGB(32, 14, 18),
+        Accent = Color3.fromRGB(255, 70, 100),
+        Accent2 = Color3.fromRGB(255, 140, 100),
+        Text = Color3.fromRGB(255, 245, 248),
+        Muted = Color3.fromRGB(180, 140, 150),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Sapphire = {
-        Background = Color3.fromRGB(3, 6, 13),
-        Panel = Color3.fromRGB(6, 11, 22),
-        Surface = Color3.fromRGB(11, 18, 32),
-        Accent = Color3.fromRGB(60, 130, 255),
-        Accent2 = Color3.fromRGB(85, 205, 255),
-        Text = Color3.fromRGB(235, 245, 255),
-        Muted = Color3.fromRGB(120, 145, 180),
-        Stroke = Color3.fromRGB(35, 70, 130),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(4, 7, 15),
+        Panel = Color3.fromRGB(8, 13, 26),
+        Surface = Color3.fromRGB(13, 20, 36),
+        Accent = Color3.fromRGB(70, 140, 255),
+        Accent2 = Color3.fromRGB(100, 210, 255),
+        Text = Color3.fromRGB(240, 247, 255),
+        Muted = Color3.fromRGB(130, 155, 190),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Sakura = {
-        Background = Color3.fromRGB(12, 6, 11),
-        Panel = Color3.fromRGB(19, 10, 18),
-        Surface = Color3.fromRGB(30, 16, 28),
-        Accent = Color3.fromRGB(255, 115, 190),
-        Accent2 = Color3.fromRGB(175, 130, 255),
-        Text = Color3.fromRGB(255, 242, 250),
-        Muted = Color3.fromRGB(175, 130, 165),
-        Stroke = Color3.fromRGB(105, 55, 95),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(14, 7, 13),
+        Panel = Color3.fromRGB(22, 12, 21),
+        Surface = Color3.fromRGB(34, 18, 32),
+        Accent = Color3.fromRGB(255, 125, 195),
+        Accent2 = Color3.fromRGB(185, 140, 255),
+        Text = Color3.fromRGB(255, 245, 252),
+        Muted = Color3.fromRGB(185, 145, 175),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Ember = {
-        Background = Color3.fromRGB(11, 7, 3),
-        Panel = Color3.fromRGB(20, 12, 6),
-        Surface = Color3.fromRGB(32, 20, 10),
-        Accent = Color3.fromRGB(255, 145, 50),
-        Accent2 = Color3.fromRGB(255, 200, 95),
-        Text = Color3.fromRGB(255, 246, 230),
-        Muted = Color3.fromRGB(175, 145, 115),
-        Stroke = Color3.fromRGB(110, 70, 30),
-        Transparency = 0.08,
-        Acrylic = 0.16
+        Background = Color3.fromRGB(13, 8, 4),
+        Panel = Color3.fromRGB(22, 14, 8),
+        Surface = Color3.fromRGB(34, 22, 12),
+        Accent = Color3.fromRGB(255, 155, 55),
+        Accent2 = Color3.fromRGB(255, 205, 100),
+        Text = Color3.fromRGB(255, 248, 235),
+        Muted = Color3.fromRGB(185, 155, 125),
+        Stroke = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     }
 }
 
@@ -93,7 +100,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
-local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 
 local function make(class, props, parent)
     local obj = Instance.new(class)
@@ -117,18 +124,18 @@ local function stroke(parent, color, transparency, thickness)
     }, parent)
 end
 
-local function pad(parent, x, y, top, bottom)
+local function pad(parent, l, r, t, b)
     return make("UIPadding", {
-        PaddingLeft = UDim.new(0, x or 10),
-        PaddingRight = UDim.new(0, x or 10),
-        PaddingTop = UDim.new(0, top or y or 8),
-        PaddingBottom = UDim.new(0, bottom or y or 8)
+        PaddingLeft = UDim.new(0, l or 10),
+        PaddingRight = UDim.new(0, r or l or 10),
+        PaddingTop = UDim.new(0, t or 8),
+        PaddingBottom = UDim.new(0, b or t or 8)
     }, parent)
 end
 
 local function tween(obj, time, props, style, direction)
     local t = TweenService:Create(obj, TweenInfo.new(
-        time or 0.2,
+        time or 0.25,
         style or Enum.EasingStyle.Quint,
         direction or Enum.EasingDirection.Out
     ), props)
@@ -163,8 +170,9 @@ function OpenHubUI:CreateWindow(config)
     config = config or {}
     local themeName = config.Theme or "Midnight"
     local theme = deepCopy(self.Themes[themeName] or self.Themes.Midnight)
-    local transparency = math.clamp(tonumber(config.Transparency) or theme.Transparency or 0.08, 0, 0.9)
-    local acrylic = math.clamp(tonumber(config.Acrylic) or theme.Acrylic or 0.16, 0, 0.85)
+    local transparency = math.clamp(tonumber(config.Transparency) or theme.Transparency or 0.22, 0, 0.85)
+    local acrylic = math.clamp(tonumber(config.Acrylic) or theme.Acrylic or 0.45, 0, 0.9)
+    local glass = math.clamp(tonumber(config.Glass) or theme.Glass or 0.55, 0, 0.9)
     local resizable = config.Resizable ~= false
 
     local guiParent = CoreGui
@@ -182,13 +190,14 @@ function OpenHubUI:CreateWindow(config)
         ThemeName = themeName,
         Transparency = transparency,
         Acrylic = acrylic,
-        BackgroundImage = nil,
+        Glass = glass,
         Tabs = {},
         Elements = {},
         Connections = {},
         Open = true,
         Destroyed = false,
-        Resizable = resizable
+        Resizable = resizable,
+        Groups = {}
     }
 
     local scale = make("UIScale", {Scale = 1}, nil)
@@ -201,10 +210,10 @@ function OpenHubUI:CreateWindow(config)
         end
     end
 
-    local DEFAULT_W, DEFAULT_H = 600, 480
+    local DEFAULT_W, DEFAULT_H = 620, 500
     local winW = config.Width or DEFAULT_W
     local winH = config.Height or DEFAULT_H
-    local MIN_W, MIN_H = 380, 280
+    local MIN_W, MIN_H = 400, 300
     local MAX_W, MAX_H = 1200, 900
 
     local root = make("Frame", {
@@ -218,14 +227,30 @@ function OpenHubUI:CreateWindow(config)
         ClipsDescendants = true
     }, gui)
     scale.Parent = root
-    corner(root, 14)
-    local rootStroke = stroke(root, theme.Stroke, 0.35, 1)
+    corner(root, 16)
+    local rootStroke = stroke(root, Color3.new(1, 1, 1), 0.82, 1.2)
+
+    local glassLayer = make("Frame", {
+        Name = "GlassLayer",
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundTransparency = 0.94,
+        BorderSizePixel = 0,
+        ZIndex = 0
+    }, root)
+    corner(glassLayer, 16)
 
     local rootGradient = make("UIGradient", {
-        Rotation = 135,
+        Rotation = 140,
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, theme.Panel),
-            ColorSequenceKeypoint.new(1, theme.Background)
+            ColorSequenceKeypoint.new(0.5, theme.Background),
+            ColorSequenceKeypoint.new(1, theme.Panel)
+        }),
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.15),
+            NumberSequenceKeypoint.new(0.5, 0),
+            NumberSequenceKeypoint.new(1, 0.2)
         })
     }, root)
 
@@ -233,12 +258,12 @@ function OpenHubUI:CreateWindow(config)
         Name = "BackgroundImage",
         BackgroundTransparency = 1,
         Size = UDim2.fromScale(1, 1),
-        ImageTransparency = 0.62,
+        ImageTransparency = 0.7,
         ScaleType = Enum.ScaleType.Crop,
         Image = "",
         ZIndex = 0
     }, root)
-    corner(bg, 14)
+    corner(bg, 16)
 
     local darkOverlay = make("Frame", {
         Name = "AcrylicOverlay",
@@ -248,29 +273,29 @@ function OpenHubUI:CreateWindow(config)
         BorderSizePixel = 0,
         ZIndex = 1
     }, root)
-    corner(darkOverlay, 14)
+    corner(darkOverlay, 16)
 
-    local shine = make("Frame", {
-        Name = "TopShine",
+    local topGlow = make("Frame", {
+        Name = "TopGlow",
         BackgroundColor3 = Color3.new(1, 1, 1),
-        BackgroundTransparency = 0.94,
+        BackgroundTransparency = 0.92,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 1, 0, 1),
-        Size = UDim2.new(1, -2, 0, 1),
+        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(1, 0, 0, 1),
         ZIndex = 8
     }, root)
 
     local header = make("Frame", {
         Name = "Header",
         BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 52),
+        Size = UDim2.new(1, 0, 0, 54),
         ZIndex = 3
     }, root)
 
     local logo = make("ImageLabel", {
         Name = "Logo",
         BackgroundTransparency = 1,
-        Position = UDim2.fromOffset(16, 11),
+        Position = UDim2.fromOffset(16, 12),
         Size = UDim2.fromOffset(28, 28),
         Image = assetId(config.Icon or ""),
         ImageColor3 = theme.Accent
@@ -279,7 +304,7 @@ function OpenHubUI:CreateWindow(config)
     local title = make("TextLabel", {
         Name = "Title",
         BackgroundTransparency = 1,
-        Position = UDim2.fromOffset(config.Icon and 52 or 18, 8),
+        Position = UDim2.fromOffset(config.Icon and 52 or 18, 9),
         Size = UDim2.new(1, -140, 0, 22),
         Font = Enum.Font.GothamBold,
         Text = config.Title or "OpenHub",
@@ -292,7 +317,7 @@ function OpenHubUI:CreateWindow(config)
     local subtitle = make("TextLabel", {
         Name = "Subtitle",
         BackgroundTransparency = 1,
-        Position = UDim2.fromOffset(config.Icon and 53 or 19, 29),
+        Position = UDim2.fromOffset(config.Icon and 53 or 19, 30),
         Size = UDim2.new(1, -150, 0, 15),
         Font = Enum.Font.Gotham,
         Text = config.Subtitle or "Interface Suite",
@@ -305,64 +330,66 @@ function OpenHubUI:CreateWindow(config)
     local close = make("TextButton", {
         Name = "Close",
         AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -12, 0, 11),
+        Position = UDim2.new(1, -12, 0, 12),
         Size = UDim2.fromOffset(28, 28),
-        BackgroundColor3 = theme.Surface,
-        BackgroundTransparency = 0.15,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.92,
         Text = "×",
-        TextSize = 20,
-        Font = Enum.Font.Gotham,
+        TextSize = 18,
+        Font = Enum.Font.GothamMedium,
         TextColor3 = theme.Text,
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
     corner(close, 8)
+    stroke(close, Color3.new(1, 1, 1), 0.88, 1)
 
     local minimize = make("TextButton", {
         Name = "Minimize",
         AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -46, 0, 11),
+        Position = UDim2.new(1, -46, 0, 12),
         Size = UDim2.fromOffset(28, 28),
-        BackgroundColor3 = theme.Surface,
-        BackgroundTransparency = 0.15,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.92,
         Text = "−",
-        TextSize = 20,
-        Font = Enum.Font.Gotham,
+        TextSize = 18,
+        Font = Enum.Font.GothamMedium,
         TextColor3 = theme.Text,
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
     corner(minimize, 8)
+    stroke(minimize, Color3.new(1, 1, 1), 0.88, 1)
 
     close.MouseEnter:Connect(function()
-        tween(close, 0.12, {BackgroundColor3 = Color3.fromRGB(220, 70, 80), BackgroundTransparency = 0})
+        tween(close, 0.15, {BackgroundColor3 = Color3.fromRGB(255, 80, 90), BackgroundTransparency = 0.15})
     end)
     close.MouseLeave:Connect(function()
-        tween(close, 0.12, {BackgroundColor3 = theme.Surface, BackgroundTransparency = 0.15})
+        tween(close, 0.15, {BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.92})
     end)
     minimize.MouseEnter:Connect(function()
-        tween(minimize, 0.12, {BackgroundTransparency = 0})
+        tween(minimize, 0.15, {BackgroundTransparency = 0.85})
     end)
     minimize.MouseLeave:Connect(function()
-        tween(minimize, 0.12, {BackgroundTransparency = 0.15})
+        tween(minimize, 0.15, {BackgroundTransparency = 0.92})
     end)
 
     local divider = make("Frame", {
         Name = "HeaderLine",
-        Position = UDim2.new(0, 12, 0, 51),
-        Size = UDim2.new(1, -24, 0, 1),
-        BackgroundColor3 = theme.Stroke,
-        BackgroundTransparency = 0.55,
+        Position = UDim2.new(0, 14, 0, 53),
+        Size = UDim2.new(1, -28, 0, 1),
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundTransparency = 0.9,
         BorderSizePixel = 0,
         ZIndex = 3
     }, root)
 
     local nav = make("ScrollingFrame", {
         Name = "Tabs",
-        Position = UDim2.fromOffset(10, 62),
-        Size = UDim2.new(0, 138, 1, -74),
+        Position = UDim2.fromOffset(12, 64),
+        Size = UDim2.new(0, 142, 1, -78),
         BackgroundColor3 = theme.Panel,
-        BackgroundTransparency = 0.22,
+        BackgroundTransparency = glass,
         BorderSizePixel = 0,
         ScrollBarThickness = 2,
         ScrollBarImageColor3 = theme.Accent,
@@ -370,26 +397,26 @@ function OpenHubUI:CreateWindow(config)
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         ZIndex = 3
     }, root)
-    corner(nav, 11)
-    stroke(nav, theme.Stroke, 0.72, 1)
-    pad(nav, 7, 7)
+    corner(nav, 12)
+    stroke(nav, Color3.new(1, 1, 1), 0.88, 1)
+    pad(nav, 8, 8, 10, 10)
     make("UIListLayout", {
-        Padding = UDim.new(0, 5),
+        Padding = UDim.new(0, 4),
         SortOrder = Enum.SortOrder.LayoutOrder
     }, nav)
 
     local content = make("Frame", {
         Name = "Content",
-        Position = UDim2.new(0, 156, 0, 62),
-        Size = UDim2.new(1, -168, 1, -74),
+        Position = UDim2.new(0, 162, 0, 64),
+        Size = UDim2.new(1, -176, 1, -78),
         BackgroundColor3 = theme.Panel,
-        BackgroundTransparency = 0.22,
+        BackgroundTransparency = glass,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         ZIndex = 3
     }, root)
-    corner(content, 11)
-    stroke(content, theme.Stroke, 0.72, 1)
+    corner(content, 12)
+    stroke(content, Color3.new(1, 1, 1), 0.88, 1)
 
     local contentPages = make("Folder", {Name = "Pages"}, content)
 
@@ -399,14 +426,14 @@ function OpenHubUI:CreateWindow(config)
         Position = UDim2.new(0, 16, 0.5, 0),
         Size = UDim2.fromOffset(44, 44),
         BackgroundColor3 = theme.Panel,
-        BackgroundTransparency = 0.05,
+        BackgroundTransparency = 0.15,
         Text = "",
         AutoButtonColor = false,
         Visible = config.OpenButton ~= false,
         ZIndex = 20
     }, gui)
     corner(openButton, 14)
-    stroke(openButton, theme.Accent, 0.25, 1.2)
+    stroke(openButton, theme.Accent, 0.35, 1.2)
 
     local openIcon = make("ImageLabel", {
         Name = "Icon",
@@ -423,15 +450,15 @@ function OpenHubUI:CreateWindow(config)
         state.Open = value
         if value then
             root.Visible = true
-            root.Size = UDim2.fromOffset(winW * 0.92, winH * 0.92)
-            tween(root, 0.28, {Size = UDim2.fromOffset(winW, winH)}, Enum.EasingStyle.Back)
-            tween(openButton, 0.18, {BackgroundTransparency = 0.05})
+            root.Size = UDim2.fromOffset(winW * 0.94, winH * 0.94)
+            tween(root, 0.3, {Size = UDim2.fromOffset(winW, winH)}, Enum.EasingStyle.Back)
+            tween(openButton, 0.2, {BackgroundTransparency = 0.15})
         else
-            tween(root, 0.16, {Size = UDim2.fromOffset(winW * 0.88, winH * 0.88)}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-            task.delay(0.17, function()
+            tween(root, 0.18, {Size = UDim2.fromOffset(winW * 0.9, winH * 0.9)}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+            task.delay(0.19, function()
                 if not state.Open and root.Parent then root.Visible = false end
             end)
-            tween(openButton, 0.18, {BackgroundTransparency = 0})
+            tween(openButton, 0.2, {BackgroundTransparency = 0.05})
         end
     end
 
@@ -443,8 +470,8 @@ function OpenHubUI:CreateWindow(config)
         content.Visible = not hidden
         nav.Visible = not hidden
         divider.Visible = not hidden
-        tween(root, 0.2, {
-            Size = hidden and UDim2.fromOffset(winW, 52) or UDim2.fromOffset(winW, winH)
+        tween(root, 0.22, {
+            Size = hidden and UDim2.fromOffset(winW, 54) or UDim2.fromOffset(winW, winH)
         })
         minimize.Text = hidden and "+" or "−"
     end)
@@ -478,7 +505,77 @@ function OpenHubUI:CreateWindow(config)
     local resizeStartSize = nil
     local resizeStartPos = nil
 
-    local function makeHandle(name, anchor, pos, size)
+    local function makeCornerMark(name, anchor, pos, rotation)
+        local holder = make("Frame", {
+            Name = name,
+            AnchorPoint = anchor,
+            Position = pos,
+            Size = UDim2.fromOffset(18, 18),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            ZIndex = 30,
+            Visible = resizable,
+            Rotation = rotation or 0
+        }, root)
+
+        local hLine = make("Frame", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 0.25,
+            BorderSizePixel = 0,
+            Size = UDim2.fromOffset(12, 2),
+            Position = UDim2.fromOffset(3, 14),
+            ZIndex = 31
+        }, holder)
+        corner(hLine, 1)
+
+        local vLine = make("Frame", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 0.25,
+            BorderSizePixel = 0,
+            Size = UDim2.fromOffset(2, 12),
+            Position = UDim2.fromOffset(14, 3),
+            ZIndex = 31
+        }, holder)
+        corner(vLine, 1)
+
+        local hit = make("TextButton", {
+            BackgroundTransparency = 1,
+            Size = UDim2.fromScale(1, 1),
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 32
+        }, holder)
+
+        hit.InputBegan:Connect(function(input)
+            if not state.Resizable then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                resizing = true
+                resizeDir = name
+                resizeStart = input.Position
+                resizeStartSize = root.AbsoluteSize
+                resizeStartPos = root.AbsolutePosition
+            end
+        end)
+
+        hit.MouseEnter:Connect(function()
+            tween(hLine, 0.12, {BackgroundTransparency = 0})
+            tween(vLine, 0.12, {BackgroundTransparency = 0})
+        end)
+        hit.MouseLeave:Connect(function()
+            tween(hLine, 0.12, {BackgroundTransparency = 0.25})
+            tween(vLine, 0.12, {BackgroundTransparency = 0.25})
+        end)
+
+        table.insert(resizeHandles, holder)
+        return holder
+    end
+
+    makeCornerMark("BR", Vector2.new(1, 1), UDim2.new(1, -2, 1, -2), 0)
+    makeCornerMark("BL", Vector2.new(0, 1), UDim2.new(0, 2, 1, -2), 90)
+    makeCornerMark("TR", Vector2.new(1, 0), UDim2.new(1, -2, 0, 2), -90)
+    makeCornerMark("TL", Vector2.new(0, 0), UDim2.new(0, 2, 0, 2), 180)
+
+    local function makeEdgeHandle(name, anchor, pos, size)
         local h = make("Frame", {
             Name = name,
             AnchorPoint = anchor,
@@ -486,7 +583,7 @@ function OpenHubUI:CreateWindow(config)
             Size = size,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            ZIndex = 25,
+            ZIndex = 28,
             Visible = resizable
         }, root)
         local hit = make("TextButton", {
@@ -494,7 +591,7 @@ function OpenHubUI:CreateWindow(config)
             Size = UDim2.fromScale(1, 1),
             Text = "",
             AutoButtonColor = false,
-            ZIndex = 26
+            ZIndex = 29
         }, h)
         hit.InputBegan:Connect(function(input)
             if not state.Resizable then return end
@@ -507,26 +604,19 @@ function OpenHubUI:CreateWindow(config)
             end
         end)
         table.insert(resizeHandles, h)
-        return h
     end
 
-    makeHandle("BR", Vector2.new(1, 1), UDim2.new(1, 0, 1, 0), UDim2.fromOffset(16, 16))
-    makeHandle("BL", Vector2.new(0, 1), UDim2.new(0, 0, 1, 0), UDim2.fromOffset(16, 16))
-    makeHandle("TR", Vector2.new(1, 0), UDim2.new(1, 0, 0, 0), UDim2.fromOffset(16, 16))
-    makeHandle("TL", Vector2.new(0, 0), UDim2.new(0, 0, 0, 0), UDim2.fromOffset(16, 16))
-    makeHandle("R", Vector2.new(1, 0.5), UDim2.new(1, 0, 0.5, 0), UDim2.fromOffset(8, 40))
-    makeHandle("L", Vector2.new(0, 0.5), UDim2.new(0, 0, 0.5, 0), UDim2.fromOffset(8, 40))
-    makeHandle("B", Vector2.new(0.5, 1), UDim2.new(0.5, 0, 1, 0), UDim2.fromOffset(40, 8))
-    makeHandle("T", Vector2.new(0.5, 0), UDim2.new(0.5, 0, 0, 0), UDim2.fromOffset(40, 8))
+    makeEdgeHandle("R", Vector2.new(1, 0.5), UDim2.new(1, 0, 0.5, 0), UDim2.fromOffset(6, 50))
+    makeEdgeHandle("L", Vector2.new(0, 0.5), UDim2.new(0, 0, 0.5, 0), UDim2.fromOffset(6, 50))
+    makeEdgeHandle("B", Vector2.new(0.5, 1), UDim2.new(0.5, 0, 1, 0), UDim2.fromOffset(50, 6))
+    makeEdgeHandle("T", Vector2.new(0.5, 0), UDim2.new(0.5, 0, 0, 0), UDim2.fromOffset(50, 6))
 
     UserInputService.InputChanged:Connect(function(input)
         if not resizing then return end
         if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
         local delta = input.Position - resizeStart
-        local newW = resizeStartSize.X
-        local newH = resizeStartSize.Y
-        local newX = resizeStartPos.X
-        local newY = resizeStartPos.Y
+        local newW, newH = resizeStartSize.X, resizeStartSize.Y
+        local newX, newY = resizeStartPos.X, resizeStartPos.Y
 
         if resizeDir == "BR" or resizeDir == "R" or resizeDir == "TR" then
             newW = math.clamp(resizeStartSize.X + delta.X, MIN_W, MAX_W)
@@ -543,8 +633,7 @@ function OpenHubUI:CreateWindow(config)
             newY = resizeStartPos.Y + (resizeStartSize.Y - newH)
         end
 
-        winW = newW
-        winH = newH
+        winW, winH = newW, newH
         root.Size = UDim2.fromOffset(newW, newH)
         root.Position = UDim2.fromOffset(newX + newW * 0.5, newY + newH * 0.5)
         root.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -568,26 +657,21 @@ function OpenHubUI:CreateWindow(config)
         state.ThemeName = newName or "Custom"
         root.BackgroundColor3 = theme.Background
         root.BackgroundTransparency = state.Transparency
-        rootGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, theme.Panel),
-            ColorSequenceKeypoint.new(1, theme.Background)
-        })
         darkOverlay.BackgroundColor3 = theme.Background
         darkOverlay.BackgroundTransparency = state.Acrylic
-        rootStroke.Color = theme.Stroke
+        rootStroke.Color = Color3.new(1, 1, 1)
         title.TextColor3 = theme.Text
         subtitle.TextColor3 = theme.Muted
         close.TextColor3 = theme.Text
         minimize.TextColor3 = theme.Text
-        close.BackgroundColor3 = theme.Surface
-        minimize.BackgroundColor3 = theme.Surface
         nav.ScrollBarImageColor3 = theme.Accent
         content.BackgroundColor3 = theme.Panel
+        content.BackgroundTransparency = state.Glass
         nav.BackgroundColor3 = theme.Panel
+        nav.BackgroundTransparency = state.Glass
         openButton.BackgroundColor3 = theme.Panel
         openIcon.ImageColor3 = theme.Text
         logo.ImageColor3 = theme.Accent
-        divider.BackgroundColor3 = theme.Stroke
         for _, item in ipairs(state.Elements) do
             pcall(function() if item.UpdateTheme then item:UpdateTheme(theme) end end)
         end
@@ -612,7 +696,7 @@ function OpenHubUI:CreateWindow(config)
     end
 
     function state:SetTransparency(value)
-        state.Transparency = math.clamp(tonumber(value) or state.Transparency, 0, 0.9)
+        state.Transparency = math.clamp(tonumber(value) or state.Transparency, 0, 0.85)
         root.BackgroundTransparency = state.Transparency
     end
 
@@ -621,56 +705,19 @@ function OpenHubUI:CreateWindow(config)
         darkOverlay.BackgroundTransparency = state.Acrylic
     end
 
+    function state:SetGlass(value)
+        state.Glass = math.clamp(tonumber(value) or state.Glass, 0, 0.9)
+        content.BackgroundTransparency = state.Glass
+        nav.BackgroundTransparency = state.Glass
+    end
+
     function state:SetBackground(source, options)
         options = options or {}
-        local image = source
-        if options.Local then
-            image = resolveAsset(source) or ""
-        else
-            image = assetId(source)
-        end
+        local image = options.Local and (resolveAsset(source) or "") or assetId(source)
         bg.Image = image or ""
-        bg.ImageTransparency = math.clamp(tonumber(options.Transparency) or 0.62, 0, 1)
+        bg.ImageTransparency = math.clamp(tonumber(options.Transparency) or 0.7, 0, 1)
         bg.ScaleType = options.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop
-        state.BackgroundImage = source
-        darkOverlay.BackgroundTransparency = state.Acrylic
         return bg.Image ~= ""
-    end
-
-    function state:SetBackgroundFile(fileName, url, options)
-        if not (writefile and getcustomasset and request) then
-            return false, "Executor file functions are unavailable"
-        end
-        local ok, response = pcall(function()
-            return request({Url = url, Method = "GET"})
-        end)
-        if not ok or not response or not response.Body then
-            return false, "Unable to download image"
-        end
-        local saved = pcall(writefile, fileName, response.Body)
-        if not saved then return false, "Unable to save image" end
-        local asset = resolveAsset(fileName)
-        if not asset then return false, "Unable to load local image" end
-        return state:SetBackground(asset, options)
-    end
-
-    function state:SetGifFrames(frames, fps)
-        if type(frames) ~= "table" or #frames == 0 then return false end
-        local alive = true
-        local rate = math.clamp(tonumber(fps) or 8, 1, 30)
-        task.spawn(function()
-            local index = 1
-            while alive and bg.Parent do
-                local frame = frames[index]
-                local resolved = resolveAsset(frame) or assetId(frame)
-                bg.Image = resolved
-                index = index % #frames + 1
-                task.wait(1 / rate)
-            end
-        end)
-        local control = {}
-        function control:Stop() alive = false end
-        return control
     end
 
     function state:SetResizable(value)
@@ -682,69 +729,100 @@ function OpenHubUI:CreateWindow(config)
 
     function state:Notify(notice)
         notice = type(notice) == "table" and notice or {Text = tostring(notice)}
+        local duration = tonumber(notice.Duration) or 4
+
         local holder = gui:FindFirstChild("Notifications")
         if not holder then
             holder = make("Frame", {
                 Name = "Notifications",
                 BackgroundTransparency = 1,
                 AnchorPoint = Vector2.new(1, 0),
-                Position = UDim2.new(1, -16, 0, 16),
-                Size = UDim2.fromOffset(280, 420),
-                ZIndex = 200
+                Position = UDim2.new(1, -18, 0, 18),
+                Size = UDim2.fromOffset(300, 500),
+                ZIndex = 400
             }, gui)
             make("UIListLayout", {
-                Padding = UDim.new(0, 8),
+                Padding = UDim.new(0, 10),
                 HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                SortOrder = Enum.SortOrder.LayoutOrder
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                VerticalAlignment = Enum.VerticalAlignment.Top
             }, holder)
         end
+
         local card = make("Frame", {
             BackgroundColor3 = theme.Panel,
-            BackgroundTransparency = 0.06,
-            Size = UDim2.new(1, 0, 0, 68),
+            BackgroundTransparency = 0.12,
+            Size = UDim2.fromOffset(280, 0),
             ClipsDescendants = true,
-            ZIndex = 201
+            ZIndex = 401
         }, holder)
-        corner(card, 11)
-        stroke(card, theme.Accent, 0.4, 1)
+        corner(card, 12)
+        stroke(card, Color3.new(1, 1, 1), 0.85, 1)
+
         local accentBar = make("Frame", {
             BackgroundColor3 = theme.Accent,
-            Size = UDim2.new(0, 3, 1, -16),
-            Position = UDim2.fromOffset(0, 8),
+            Size = UDim2.new(0, 3, 1, 0),
+            Position = UDim2.fromOffset(0, 0),
             BorderSizePixel = 0,
-            ZIndex = 202
+            ZIndex = 402
         }, card)
-        corner(accentBar, 2)
-        make("TextLabel", {
+
+        local titleLbl = make("TextLabel", {
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(14, 8),
-            Size = UDim2.new(1, -24, 0, 18),
+            Position = UDim2.fromOffset(16, 12),
+            Size = UDim2.new(1, -40, 0, 18),
             Text = notice.Title or "OpenHub",
             Font = Enum.Font.GothamBold,
-            TextSize = 12,
+            TextSize = 13,
             TextColor3 = theme.Text,
             TextXAlignment = Enum.TextXAlignment.Left,
-            ZIndex = 202
+            ZIndex = 402
         }, card)
-        make("TextLabel", {
+
+        local bodyLbl = make("TextLabel", {
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(14, 28),
-            Size = UDim2.new(1, -24, 0, 30),
+            Position = UDim2.fromOffset(16, 34),
+            Size = UDim2.new(1, -32, 0, 0),
             Text = notice.Content or notice.Text or "",
             Font = Enum.Font.Gotham,
-            TextSize = 11,
+            TextSize = 12,
             TextWrapped = true,
             TextColor3 = theme.Muted,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextYAlignment = Enum.TextYAlignment.Top,
-            ZIndex = 202
+            AutomaticSize = Enum.AutomaticSize.Y,
+            ZIndex = 402
         }, card)
-        card.BackgroundTransparency = 1
-        tween(card, 0.2, {BackgroundTransparency = 0.06})
-        task.delay(tonumber(notice.Duration) or 3.2, function()
+
+        local progressTrack = make("Frame", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 0.9,
+            Position = UDim2.new(0, 0, 1, -3),
+            Size = UDim2.new(1, 0, 0, 3),
+            BorderSizePixel = 0,
+            ZIndex = 403
+        }, card)
+
+        local progressFill = make("Frame", {
+            BackgroundColor3 = theme.Accent,
+            Size = UDim2.new(1, 0, 1, 0),
+            BorderSizePixel = 0,
+            ZIndex = 404
+        }, progressTrack)
+
+        task.defer(function()
+            local textH = math.max(bodyLbl.TextBounds.Y, 16)
+            local totalH = 34 + textH + 18
+            card.Size = UDim2.fromOffset(280, 0)
+            card.BackgroundTransparency = 1
+            tween(card, 0.35, {Size = UDim2.fromOffset(280, totalH), BackgroundTransparency = 0.12}, Enum.EasingStyle.Quint)
+            tween(progressFill, duration, {Size = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Linear)
+        end)
+
+        task.delay(duration, function()
             if card.Parent then
-                tween(card, 0.18, {BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
-                task.wait(0.2)
+                tween(card, 0.3, {BackgroundTransparency = 1, Size = UDim2.fromOffset(280, 0)}, Enum.EasingStyle.Quint)
+                task.wait(0.32)
                 card:Destroy()
             end
         end)
@@ -760,19 +838,54 @@ function OpenHubUI:CreateWindow(config)
     end
 
     local Window = {Instance = root, GUI = gui, State = state}
+    local layoutOrder = 0
+
+    function Window:CreateTabGroup(cfg)
+        cfg = type(cfg) == "table" and cfg or {Name = tostring(cfg or "Group")}
+        layoutOrder = layoutOrder + 1
+
+        local frame = make("Frame", {
+            Name = "Group_" .. (cfg.Name or "Group"),
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 28),
+            LayoutOrder = layoutOrder,
+            ZIndex = 4
+        }, nav)
+
+        local lbl = make("TextLabel", {
+            BackgroundTransparency = 1,
+            Position = UDim2.fromOffset(4, 6),
+            Size = UDim2.new(1, -20, 0, 16),
+            Text = string.upper(cfg.Name or "GROUP") .. "  ↓",
+            Font = Enum.Font.GothamBold,
+            TextSize = 10,
+            TextColor3 = theme.Muted,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextTransparency = 0.15,
+            ZIndex = 5
+        }, frame)
+
+        local item = {Instance = frame, Label = lbl}
+        function item:UpdateTheme(t)
+            lbl.TextColor3 = t.Muted
+        end
+        table.insert(state.Elements, item)
+        return item
+    end
 
     function Window:CreateTab(tabConfig)
         tabConfig = tabConfig or {}
         local tabName = tabConfig.Name or ("Tab " .. (#state.Tabs + 1))
+        layoutOrder = layoutOrder + 1
 
         local button = make("TextButton", {
             Name = tabName .. "Button",
-            Size = UDim2.new(1, 0, 0, 36),
+            Size = UDim2.new(1, 0, 0, 34),
             BackgroundColor3 = theme.Accent,
             BackgroundTransparency = 1,
             Text = "",
             AutoButtonColor = false,
-            LayoutOrder = #state.Tabs + 1,
+            LayoutOrder = layoutOrder,
             ZIndex = 4
         }, nav)
         corner(button, 8)
@@ -780,18 +893,19 @@ function OpenHubUI:CreateWindow(config)
         local icon = make("ImageLabel", {
             Name = "Icon",
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(9, 8),
-            Size = UDim2.fromOffset(18, 18),
+            Position = UDim2.fromOffset(8, 8),
+            Size = UDim2.fromOffset(16, 16),
             Image = assetId(tabConfig.Icon or ""),
             ImageColor3 = theme.Muted,
             ZIndex = 5
         }, button)
 
+        local hasIcon = tabConfig.Icon and tabConfig.Icon ~= ""
         local label = make("TextLabel", {
             Name = "Label",
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(tabConfig.Icon and 34 or 11, 0),
-            Size = UDim2.new(1, tabConfig.Icon and -42 or -16, 1, 0),
+            Position = UDim2.fromOffset(hasIcon and 30 or 10, 0),
+            Size = UDim2.new(1, hasIcon and -38 or -16, 1, 0),
             Text = tabName,
             Font = Enum.Font.GothamMedium,
             TextSize = 12,
@@ -812,7 +926,7 @@ function OpenHubUI:CreateWindow(config)
             Visible = false,
             ZIndex = 4
         }, contentPages)
-        pad(page, 11, 11)
+        pad(page, 12, 12, 12, 12)
         make("UIListLayout", {
             Padding = UDim.new(0, 8),
             SortOrder = Enum.SortOrder.LayoutOrder
@@ -830,18 +944,28 @@ function OpenHubUI:CreateWindow(config)
         local function selectTab()
             for _, other in ipairs(state.Tabs) do
                 other.Page.Visible = false
-                tween(other.Button, 0.16, {BackgroundTransparency = 1})
+                tween(other.Button, 0.18, {BackgroundTransparency = 1})
                 other.Label.TextColor3 = theme.Muted
                 other.Icon.ImageColor3 = theme.Muted
             end
             page.Visible = true
-            tween(button, 0.18, {BackgroundTransparency = 0.82})
+            tween(button, 0.2, {BackgroundTransparency = 0.82})
             label.TextColor3 = theme.Text
             icon.ImageColor3 = theme.Accent
             page.CanvasPosition = Vector2.new(0, 0)
         end
 
         button.MouseButton1Click:Connect(selectTab)
+        button.MouseEnter:Connect(function()
+            if not page.Visible then
+                tween(button, 0.12, {BackgroundTransparency = 0.92})
+            end
+        end)
+        button.MouseLeave:Connect(function()
+            if not page.Visible then
+                tween(button, 0.12, {BackgroundTransparency = 1})
+            end
+        end)
 
         function tab:UpdateTheme(newTheme)
             button.BackgroundColor3 = newTheme.Accent
@@ -860,23 +984,17 @@ function OpenHubUI:CreateWindow(config)
             end
         end
 
-        function tab:SetIcon(value)
-            icon.Image = assetId(value)
-            icon.Visible = value ~= nil and value ~= ""
-            label.Position = UDim2.fromOffset(icon.Visible and 34 or 11, 0)
-        end
-
         local function elementFrame(name, height)
             local frame = make("Frame", {
                 Name = name or "Element",
-                Size = UDim2.new(1, 0, 0, height or 50),
+                Size = UDim2.new(1, 0, 0, height or 48),
                 BackgroundColor3 = theme.Surface,
-                BackgroundTransparency = 0.08,
+                BackgroundTransparency = 0.25,
                 BorderSizePixel = 0,
                 ZIndex = 5
             }, page)
-            corner(frame, 9)
-            stroke(frame, theme.Stroke, 0.75, 1)
+            corner(frame, 10)
+            stroke(frame, Color3.new(1, 1, 1), 0.9, 1)
             return frame
         end
 
@@ -890,7 +1008,7 @@ function OpenHubUI:CreateWindow(config)
             local frame = make("Frame", {
                 Name = "Section",
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 0, 22),
+                Size = UDim2.new(1, 0, 0, 24),
                 ZIndex = 5
             }, page)
             local lbl = make("TextLabel", {
@@ -903,25 +1021,14 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 6
             }, frame)
-            local line = make("Frame", {
-                BackgroundColor3 = theme.Stroke,
-                BackgroundTransparency = 0.5,
-                Position = UDim2.new(0, 0, 1, -1),
-                Size = UDim2.new(1, 0, 0, 1),
-                BorderSizePixel = 0,
-                ZIndex = 6
-            }, frame)
             local item = {Instance = frame}
-            function item:UpdateTheme(t)
-                line.BackgroundColor3 = t.Stroke
-                lbl.TextColor3 = t.Accent
-            end
+            function item:UpdateTheme(t) lbl.TextColor3 = t.Accent end
             return addElement(item)
         end
 
         function tab:CreateLabel(cfg)
             cfg = type(cfg) == "table" and cfg or {Text = tostring(cfg or "Label")}
-            local frame = elementFrame(cfg.Name or "Label", cfg.Height or 40)
+            local frame = elementFrame(cfg.Name or "Label", cfg.Height or 38)
             local textLabel = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
@@ -945,11 +1052,11 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateParagraph(cfg)
             cfg = cfg or {}
-            local frame = elementFrame(cfg.Name or "Paragraph", cfg.Height or 70)
+            local frame = elementFrame(cfg.Name or "Paragraph", cfg.Height or 72)
             local head = make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, 7),
-                Size = UDim2.new(1, -24, 0, 18),
+                Position = UDim2.fromOffset(12, 8),
+                Size = UDim2.new(1, -24, 0, 16),
                 Text = cfg.Title or "Information",
                 Font = Enum.Font.GothamBold,
                 TextSize = 12,
@@ -959,8 +1066,8 @@ function OpenHubUI:CreateWindow(config)
             }, frame)
             local body = make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, 26),
-                Size = UDim2.new(1, -24, 1, -32),
+                Position = UDim2.fromOffset(12, 28),
+                Size = UDim2.new(1, -24, 1, -36),
                 Text = cfg.Content or cfg.Text or "",
                 Font = Enum.Font.Gotham,
                 TextSize = 11,
@@ -982,7 +1089,7 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateButton(cfg)
             cfg = type(cfg) == "table" and cfg or {Name = tostring(cfg or "Button")}
-            local frame = elementFrame(cfg.Name or "Button", cfg.Height or 44)
+            local frame = elementFrame(cfg.Name or "Button", 42)
             local btn = make("TextButton", {
                 BackgroundTransparency = 1,
                 Size = UDim2.fromScale(1, 1),
@@ -990,19 +1097,10 @@ function OpenHubUI:CreateWindow(config)
                 AutoButtonColor = false,
                 ZIndex = 6
             }, frame)
-            local ico = make("ImageLabel", {
-                BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, 12),
-                Size = UDim2.fromOffset(18, 18),
-                Image = assetId(cfg.Icon or ""),
-                ImageColor3 = theme.Accent,
-                Visible = cfg.Icon ~= nil,
-                ZIndex = 7
-            }, btn)
             local txt = make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(cfg.Icon and 38 or 13, 0),
-                Size = UDim2.new(1, cfg.Icon and -50 or -26, 1, 0),
+                Position = UDim2.fromOffset(14, 0),
+                Size = UDim2.new(1, -40, 1, 0),
                 Text = cfg.Name or "Button",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1014,33 +1112,26 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 1,
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
-                Size = UDim2.fromOffset(16, 20),
+                Size = UDim2.fromOffset(16, 18),
                 Text = "›",
                 Font = Enum.Font.Gotham,
-                TextSize = 20,
+                TextSize = 18,
                 TextColor3 = theme.Muted,
                 ZIndex = 7
             }, btn)
             btn.MouseEnter:Connect(function()
-                tween(frame, 0.14, {BackgroundColor3 = theme.Accent, BackgroundTransparency = 0.88})
+                tween(frame, 0.14, {BackgroundTransparency = 0.1})
             end)
             btn.MouseLeave:Connect(function()
-                tween(frame, 0.14, {BackgroundColor3 = theme.Surface, BackgroundTransparency = 0.08})
+                tween(frame, 0.14, {BackgroundTransparency = 0.25})
             end)
             btn.MouseButton1Click:Connect(function()
-                tween(frame, 0.07, {Size = UDim2.new(1, -4, 0, frame.Size.Y.Offset)})
-                task.delay(0.08, function()
-                    if frame.Parent then
-                        tween(frame, 0.12, {Size = UDim2.new(1, 0, 0, frame.Size.Y.Offset)})
-                    end
-                end)
                 if cfg.Callback then task.spawn(cfg.Callback) end
             end)
             local item = {Instance = frame}
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 txt.TextColor3 = t.Text
-                ico.ImageColor3 = t.Accent
                 arrow.TextColor3 = t.Muted
             end
             return addElement(item)
@@ -1049,10 +1140,10 @@ function OpenHubUI:CreateWindow(config)
         function tab:CreateToggle(cfg)
             cfg = cfg or {}
             local value = cfg.CurrentValue == true
-            local frame = elementFrame(cfg.Name or "Toggle", cfg.Description and 62 or 48)
+            local frame = elementFrame(cfg.Name or "Toggle", cfg.Description and 58 or 44)
             local name = make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, cfg.Description and 7 or 0),
+                Position = UDim2.fromOffset(12, cfg.Description and 6 or 0),
                 Size = UDim2.new(1, -70, cfg.Description and 0 or 1, cfg.Description and 18 or 0),
                 Text = cfg.Name or "Toggle",
                 Font = Enum.Font.GothamMedium,
@@ -1065,13 +1156,12 @@ function OpenHubUI:CreateWindow(config)
             if cfg.Description then
                 desc = make("TextLabel", {
                     BackgroundTransparency = 1,
-                    Position = UDim2.fromOffset(12, 28),
-                    Size = UDim2.new(1, -72, 0, 22),
+                    Position = UDim2.fromOffset(12, 26),
+                    Size = UDim2.new(1, -72, 0, 20),
                     Text = cfg.Description,
                     Font = Enum.Font.Gotham,
                     TextSize = 10,
                     TextColor3 = theme.Muted,
-                    TextWrapped = true,
                     TextXAlignment = Enum.TextXAlignment.Left,
                     ZIndex = 6
                 }, frame)
@@ -1080,8 +1170,8 @@ function OpenHubUI:CreateWindow(config)
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
                 Size = UDim2.fromOffset(40, 22),
-                BackgroundColor3 = value and theme.Accent or theme.Stroke,
-                BackgroundTransparency = value and 0 or 0.4,
+                BackgroundColor3 = value and theme.Accent or Color3.fromRGB(60, 60, 70),
+                BackgroundTransparency = value and 0.1 or 0.3,
                 Text = "",
                 AutoButtonColor = false,
                 ZIndex = 6
@@ -1094,14 +1184,14 @@ function OpenHubUI:CreateWindow(config)
                 BorderSizePixel = 0,
                 ZIndex = 7
             }, switch)
-            corner(knob, 9)
+            corner(knob, 8)
             local function set(v, fire)
                 value = v == true
-                tween(switch, 0.16, {
-                    BackgroundColor3 = value and theme.Accent or theme.Stroke,
-                    BackgroundTransparency = value and 0 or 0.4
+                tween(switch, 0.18, {
+                    BackgroundColor3 = value and theme.Accent or Color3.fromRGB(60, 60, 70),
+                    BackgroundTransparency = value and 0.1 or 0.3
                 })
-                tween(knob, 0.16, {
+                tween(knob, 0.18, {
                     Position = value and UDim2.new(1, -19, 0, 3) or UDim2.fromOffset(3, 3)
                 })
                 if fire and cfg.Callback then task.spawn(cfg.Callback, value) end
@@ -1114,7 +1204,7 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 name.TextColor3 = t.Text
                 if desc then desc.TextColor3 = t.Muted end
-                switch.BackgroundColor3 = value and t.Accent or t.Stroke
+                if value then switch.BackgroundColor3 = t.Accent end
             end
             addElement(item)
             if cfg.Callback and cfg.CurrentValue then task.spawn(cfg.Callback, value) end
@@ -1126,11 +1216,11 @@ function OpenHubUI:CreateWindow(config)
             local min = tonumber(cfg.Min) or 0
             local max = tonumber(cfg.Max) or 100
             local value = math.clamp(tonumber(cfg.CurrentValue) or min, min, max)
-            local frame = elementFrame(cfg.Name or "Slider", 62)
+            local frame = elementFrame(cfg.Name or "Slider", 58)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 6),
-                Size = UDim2.new(1, -70, 0, 18),
+                Size = UDim2.new(1, -70, 0, 16),
                 Text = cfg.Name or "Slider",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1142,7 +1232,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 1,
                 AnchorPoint = Vector2.new(1, 0),
                 Position = UDim2.new(1, -12, 0, 6),
-                Size = UDim2.fromOffset(60, 18),
+                Size = UDim2.fromOffset(55, 16),
                 Text = tostring(value),
                 Font = Enum.Font.GothamBold,
                 TextSize = 11,
@@ -1151,31 +1241,30 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 6
             }, frame)
             local track = make("Frame", {
-                Position = UDim2.new(0, 12, 0, 36),
+                Position = UDim2.new(0, 12, 0, 34),
                 Size = UDim2.new(1, -24, 0, 5),
-                BackgroundColor3 = theme.Stroke,
-                BackgroundTransparency = 0.35,
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BackgroundTransparency = 0.88,
                 BorderSizePixel = 0,
                 ZIndex = 6
             }, frame)
-            corner(track, 4)
+            corner(track, 3)
             local fill = make("Frame", {
                 Size = UDim2.new((value - min) / math.max(max - min, 1), 0, 1, 0),
                 BackgroundColor3 = theme.Accent,
                 BorderSizePixel = 0,
                 ZIndex = 7
             }, track)
-            corner(fill, 4)
+            corner(fill, 3)
             local knob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new((value - min) / math.max(max - min, 1), 0, 0.5, 0),
                 Size = UDim2.fromOffset(12, 12),
-                BackgroundColor3 = theme.Text,
+                BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 ZIndex = 8
             }, track)
-            corner(knob, 7)
-            stroke(knob, theme.Accent, 0.2, 1)
+            corner(knob, 6)
             local hit = make("TextButton", {
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, -8),
@@ -1195,13 +1284,13 @@ function OpenHubUI:CreateWindow(config)
             hit.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     sliding = true
-                    local p = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                    local p = math.clamp((input.Position.X - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1), 0, 1)
                     set(min + (max - min) * p, true)
                 end
             end)
             UserInputService.InputChanged:Connect(function(input)
                 if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                    local p = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                    local p = math.clamp((input.Position.X - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1), 0, 1)
                     set(min + (max - min) * p, true)
                 end
             end)
@@ -1217,7 +1306,6 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 valLabel.TextColor3 = t.Accent
-                track.BackgroundColor3 = t.Stroke
                 fill.BackgroundColor3 = t.Accent
             end
             return addElement(item)
@@ -1225,36 +1313,36 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateInput(cfg)
             cfg = cfg or {}
-            local frame = elementFrame(cfg.Name or "Input", cfg.Description and 68 or 54)
+            local frame = elementFrame(cfg.Name or "Input", 52)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 5),
-                Size = UDim2.new(1, -24, 0, 16),
+                Size = UDim2.new(1, -24, 0, 14),
                 Text = cfg.Name or "Input",
                 Font = Enum.Font.GothamMedium,
-                TextSize = 12,
-                TextColor3 = theme.Text,
+                TextSize = 11,
+                TextColor3 = theme.Muted,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 6
             }, frame)
             local box = make("TextBox", {
-                Position = UDim2.fromOffset(12, 26),
-                Size = UDim2.new(1, -24, 0, 24),
-                BackgroundColor3 = theme.Background,
-                BackgroundTransparency = 0.2,
+                Position = UDim2.fromOffset(12, 22),
+                Size = UDim2.new(1, -24, 0, 22),
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.6,
                 Text = tostring(cfg.Default or ""),
                 PlaceholderText = cfg.Placeholder or "Enter value...",
                 ClearTextOnFocus = false,
                 TextColor3 = theme.Text,
                 PlaceholderColor3 = theme.Muted,
                 Font = Enum.Font.Gotham,
-                TextSize = 11,
+                TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 BorderSizePixel = 0,
                 ZIndex = 6
             }, frame)
             corner(box, 6)
-            pad(box, 8, 0)
+            pad(box, 8, 8, 0, 0)
             box.FocusLost:Connect(function(enter)
                 if (not cfg.Enter or enter) and cfg.Callback then
                     task.spawn(cfg.Callback, box.Text)
@@ -1265,8 +1353,7 @@ function OpenHubUI:CreateWindow(config)
             function item:Get() return box.Text end
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
-                label.TextColor3 = t.Text
-                box.BackgroundColor3 = t.Background
+                label.TextColor3 = t.Muted
                 box.TextColor3 = t.Text
                 box.PlaceholderColor3 = t.Muted
             end
@@ -1280,11 +1367,11 @@ function OpenHubUI:CreateWindow(config)
             if type(selected) == "table" then selected = selected[1] end
             local expanded = false
 
-            local frame = elementFrame(cfg.Name or "Dropdown", 46)
+            local frame = elementFrame(cfg.Name or "Dropdown", 44)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
-                Size = UDim2.new(0.42, 0, 1, 0),
+                Size = UDim2.new(0.4, 0, 1, 0),
                 Text = cfg.Name or "Dropdown",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1297,9 +1384,9 @@ function OpenHubUI:CreateWindow(config)
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -10, 0.5, 0),
                 Size = UDim2.new(0.55, 0, 0, 28),
-                BackgroundColor3 = theme.Background,
-                BackgroundTransparency = 0.18,
-                Text = tostring(selected),
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.55,
+                Text = tostring(selected) .. "  ▾",
                 Font = Enum.Font.Gotham,
                 TextSize = 11,
                 TextColor3 = theme.Text,
@@ -1311,14 +1398,14 @@ function OpenHubUI:CreateWindow(config)
             local list = make("Frame", {
                 Name = "DropdownPopup",
                 BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.02,
+                BackgroundTransparency = 0.08,
                 ClipsDescendants = true,
                 Visible = false,
-                ZIndex = 300,
+                ZIndex = 500,
                 Size = UDim2.fromOffset(0, 0)
             }, gui)
-            corner(list, 9)
-            stroke(list, theme.Stroke, 0.25, 1)
+            corner(list, 10)
+            stroke(list, Color3.new(1, 1, 1), 0.8, 1)
 
             local scroll = make("ScrollingFrame", {
                 BackgroundTransparency = 1,
@@ -1328,13 +1415,21 @@ function OpenHubUI:CreateWindow(config)
                 AutomaticCanvasSize = Enum.AutomaticSize.Y,
                 ScrollBarThickness = 2,
                 ScrollBarImageColor3 = theme.Accent,
-                ZIndex = 301
+                ZIndex = 501
             }, list)
-            pad(scroll, 5, 5)
+            pad(scroll, 6, 6, 6, 6)
             make("UIListLayout", {
                 Padding = UDim.new(0, 3),
                 SortOrder = Enum.SortOrder.LayoutOrder
             }, scroll)
+
+            local function closeList()
+                expanded = false
+                tween(list, 0.15, {Size = UDim2.fromOffset(list.Size.X.Offset, 0)})
+                task.delay(0.16, function()
+                    if not expanded then list.Visible = false end
+                end)
+            end
 
             local function rebuild()
                 for _, c in ipairs(scroll:GetChildren()) do
@@ -1344,77 +1439,63 @@ function OpenHubUI:CreateWindow(config)
                     local b = make("TextButton", {
                         Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = theme.Accent,
-                        BackgroundTransparency = 0.9,
-                        Text = tostring(opt),
+                        BackgroundTransparency = 0.92,
+                        Text = "  " .. tostring(opt),
                         Font = Enum.Font.Gotham,
-                        TextSize = 11,
+                        TextSize = 12,
                         TextColor3 = theme.Text,
+                        TextXAlignment = Enum.TextXAlignment.Left,
                         AutoButtonColor = false,
                         LayoutOrder = i,
-                        ZIndex = 302
+                        ZIndex = 502
                     }, scroll)
                     corner(b, 6)
                     b.MouseEnter:Connect(function()
-                        tween(b, 0.1, {BackgroundTransparency = 0.72})
+                        tween(b, 0.1, {BackgroundTransparency = 0.75})
                     end)
                     b.MouseLeave:Connect(function()
-                        tween(b, 0.1, {BackgroundTransparency = 0.9})
+                        tween(b, 0.1, {BackgroundTransparency = 0.92})
                     end)
                     b.MouseButton1Click:Connect(function()
                         selected = opt
-                        chosen.Text = tostring(opt)
-                        expanded = false
-                        tween(list, 0.12, {Size = UDim2.fromOffset(list.Size.X.Offset, 0)})
-                        task.delay(0.13, function() list.Visible = false end)
+                        chosen.Text = tostring(opt) .. "  ▾"
+                        closeList()
                         if cfg.Callback then task.spawn(cfg.Callback, opt) end
                     end)
                 end
             end
             rebuild()
 
-            local function positionList()
+            local function openList()
+                expanded = true
                 local abs = chosen.AbsolutePosition
                 local absSize = chosen.AbsoluteSize
-                local h = math.min(#options, 6) * 31 + 12
+                local h = math.min(#options, 6) * 31 + 14
                 local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
                 local px = abs.X
-                local py = abs.Y + absSize.Y + 4
-                if py + h > screen.Y - 10 then
-                    py = abs.Y - h - 4
-                end
-                if px + absSize.X > screen.X - 10 then
-                    px = screen.X - absSize.X - 10
-                end
+                local py = abs.Y + absSize.Y + 6
+                if py + h > screen.Y - 12 then py = abs.Y - h - 6 end
+                if px + absSize.X > screen.X - 12 then px = screen.X - absSize.X - 12 end
                 list.Position = UDim2.fromOffset(px, py)
-                list.Size = UDim2.fromOffset(absSize.X, 0)
+                list.Size = UDim2.fromOffset(math.max(absSize.X, 140), 0)
                 list.Visible = true
-                tween(list, 0.16, {Size = UDim2.fromOffset(absSize.X, h)})
+                tween(list, 0.18, {Size = UDim2.fromOffset(math.max(absSize.X, 140), h)})
             end
 
             chosen.MouseButton1Click:Connect(function()
-                expanded = not expanded
-                if expanded then
-                    positionList()
-                else
-                    tween(list, 0.12, {Size = UDim2.fromOffset(list.Size.X.Offset, 0)})
-                    task.delay(0.13, function()
-                        if not expanded then list.Visible = false end
-                    end)
-                end
+                if expanded then closeList() else openList() end
             end)
 
             local outsideConn = UserInputService.InputBegan:Connect(function(input)
                 if not expanded then return end
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     local pos = input.Position
-                    local inList = pos.X >= list.AbsolutePosition.X and pos.X <= list.AbsolutePosition.X + list.AbsoluteSize.X
-                        and pos.Y >= list.AbsolutePosition.Y and pos.Y <= list.AbsolutePosition.Y + list.AbsoluteSize.Y
-                    local inChosen = pos.X >= chosen.AbsolutePosition.X and pos.X <= chosen.AbsolutePosition.X + chosen.AbsoluteSize.X
-                        and pos.Y >= chosen.AbsolutePosition.Y and pos.Y <= chosen.AbsolutePosition.Y + chosen.AbsoluteSize.Y
-                    if not inList and not inChosen then
-                        expanded = false
-                        tween(list, 0.12, {Size = UDim2.fromOffset(list.Size.X.Offset, 0)})
-                        task.delay(0.13, function() list.Visible = false end)
+                    local function inside(obj)
+                        local a, s = obj.AbsolutePosition, obj.AbsoluteSize
+                        return pos.X >= a.X and pos.X <= a.X + s.X and pos.Y >= a.Y and pos.Y <= a.Y + s.Y
+                    end
+                    if not inside(list) and not inside(chosen) then
+                        closeList()
                     end
                 end
             end)
@@ -1423,7 +1504,7 @@ function OpenHubUI:CreateWindow(config)
             local item = {Instance = frame}
             function item:Set(v)
                 selected = v
-                chosen.Text = tostring(v)
+                chosen.Text = tostring(v) .. "  ▾"
                 if cfg.Callback then task.spawn(cfg.Callback, v) end
             end
             function item:Get() return selected end
@@ -1434,12 +1515,8 @@ function OpenHubUI:CreateWindow(config)
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
-                chosen.BackgroundColor3 = t.Background
                 chosen.TextColor3 = t.Text
                 list.BackgroundColor3 = t.Panel
-                for _, b in ipairs(scroll:GetChildren()) do
-                    if b:IsA("TextButton") then b.TextColor3 = t.Text end
-                end
             end
             return addElement(item)
         end
@@ -1448,11 +1525,11 @@ function OpenHubUI:CreateWindow(config)
             cfg = cfg or {}
             local key = cfg.CurrentBind or "RightShift"
             local listening = false
-            local frame = elementFrame(cfg.Name or "Keybind", 46)
+            local frame = elementFrame(cfg.Name or "Keybind", 44)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
-                Size = UDim2.new(1, -96, 1, 0),
+                Size = UDim2.new(1, -100, 1, 0),
                 Text = cfg.Name or "Keybind",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1463,9 +1540,9 @@ function OpenHubUI:CreateWindow(config)
             local btn = make("TextButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -10, 0.5, 0),
-                Size = UDim2.fromOffset(76, 26),
-                BackgroundColor3 = theme.Background,
-                BackgroundTransparency = 0.15,
+                Size = UDim2.fromOffset(78, 26),
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.55,
                 Text = key,
                 Font = Enum.Font.GothamBold,
                 TextSize = 10,
@@ -1495,7 +1572,6 @@ function OpenHubUI:CreateWindow(config)
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
-                btn.BackgroundColor3 = t.Background
                 btn.TextColor3 = t.Accent
             end
             return addElement(item)
@@ -1506,12 +1582,12 @@ function OpenHubUI:CreateWindow(config)
             local color = cfg.Color or theme.Accent
             local h, s, v = color:ToHSV()
 
-            local frame = elementFrame(cfg.Name or "Color", 46)
+            local frame = elementFrame(cfg.Name or "Color", 44)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
                 Size = UDim2.new(1, -64, 1, 0),
-                Text = cfg.Name or "Accent Color",
+                Text = cfg.Name or "Color",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
                 TextColor3 = theme.Text,
@@ -1522,250 +1598,214 @@ function OpenHubUI:CreateWindow(config)
             local swatch = make("TextButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
-                Size = UDim2.fromOffset(40, 24),
+                Size = UDim2.fromOffset(36, 22),
                 BackgroundColor3 = color,
                 Text = "",
                 AutoButtonColor = false,
                 ZIndex = 6
             }, frame)
-            corner(swatch, 12)
-            stroke(swatch, theme.Stroke, 0.35, 1)
+            corner(swatch, 7)
+            stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
-                Size = UDim2.fromOffset(200, 230),
+                Size = UDim2.fromOffset(200, 200),
                 BackgroundColor3 = theme.Panel,
+                BackgroundTransparency = 0.06,
                 BorderSizePixel = 0,
                 Visible = false,
-                ZIndex = 320
+                ZIndex = 520
             }, gui)
             corner(popup, 12)
-            stroke(popup, theme.Stroke, 0.2, 1)
-            pad(popup, 12, 12)
+            stroke(popup, Color3.new(1, 1, 1), 0.8, 1)
+            pad(popup, 12, 12, 12, 12)
 
-            local wheelSize = 140
-            local wheel = make("Frame", {
-                Name = "HueWheel",
-                Size = UDim2.fromOffset(wheelSize, wheelSize),
-                BackgroundTransparency = 1,
-                ZIndex = 321
-            }, popup)
-
-            local segments = 48
-            local segThickness = 18
-            local radius = (wheelSize / 2) - (segThickness / 2)
-            local center = wheelSize / 2
-
-            for i = 0, segments - 1 do
-                local a0 = (i / segments) * math.pi * 2
-                local a1 = ((i + 1) / segments) * math.pi * 2
-                local mid = (a0 + a1) / 2
-                local hue = i / segments
-                local segColor = Color3.fromHSV(hue, 1, 1)
-
-                local seg = make("Frame", {
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    Position = UDim2.fromOffset(
-                        center + math.cos(mid) * radius,
-                        center + math.sin(mid) * radius
-                    ),
-                    Size = UDim2.fromOffset(segThickness + 2, segThickness + 2),
-                    BackgroundColor3 = segColor,
-                    BorderSizePixel = 0,
-                    Rotation = math.deg(mid) + 90,
-                    ZIndex = 322
-                }, wheel)
-                corner(seg, 4)
-            end
-
-            local innerCircle = make("Frame", {
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.fromOffset(wheelSize - segThickness * 2 - 8, wheelSize - segThickness * 2 - 8),
+            local svBox = make("Frame", {
+                Size = UDim2.fromOffset(176, 120),
                 BackgroundColor3 = Color3.fromHSV(h, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 323
-            }, wheel)
-            corner(innerCircle, (wheelSize - segThickness * 2 - 8) / 2)
+                ZIndex = 521
+            }, popup)
+            corner(svBox, 8)
 
-            local whiteOverlay = make("Frame", {
+            local whiteG = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 324
-            }, innerCircle)
-            corner(whiteOverlay, (wheelSize - segThickness * 2 - 8) / 2)
+                ZIndex = 522
+            }, svBox)
+            corner(whiteG, 8)
             make("UIGradient", {
-                Rotation = 0,
                 Transparency = NumberSequence.new({
                     NumberSequenceKeypoint.new(0, 0),
                     NumberSequenceKeypoint.new(1, 1)
                 })
-            }, whiteOverlay)
+            }, whiteG)
 
-            local blackOverlay = make("Frame", {
+            local blackG = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(0, 0, 0),
                 BorderSizePixel = 0,
-                ZIndex = 325
-            }, innerCircle)
-            corner(blackOverlay, (wheelSize - segThickness * 2 - 8) / 2)
+                ZIndex = 523
+            }, svBox)
+            corner(blackG, 8)
             make("UIGradient", {
                 Rotation = 90,
                 Transparency = NumberSequence.new({
                     NumberSequenceKeypoint.new(0, 1),
                     NumberSequenceKeypoint.new(1, 0)
                 })
-            }, blackOverlay)
-
-            local hueKnob = make("Frame", {
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Size = UDim2.fromOffset(14, 14),
-                BackgroundColor3 = Color3.new(1, 1, 1),
-                BorderSizePixel = 0,
-                ZIndex = 326
-            }, wheel)
-            corner(hueKnob, 7)
-            stroke(hueKnob, Color3.new(0, 0, 0), 0.2, 1.5)
+            }, blackG)
 
             local svKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
-                Size = UDim2.fromOffset(12, 12),
+                Position = UDim2.new(s, 0, 1 - v, 0),
+                Size = UDim2.fromOffset(14, 14),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 327
-            }, innerCircle)
-            corner(svKnob, 6)
-            stroke(svKnob, Color3.new(0, 0, 0), 0.25, 1.5)
+                ZIndex = 525
+            }, svBox)
+            corner(svKnob, 7)
+            stroke(svKnob, Color3.new(0, 0, 0), 0.3, 1.5)
 
-            local wheelHit = make("TextButton", {
+            local svHit = make("TextButton", {
                 BackgroundTransparency = 1,
                 Size = UDim2.fromScale(1, 1),
                 Text = "",
-                ZIndex = 328
-            }, wheel)
+                ZIndex = 526
+            }, svBox)
 
-            local preview = make("Frame", {
-                Position = UDim2.fromOffset(0, 152),
-                Size = UDim2.fromOffset(36, 22),
-                BackgroundColor3 = color,
+            local hueTrack = make("Frame", {
+                Position = UDim2.fromOffset(0, 130),
+                Size = UDim2.fromOffset(176, 14),
+                BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 321
+                ZIndex = 521
             }, popup)
-            corner(preview, 6)
+            corner(hueTrack, 5)
+            make("UIGradient", {
+                Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+                    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
+                    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+                    ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+                    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+                })
+            }, hueTrack)
 
-            local hexLabel = make("TextLabel", {
+            local hueKnob = make("Frame", {
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.new(h, 0, 0.5, 0),
+                Size = UDim2.fromOffset(8, 18),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                ZIndex = 522
+            }, hueTrack)
+            corner(hueKnob, 3)
+            stroke(hueKnob, Color3.new(0, 0, 0), 0.2, 1)
+
+            local hueHit = make("TextButton", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(44, 152),
-                Size = UDim2.fromOffset(120, 22),
+                Size = UDim2.fromScale(1, 1),
+                Text = "",
+                ZIndex = 523
+            }, hueTrack)
+
+            local hexLbl = make("TextLabel", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(0, 154),
+                Size = UDim2.fromOffset(176, 18),
                 Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)),
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
                 TextColor3 = theme.Text,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 321
+                TextXAlignment = Enum.TextXAlignment.Center,
+                ZIndex = 521
             }, popup)
-
-            local function updateKnobs()
-                local angle = h * math.pi * 2
-                hueKnob.Position = UDim2.fromOffset(
-                    center + math.cos(angle) * radius,
-                    center + math.sin(angle) * radius
-                )
-                svKnob.Position = UDim2.new(s, 0, 1 - v, 0)
-                innerCircle.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-            end
 
             local function applyColor(fire)
                 color = Color3.fromHSV(h, s, v)
                 swatch.BackgroundColor3 = color
-                preview.BackgroundColor3 = color
-                hexLabel.Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
-                updateKnobs()
+                svBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                svKnob.Position = UDim2.new(s, 0, 1 - v, 0)
+                hueKnob.Position = UDim2.new(h, 0, 0.5, 0)
+                hexLbl.Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
                 if fire and cfg.Callback then task.spawn(cfg.Callback, color) end
             end
-
-            updateKnobs()
 
             local function positionPopup()
                 local abs = swatch.AbsolutePosition
                 local absSize = swatch.AbsoluteSize
                 local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
                 local px = abs.X + absSize.X - 200
-                local py = abs.Y + absSize.Y + 6
-                if px < 8 then px = 8 end
-                if py + 230 > screen.Y - 8 then py = abs.Y - 236 end
-                if px + 200 > screen.X - 8 then px = screen.X - 208 end
+                local py = abs.Y + absSize.Y + 8
+                if px < 10 then px = 10 end
+                if py + 200 > screen.Y - 10 then py = abs.Y - 208 end
+                if px + 200 > screen.X - 10 then px = screen.X - 210 end
                 popup.Position = UDim2.fromOffset(px, py)
             end
 
+            local open = false
             swatch.MouseButton1Click:Connect(function()
-                popup.Visible = not popup.Visible
-                if popup.Visible then positionPopup() end
+                open = not open
+                popup.Visible = open
+                if open then positionPopup() end
             end)
 
-            local hueDragging = false
-            local svDragging = false
+            local svDrag, hueDrag = false, false
 
-            wheelHit.InputBegan:Connect(function(input)
-                if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
-                local rel = input.Position - wheel.AbsolutePosition
-                local dx = rel.X - center
-                local dy = rel.Y - center
-                local dist = math.sqrt(dx * dx + dy * dy)
-                local outerR = wheelSize / 2
-                local innerR = (wheelSize - segThickness * 2 - 8) / 2
-                if dist > innerR + 4 and dist < outerR + 4 then
-                    hueDragging = true
-                    local angle = math.atan2(dy, dx)
-                    if angle < 0 then angle = angle + math.pi * 2 end
-                    h = angle / (math.pi * 2)
+            svHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    svDrag = true
+                    local rel = input.Position - svBox.AbsolutePosition
+                    s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
+                    v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
                     applyColor(true)
-                elseif dist <= innerR + 4 then
-                    svDragging = true
-                    local innerAbs = innerCircle.AbsolutePosition
-                    local innerSize = innerCircle.AbsoluteSize
-                    s = math.clamp((input.Position.X - innerAbs.X) / innerSize.X, 0, 1)
-                    v = 1 - math.clamp((input.Position.Y - innerAbs.Y) / innerSize.Y, 0, 1)
+                end
+            end)
+
+            hueHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    hueDrag = true
+                    local rel = input.Position - hueTrack.AbsolutePosition
+                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 end
             end)
 
             UserInputService.InputChanged:Connect(function(input)
                 if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
-                if hueDragging then
-                    local rel = input.Position - wheel.AbsolutePosition
-                    local dx = rel.X - center
-                    local dy = rel.Y - center
-                    local angle = math.atan2(dy, dx)
-                    if angle < 0 then angle = angle + math.pi * 2 end
-                    h = angle / (math.pi * 2)
+                if svDrag then
+                    local rel = input.Position - svBox.AbsolutePosition
+                    s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
+                    v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
                     applyColor(true)
-                elseif svDragging then
-                    local innerAbs = innerCircle.AbsolutePosition
-                    local innerSize = innerCircle.AbsoluteSize
-                    s = math.clamp((input.Position.X - innerAbs.X) / innerSize.X, 0, 1)
-                    v = 1 - math.clamp((input.Position.Y - innerAbs.Y) / innerSize.Y, 0, 1)
+                elseif hueDrag then
+                    local rel = input.Position - hueTrack.AbsolutePosition
+                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
                     applyColor(true)
                 end
             end)
 
             UserInputService.InputEnded:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    hueDragging = false
-                    svDragging = false
+                    svDrag = false
+                    hueDrag = false
                 end
             end)
 
             local outsideConn = UserInputService.InputBegan:Connect(function(input)
-                if not popup.Visible then return end
+                if not open then return end
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     local pos = input.Position
-                    local inPopup = pos.X >= popup.AbsolutePosition.X and pos.X <= popup.AbsolutePosition.X + popup.AbsoluteSize.X
-                        and pos.Y >= popup.AbsolutePosition.Y and pos.Y <= popup.AbsolutePosition.Y + popup.AbsoluteSize.Y
-                    local inSwatch = pos.X >= swatch.AbsolutePosition.X and pos.X <= swatch.AbsolutePosition.X + swatch.AbsoluteSize.X
-                        and pos.Y >= swatch.AbsolutePosition.Y and pos.Y <= swatch.AbsolutePosition.Y + swatch.AbsoluteSize.Y
-                    if not inPopup and not inSwatch then
+                    local function inside(obj)
+                        local a, sz = obj.AbsolutePosition, obj.AbsoluteSize
+                        return pos.X >= a.X and pos.X <= a.X + sz.X and pos.Y >= a.Y and pos.Y <= a.Y + sz.Y
+                    end
+                    if not inside(popup) and not inside(swatch) then
+                        open = false
                         popup.Visible = false
                     end
                 end
@@ -1773,12 +1813,11 @@ function OpenHubUI:CreateWindow(config)
             table.insert(state.Connections, outsideConn)
 
             local item = {Instance = frame}
-            function item:Set(v)
-                if typeof(v) == "Color3" then
-                    color = v
-                    h, s, v = v:ToHSV()
+            function item:Set(c)
+                if typeof(c) == "Color3" then
+                    color = c
+                    h, s, v = c:ToHSV()
                     applyColor(false)
-                    if cfg.Callback then task.spawn(cfg.Callback, color) end
                 end
             end
             function item:Get() return color end
@@ -1786,7 +1825,7 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 popup.BackgroundColor3 = t.Panel
-                hexLabel.TextColor3 = t.Text
+                hexLbl.TextColor3 = t.Text
             end
             return addElement(item)
         end
@@ -1794,25 +1833,25 @@ function OpenHubUI:CreateWindow(config)
         function tab:CreateDivider()
             local frame = make("Frame", {
                 Name = "Divider",
-                BackgroundColor3 = theme.Stroke,
-                BackgroundTransparency = 0.55,
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BackgroundTransparency = 0.9,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, 0, 0, 1),
                 ZIndex = 5
             }, page)
             local item = {Instance = frame}
-            function item:UpdateTheme(t) frame.BackgroundColor3 = t.Stroke end
+            function item:UpdateTheme(t) end
             return addElement(item)
         end
 
         function tab:CreateProgressBar(cfg)
             cfg = cfg or {}
             local value = math.clamp(tonumber(cfg.Value) or 0, 0, 100)
-            local frame = elementFrame(cfg.Name or "Progress", cfg.Description and 60 or 48)
+            local frame = elementFrame(cfg.Name or "Progress", 48)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 5),
-                Size = UDim2.new(1, -70, 0, 18),
+                Size = UDim2.new(1, -70, 0, 16),
                 Text = cfg.Name or "Progress",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1824,7 +1863,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 1,
                 AnchorPoint = Vector2.new(1, 0),
                 Position = UDim2.new(1, -12, 0, 5),
-                Size = UDim2.fromOffset(50, 18),
+                Size = UDim2.fromOffset(48, 16),
                 Text = tostring(value) .. "%",
                 Font = Enum.Font.GothamBold,
                 TextSize = 11,
@@ -1833,24 +1872,25 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 6
             }, frame)
             local track = make("Frame", {
-                Position = UDim2.new(0, 12, 0, 29),
+                Position = UDim2.new(0, 12, 0, 28),
                 Size = UDim2.new(1, -24, 0, 6),
-                BackgroundColor3 = theme.Stroke,
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BackgroundTransparency = 0.88,
                 BorderSizePixel = 0,
                 ZIndex = 6
             }, frame)
-            corner(track, 4)
+            corner(track, 3)
             local fill = make("Frame", {
                 Size = UDim2.new(value / 100, 0, 1, 0),
                 BackgroundColor3 = theme.Accent,
                 BorderSizePixel = 0,
                 ZIndex = 7
             }, track)
-            corner(fill, 4)
+            corner(fill, 3)
             local item = {Instance = frame}
             function item:Set(v)
                 value = math.clamp(tonumber(v) or value, 0, 100)
-                tween(fill, 0.18, {Size = UDim2.new(value / 100, 0, 1, 0)})
+                tween(fill, 0.2, {Size = UDim2.new(value / 100, 0, 1, 0)})
                 amount.Text = tostring(math.floor(value)) .. "%"
             end
             function item:Get() return value end
@@ -1858,7 +1898,6 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 amount.TextColor3 = t.Accent
-                track.BackgroundColor3 = t.Stroke
                 fill.BackgroundColor3 = t.Accent
             end
             return addElement(item)
@@ -1866,7 +1905,7 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateImage(cfg)
             cfg = type(cfg) == "table" and cfg or {Image = cfg}
-            local frame = elementFrame(cfg.Name or "Image", cfg.Height or 140)
+            local frame = elementFrame(cfg.Name or "Image", cfg.Height or 130)
             local image = make("ImageLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(6, 6),
@@ -1875,7 +1914,7 @@ function OpenHubUI:CreateWindow(config)
                 ScaleType = cfg.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop,
                 ZIndex = 6
             }, frame)
-            corner(image, 7)
+            corner(image, 8)
             local item = {Instance = frame}
             function item:Set(v) image.Image = assetId(v) end
             function item:UpdateTheme(t) frame.BackgroundColor3 = t.Surface end
@@ -1884,36 +1923,25 @@ function OpenHubUI:CreateWindow(config)
 
         function tab:CreateSearchBox(cfg)
             cfg = cfg or {}
-            local frame = elementFrame(cfg.Name or "Search", 54)
-            local label = make("TextLabel", {
-                BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, 4),
-                Size = UDim2.new(1, -24, 0, 15),
-                Text = cfg.Name or "Search",
-                Font = Enum.Font.GothamMedium,
-                TextSize = 11,
-                TextColor3 = theme.Muted,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 6
-            }, frame)
+            local frame = elementFrame(cfg.Name or "Search", 50)
             local box = make("TextBox", {
-                Position = UDim2.fromOffset(10, 22),
-                Size = UDim2.new(1, -20, 0, 26),
-                BackgroundColor3 = theme.Background,
-                BackgroundTransparency = 0.18,
+                Position = UDim2.fromOffset(10, 10),
+                Size = UDim2.new(1, -20, 0, 28),
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.55,
                 Text = "",
                 PlaceholderText = cfg.Placeholder or "Search...",
                 ClearTextOnFocus = false,
                 TextColor3 = theme.Text,
                 PlaceholderColor3 = theme.Muted,
                 Font = Enum.Font.Gotham,
-                TextSize = 11,
+                TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 BorderSizePixel = 0,
                 ZIndex = 6
             }, frame)
             corner(box, 7)
-            pad(box, 8, 0)
+            pad(box, 10, 10, 0, 0)
             box:GetPropertyChangedSignal("Text"):Connect(function()
                 if cfg.Callback then task.spawn(cfg.Callback, box.Text) end
             end)
@@ -1922,8 +1950,6 @@ function OpenHubUI:CreateWindow(config)
             function item:Get() return box.Text end
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
-                label.TextColor3 = t.Muted
-                box.BackgroundColor3 = t.Background
                 box.TextColor3 = t.Text
                 box.PlaceholderColor3 = t.Muted
             end
@@ -1937,12 +1963,12 @@ function OpenHubUI:CreateWindow(config)
             for _, v in ipairs(cfg.CurrentOptions or {}) do
                 selected[tostring(v)] = true
             end
-            local frame = elementFrame(cfg.Name or "Multi dropdown", 46)
+            local frame = elementFrame(cfg.Name or "Multi", 44)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
-                Size = UDim2.new(0.42, 0, 1, 0),
-                Text = cfg.Name or "Multi dropdown",
+                Size = UDim2.new(0.4, 0, 1, 0),
+                Text = cfg.Name or "Multi",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
                 TextColor3 = theme.Text,
@@ -1953,8 +1979,9 @@ function OpenHubUI:CreateWindow(config)
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -10, 0.5, 0),
                 Size = UDim2.new(0.55, 0, 0, 28),
-                BackgroundColor3 = theme.Background,
-                Text = "Select options",
+                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundTransparency = 0.55,
+                Text = "Select  ▾",
                 Font = Enum.Font.Gotham,
                 TextSize = 10,
                 TextColor3 = theme.Text,
@@ -1962,15 +1989,18 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 6
             }, frame)
             corner(chosen, 7)
+
             local popup = make("Frame", {
                 BackgroundColor3 = theme.Panel,
+                BackgroundTransparency = 0.08,
                 ClipsDescendants = true,
                 Visible = false,
-                ZIndex = 300,
+                ZIndex = 500,
                 Size = UDim2.fromOffset(0, 0)
             }, gui)
-            corner(popup, 9)
-            stroke(popup, theme.Stroke, 0.25, 1)
+            corner(popup, 10)
+            stroke(popup, Color3.new(1, 1, 1), 0.8, 1)
+
             local scroll = make("ScrollingFrame", {
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
@@ -1978,13 +2008,14 @@ function OpenHubUI:CreateWindow(config)
                 CanvasSize = UDim2.new(),
                 AutomaticCanvasSize = Enum.AutomaticSize.Y,
                 ScrollBarThickness = 2,
-                ZIndex = 301
+                ZIndex = 501
             }, popup)
-            pad(scroll, 5, 5)
+            pad(scroll, 6, 6, 6, 6)
             make("UIListLayout", {
                 Padding = UDim.new(0, 3),
                 SortOrder = Enum.SortOrder.LayoutOrder
             }, scroll)
+
             local function values()
                 local out = {}
                 for _, v in ipairs(options) do
@@ -1992,9 +2023,19 @@ function OpenHubUI:CreateWindow(config)
                 end
                 return out
             end
+
+            local expanded = false
+            local function closePopup()
+                expanded = false
+                tween(popup, 0.15, {Size = UDim2.fromOffset(popup.Size.X.Offset, 0)})
+                task.delay(0.16, function()
+                    if not expanded then popup.Visible = false end
+                end)
+            end
+
             local function refresh()
                 local vals = values()
-                chosen.Text = #vals == 0 and "Select options" or table.concat(vals, ", ")
+                chosen.Text = (#vals == 0 and "Select" or table.concat(vals, ", ")) .. "  ▾"
                 for _, b in ipairs(scroll:GetChildren()) do
                     if b:IsA("TextButton") then b:Destroy() end
                 end
@@ -2003,14 +2044,15 @@ function OpenHubUI:CreateWindow(config)
                     local b = make("TextButton", {
                         Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = isOn and theme.Accent or theme.Surface,
-                        BackgroundTransparency = isOn and 0.2 or 0.3,
-                        Text = (isOn and "✓  " or "＋  ") .. tostring(opt),
+                        BackgroundTransparency = isOn and 0.25 or 0.4,
+                        Text = (isOn and "  ✓  " or "  ○  ") .. tostring(opt),
                         Font = Enum.Font.Gotham,
                         TextSize = 11,
                         TextColor3 = theme.Text,
+                        TextXAlignment = Enum.TextXAlignment.Left,
                         AutoButtonColor = false,
                         LayoutOrder = i,
-                        ZIndex = 302
+                        ZIndex = 502
                     }, scroll)
                     corner(b, 6)
                     b.MouseButton1Click:Connect(function()
@@ -2020,31 +2062,25 @@ function OpenHubUI:CreateWindow(config)
                     end)
                 end
             end
-            local function positionPopup()
-                local abs = chosen.AbsolutePosition
-                local absSize = chosen.AbsoluteSize
-                local h = math.min(#options, 6) * 31 + 12
-                local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
-                local px = abs.X
-                local py = abs.Y + absSize.Y + 4
-                if py + h > screen.Y - 10 then py = abs.Y - h - 4 end
-                popup.Position = UDim2.fromOffset(px, py)
-                popup.Size = UDim2.fromOffset(absSize.X, 0)
-                popup.Visible = true
-                tween(popup, 0.16, {Size = UDim2.fromOffset(absSize.X, h)})
-            end
-            local expanded = false
+
             chosen.MouseButton1Click:Connect(function()
-                expanded = not expanded
                 if expanded then
-                    positionPopup()
+                    closePopup()
                 else
-                    tween(popup, 0.12, {Size = UDim2.fromOffset(popup.Size.X.Offset, 0)})
-                    task.delay(0.13, function()
-                        if not expanded then popup.Visible = false end
-                    end)
+                    expanded = true
+                    local abs = chosen.AbsolutePosition
+                    local absSize = chosen.AbsoluteSize
+                    local h = math.min(#options, 6) * 31 + 14
+                    local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+                    local px, py = abs.X, abs.Y + absSize.Y + 6
+                    if py + h > screen.Y - 12 then py = abs.Y - h - 6 end
+                    popup.Position = UDim2.fromOffset(px, py)
+                    popup.Size = UDim2.fromOffset(math.max(absSize.X, 140), 0)
+                    popup.Visible = true
+                    tween(popup, 0.18, {Size = UDim2.fromOffset(math.max(absSize.X, 140), h)})
                 end
             end)
+
             refresh()
             local item = {Instance = frame}
             function item:Set(v)
@@ -2060,7 +2096,6 @@ function OpenHubUI:CreateWindow(config)
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
-                chosen.BackgroundColor3 = t.Background
                 chosen.TextColor3 = t.Text
                 popup.BackgroundColor3 = t.Panel
                 refresh()
@@ -2072,8 +2107,6 @@ function OpenHubUI:CreateWindow(config)
             return self:CreateInput(cfg)
         end
 
-        local item = {Instance = page}
-        function item:Select() selectTab() end
         table.insert(state.Tabs, tab)
         if #state.Tabs == 1 then selectTab() end
         return tab
@@ -2082,10 +2115,9 @@ function OpenHubUI:CreateWindow(config)
     function Window:SetTheme(name) state:SetTheme(name) end
     function Window:CreateCustomTheme(name, values) return state:CreateCustomTheme(name, values) end
     function Window:SetBackground(source, options) return state:SetBackground(source, options) end
-    function Window:SetBackgroundFile(fileName, url, options) return state:SetBackgroundFile(fileName, url, options) end
-    function Window:SetGifFrames(frames, fps) return state:SetGifFrames(frames, fps) end
     function Window:SetTransparency(value) state:SetTransparency(value) end
     function Window:SetAcrylic(value) state:SetAcrylic(value) end
+    function Window:SetGlass(value) state:SetGlass(value) end
     function Window:SetResizable(value) state:SetResizable(value) end
     function Window:Notify(notice) return state:Notify(notice) end
     function Window:Destroy() state:Destroy() end
@@ -2096,14 +2128,14 @@ function OpenHubUI:CreateWindow(config)
     if config.BackgroundImage then
         state:SetBackground(config.BackgroundImage, {
             Local = config.BackgroundLocal,
-            Transparency = config.BackgroundImageTransparency or 0.62
+            Transparency = config.BackgroundImageTransparency or 0.7
         })
     end
 
     if config.Intro ~= false then
-        root.Size = UDim2.fromOffset(winW * 0.9, winH * 0.9)
+        root.Size = UDim2.fromOffset(winW * 0.92, winH * 0.92)
         root.BackgroundTransparency = 1
-        tween(root, 0.32, {
+        tween(root, 0.35, {
             Size = UDim2.fromOffset(winW, winH),
             BackgroundTransparency = transparency
         }, Enum.EasingStyle.Back)

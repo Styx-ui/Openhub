@@ -516,148 +516,98 @@ function OpenHubUI:CreateWindow(config)
     end)
 
     local resizeHandles = {}
-    local resizing = false
-    local resizeDir = nil
-    local resizeStart = nil
-    local resizeStartSize = nil
-    local resizeStartPos = nil
+    local resizeVisuals = {}
+    local _drag = nil
 
-    local function makeCornerMark(name, anchor, pos, rotation)
-        local holder = make("Frame", {
+    -- Visuales estilo Xero: cápsulas diagonales en esquinas + cápsulas laterales
+    local function addResizeVisual(name, position, anchor, size, rotation)
+        local grip = make("Frame", {
             Name = name,
             AnchorPoint = anchor,
-            Position = pos,
-            Size = UDim2.fromOffset(18, 18),
-            BackgroundTransparency = 1,
+            Position = position,
+            Size = size,
+            Rotation = rotation or 0,
+            BackgroundColor3 = theme.Text,
+            BackgroundTransparency = 0.35,
             BorderSizePixel = 0,
-            ZIndex = 30,
+            ZIndex = 39,
             Visible = resizable,
-            Rotation = rotation or 0
         }, root)
-
-        local hLine = make("Frame", {
-            BackgroundColor3 = Color3.new(1, 1, 1),
-            BackgroundTransparency = 0.25,
-            BorderSizePixel = 0,
-            Size = UDim2.fromOffset(12, 2),
-            Position = UDim2.fromOffset(3, 14),
-            ZIndex = 31
-        }, holder)
-        corner(hLine, 1)
-
-        local vLine = make("Frame", {
-            BackgroundColor3 = Color3.new(1, 1, 1),
-            BackgroundTransparency = 0.25,
-            BorderSizePixel = 0,
-            Size = UDim2.fromOffset(2, 12),
-            Position = UDim2.fromOffset(14, 3),
-            ZIndex = 31
-        }, holder)
-        corner(vLine, 1)
-
-        local hit = make("TextButton", {
-            BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
-            Text = "",
-            AutoButtonColor = false,
-            ZIndex = 32
-        }, holder)
-
-        hit.InputBegan:Connect(function(input)
-            if not state.Resizable then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                resizing = true
-                resizeDir = name
-                resizeStart = input.Position
-                resizeStartSize = root.AbsoluteSize
-                resizeStartPos = root.AbsolutePosition
-            end
-        end)
-
-        hit.MouseEnter:Connect(function()
-            tween(hLine, 0.12, {BackgroundTransparency = 0})
-            tween(vLine, 0.12, {BackgroundTransparency = 0})
-        end)
-        hit.MouseLeave:Connect(function()
-            tween(hLine, 0.12, {BackgroundTransparency = 0.25})
-            tween(vLine, 0.12, {BackgroundTransparency = 0.25})
-        end)
-
-        table.insert(resizeHandles, holder)
-        return holder
+        corner(grip, 99)
+        table.insert(resizeVisuals, grip)
+        return grip
     end
 
-    makeCornerMark("BR", Vector2.new(1, 1), UDim2.new(1, -2, 1, -2), 0)
-    makeCornerMark("BL", Vector2.new(0, 1), UDim2.new(0, 2, 1, -2), 90)
+    -- Esquinas inferiores
+    addResizeVisual("ResizeGuideBL_Outer", UDim2.new(0, 13, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(16, 3), -45)
+    addResizeVisual("ResizeGuideBL_Inner", UDim2.new(0, 20, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(10, 3), -45)
+    addResizeVisual("ResizeGuideBR_Outer", UDim2.new(1, -13, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(16, 3), 45)
+    addResizeVisual("ResizeGuideBR_Inner", UDim2.new(1, -20, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(10, 3), 45)
+    -- Laterales
+    addResizeVisual("ResizeGuideLeft",  UDim2.new(0,    6, .5, 0), Vector2.new(.5, .5), UDim2.fromOffset(3, 36), 0)
+    addResizeVisual("ResizeGuideRight", UDim2.new(1,   -6, .5, 0), Vector2.new(.5, .5), UDim2.fromOffset(3, 36), 0)
 
-    local function makeEdgeHandle(name, anchor, pos, size)
-        local h = make("Frame", {
+    local function addResizeHandle(name, position, anchor, size, xFactor, yFactor)
+        local hit = make("TextButton", {
             Name = name,
             AnchorPoint = anchor,
-            Position = pos,
+            Position = position,
             Size = size,
             BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            ZIndex = 28,
-            Visible = resizable
-        }, root)
-        local hit = make("TextButton", {
-            BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
             Text = "",
             AutoButtonColor = false,
-            ZIndex = 29
-        }, h)
-        hit.InputBegan:Connect(function(input)
-            if not state.Resizable then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                resizing = true
-                resizeDir = name
-                resizeStart = input.Position
-                resizeStartSize = root.AbsoluteSize
-                resizeStartPos = root.AbsolutePosition
-            end
-        end)
-        table.insert(resizeHandles, h)
+            ZIndex = 40,
+            Visible = resizable
+        }, root)
+        table.insert(resizeHandles, {Hit = hit, X = xFactor, Y = yFactor})
+        return hit
     end
 
-    makeEdgeHandle("R", Vector2.new(1, 0.5), UDim2.new(1, 0, 0.5, 0), UDim2.fromOffset(6, 50))
-    makeEdgeHandle("L", Vector2.new(0, 0.5), UDim2.new(0, 0, 0.5, 0), UDim2.fromOffset(6, 50))
-    makeEdgeHandle("B", Vector2.new(0.5, 1), UDim2.new(0.5, 0, 1, 0), UDim2.fromOffset(50, 6))
-    makeEdgeHandle("T", Vector2.new(0.5, 0), UDim2.new(0.5, 0, 0, 0), UDim2.fromOffset(50, 6))
+    -- Esquinas
+    addResizeHandle("ResizeTL", UDim2.fromScale(0, 0), Vector2.new(0, 0), UDim2.fromOffset(28, 28), -1, -1)
+    addResizeHandle("ResizeTR", UDim2.fromScale(1, 0), Vector2.new(1, 0), UDim2.fromOffset(28, 28),  1, -1)
+    addResizeHandle("ResizeBL", UDim2.fromScale(0, 1), Vector2.new(0, 1), UDim2.fromOffset(28, 28), -1,  1)
+    addResizeHandle("ResizeBR", UDim2.fromScale(1, 1), Vector2.new(1, 1), UDim2.fromOffset(28, 28),  1,  1)
+    -- Bordes
+    addResizeHandle("ResizeTop",    UDim2.fromScale(.5, 0), Vector2.new(.5, 0), UDim2.new(.34, 0, 0, 12),  0, -1)
+    addResizeHandle("ResizeBottom", UDim2.fromScale(.5, 1), Vector2.new(.5, 1), UDim2.new(.34, 0, 0, 14),  0,  1)
+    addResizeHandle("ResizeLeft",   UDim2.fromScale(0, .5), Vector2.new(0, .5), UDim2.new(0, 12, .34, 0), -1,  0)
+    addResizeHandle("ResizeRight",  UDim2.fromScale(1, .5), Vector2.new(1, .5), UDim2.new(0, 12, .34, 0),  1,  0)
+
+    local function beginResize(info, input)
+        if not state.Resizable then return end
+        if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+        local start = input.Position
+        local startW = root.AbsoluteSize.X
+        local startH = root.AbsoluteSize.Y
+        local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
+        _drag = {
+            Input = input,
+            Update = function(pos)
+                local delta = pos - start
+                local maxW = math.max(260, vp.X)
+                local maxH = math.max(220, vp.Y)
+                local newW = math.clamp(startW + info.X * delta.X, MIN_W, math.min(MAX_W, maxW))
+                local newH = math.clamp(startH + info.Y * delta.Y, MIN_H, math.min(MAX_H, maxH))
+                winW, winH = newW, newH
+                root.Size = UDim2.fromOffset(newW, newH)
+            end
+        }
+    end
+
+    for _, info in ipairs(resizeHandles) do
+        info.Hit.InputBegan:Connect(function(input) beginResize(info, input) end)
+    end
 
     UserInputService.InputChanged:Connect(function(input)
-        if not resizing then return end
+        if not _drag then return end
         if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
-        local delta = input.Position - resizeStart
-        local newW, newH = resizeStartSize.X, resizeStartSize.Y
-        local newX, newY = resizeStartPos.X, resizeStartPos.Y
-
-        if resizeDir == "BR" or resizeDir == "R" or resizeDir == "TR" then
-            newW = math.clamp(resizeStartSize.X + delta.X, MIN_W, MAX_W)
-        end
-        if resizeDir == "BL" or resizeDir == "L" or resizeDir == "TL" then
-            newW = math.clamp(resizeStartSize.X - delta.X, MIN_W, MAX_W)
-            newX = resizeStartPos.X + (resizeStartSize.X - newW)
-        end
-        if resizeDir == "BR" or resizeDir == "B" or resizeDir == "BL" then
-            newH = math.clamp(resizeStartSize.Y + delta.Y, MIN_H, MAX_H)
-        end
-        if resizeDir == "TR" or resizeDir == "T" or resizeDir == "TL" then
-            newH = math.clamp(resizeStartSize.Y - delta.Y, MIN_H, MAX_H)
-            newY = resizeStartPos.Y + (resizeStartSize.Y - newH)
-        end
-
-        winW, winH = newW, newH
-        root.Size = UDim2.fromOffset(newW, newH)
-        root.Position = UDim2.fromOffset(newX + newW * 0.5, newY + newH * 0.5)
-        root.AnchorPoint = Vector2.new(0.5, 0.5)
+        _drag.Update(input.Position)
     end)
 
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            resizing = false
-            resizeDir = nil
+            _drag = nil
         end
     end)
 
@@ -687,6 +637,9 @@ function OpenHubUI:CreateWindow(config)
         openButton.BackgroundColor3 = theme.Panel
         openIcon.ImageColor3 = theme.Text
         logo.ImageColor3 = theme.Accent
+        for _, grip in ipairs(resizeVisuals) do
+            grip.BackgroundColor3 = theme.Text
+        end
         for _, item in ipairs(state.Elements) do
             pcall(function() if item.UpdateTheme then item:UpdateTheme(theme) end end)
         end
@@ -742,8 +695,11 @@ function OpenHubUI:CreateWindow(config)
 
     function state:SetResizable(value)
         state.Resizable = value == true
-        for _, h in ipairs(resizeHandles) do
-            h.Visible = state.Resizable
+        for _, info in ipairs(resizeHandles) do
+            info.Hit.Visible = state.Resizable
+        end
+        for _, grip in ipairs(resizeVisuals) do
+            grip.Visible = state.Resizable
         end
     end
 

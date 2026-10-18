@@ -520,8 +520,8 @@ function OpenHubUI:CreateWindow(config)
     local searchButton = make("ImageButton", {
         Name = "SearchButton",
         AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -80, 0, 12),
-        Size = UDim2.fromOffset(28, 28),
+        Position = UDim2.new(1, -80, 0, 14),
+        Size = UDim2.fromOffset(24, 24),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 0.92,
         Image = assetId("search"),
@@ -529,7 +529,7 @@ function OpenHubUI:CreateWindow(config)
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
-    corner(searchButton, 8)
+    corner(searchButton, 7)
     stroke(searchButton, Color3.new(1, 1, 1), 0.88, 1)
 
     local searchBox = make("TextBox", {

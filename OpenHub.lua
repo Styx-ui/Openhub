@@ -1650,7 +1650,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(16, 16),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 525
+                ZIndex = 524
             }, svBox)
             corner(svKnob, 8)
             stroke(svKnob, Color3.new(0, 0, 0), 0.25, 1.5)
@@ -1970,8 +1970,13 @@ function OpenHubUI:CreateWindow(config)
                         return pos.X >= a2.X and pos.X <= a2.X + sz.X and pos.Y >= a2.Y and pos.Y <= a2.Y + sz.Y
                     end
                     if not inside(popup) and not inside(swatch) then
-                        open = false
-                        popup.Visible = false
+                        -- defer so drag handlers on svHit/hueHit/alphaHit fire first
+                        task.defer(function()
+                            if not svDrag and not hueDrag and not alphaDrag then
+                                open = false
+                                popup.Visible = false
+                            end
+                        end)
                     end
                 end
             end)

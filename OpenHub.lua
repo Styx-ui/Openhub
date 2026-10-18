@@ -183,8 +183,9 @@ local function pad(parent, l, r, t, b)
 end
 
 local function tween(obj, time, props, style, direction)
+    time = math.max(0.12, (time or 0.25) * 1.45)
     local t = TweenService:Create(obj, TweenInfo.new(
-        time or 0.25,
+        time,
         style or Enum.EasingStyle.Quint,
         direction or Enum.EasingDirection.Out
     ), props)
@@ -503,6 +504,85 @@ function OpenHubUI:CreateWindow(config)
         ZIndex = 6
     }, minimize)
 
+    local searchButton = make("ImageButton", {
+        Name = "SearchButton",
+        AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -80, 0, 12),
+        Size = UDim2.fromOffset(28, 28),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.92,
+        Image = assetId("search"),
+        ImageColor3 = theme.Text,
+        AutoButtonColor = false,
+        ZIndex = 5
+    }, header)
+    corner(searchButton, 8)
+    stroke(searchButton, Color3.new(1, 1, 1), 0.88, 1)
+
+    local searchBox = make("TextBox", {
+        Name = "SearchBox",
+        AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -114, 0, 12),
+        Size = UDim2.fromOffset(184, 28),
+        BackgroundColor3 = theme.Surface,
+        BackgroundTransparency = 0.08,
+        Text = "",
+        PlaceholderText = "Search in OpenHub",
+        PlaceholderColor3 = theme.Muted,
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextColor3 = theme.Text,
+        ClearTextOnFocus = false,
+        Visible = false,
+        ZIndex = 6
+    }, header)
+    corner(searchBox, 8)
+    stroke(searchBox, theme.Accent, 0.7, 1)
+
+    local function objectMatches(object, query)
+        local needle = string.lower(query or "")
+        if needle == "" then return true end
+        if string.find(string.lower(object.Name or ""), needle, 1, true) then return true end
+        for _, child in ipairs(object:GetDescendants()) do
+            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                local text = tostring(child.Text or child.PlaceholderText or "")
+                if string.find(string.lower(text), needle, 1, true) then return true end
+            end
+        end
+        return false
+    end
+
+    local function filterSearch(query)
+        query = tostring(query or "")
+        local firstMatch
+        for _, tabItem in ipairs(state.Tabs) do
+            local tabMatch = objectMatches(tabItem.Page, query)
+            for _, child in ipairs(tabItem.Page:GetChildren()) do
+                if child:IsA("GuiObject") and not child:IsA("UIListLayout") then
+                    child.Visible = query == "" or objectMatches(child, query)
+                end
+            end
+            tabItem.Button.Visible = query == "" or tabMatch
+            if tabMatch and not firstMatch then firstMatch = tabItem end
+        end
+        if query ~= "" and firstMatch and firstMatch.Select then firstMatch.Select() end
+    end
+
+    local searchOpen = false
+    searchButton.MouseButton1Click:Connect(function()
+        searchOpen = not searchOpen
+        searchBox.Visible = searchOpen
+        if searchOpen then
+            searchBox:CaptureFocus()
+        else
+            searchBox.Text = ""
+            filterSearch("")
+        end
+    end)
+    searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        filterSearch(searchBox.Text)
+    end)
+
     close.MouseEnter:Connect(function()
         tween(close, 0.15, {BackgroundColor3 = Color3.fromRGB(255, 80, 90), BackgroundTransparency = 0.15})
     end)
@@ -801,6 +881,11 @@ function OpenHubUI:CreateWindow(config)
         minimizeIcon.ImageColor3 = theme.Text
         openTitle.TextColor3 = theme.Text
         openIcon.ImageColor3 = theme.Accent
+        searchButton.BackgroundColor3 = theme.Panel
+        searchButton.ImageColor3 = theme.Text
+        searchBox.BackgroundColor3 = theme.Surface
+        searchBox.TextColor3 = theme.Text
+        searchBox.PlaceholderColor3 = theme.Muted
         nav.ScrollBarImageColor3 = theme.Accent
         content.BackgroundColor3 = theme.Panel
         content.BackgroundTransparency = state.Glass
@@ -1155,6 +1240,8 @@ function OpenHubUI:CreateWindow(config)
             icon.ImageColor3 = theme.Accent
             page.CanvasPosition = Vector2.new(0, 0)
         end
+
+        tab.Select = selectTab
 
         button.MouseButton1Click:Connect(selectTab)
         button.MouseEnter:Connect(function()
@@ -1820,7 +1907,7 @@ function OpenHubUI:CreateWindow(config)
             corner(swatch, 7)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
-            local PW, PH = 238, 300
+            local PW, PH = 238, 370
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
                 Size = UDim2.fromOffset(PW, PH),
@@ -2120,6 +2207,120 @@ function OpenHubUI:CreateWindow(config)
                 gBox.Text = tostring(math.floor(color.G * 255))
                 bBox.Text = tostring(math.floor(color.B * 255))
                 if fire and cfg.Callback then task.spawn(cfg.Callback, color, a) end
+            end
+
+            local function setPickerColor(value, fire)
+                if typeof(value) ~= "Color3" then return end
+                color = value
+                h, s, v = color:ToHSV()
+                applyColor(fire ~= false)
+            end
+
+            local presetColors = {
+                Color3.fromRGB(235, 87, 87),
+                Color3.fromRGB(255, 168, 76),
+                Color3.fromRGB(255, 219, 92),
+                Color3.fromRGB(76, 201, 120),
+                Color3.fromRGB(76, 170, 255),
+                Color3.fromRGB(130, 105, 255),
+                Color3.fromRGB(210, 93, 255),
+                Color3.fromRGB(245, 247, 255)
+            }
+            local favoriteColors = {}
+            local favoriteButtons = {}
+            local presetY = RGB_Y + 30
+            local presetLabel = make("TextLabel", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(PAD, presetY),
+                Size = UDim2.fromOffset(70, 18),
+                Text = "Presets",
+                Font = Enum.Font.GothamBold,
+                TextSize = 10,
+                TextColor3 = theme.Muted,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 524
+            }, popup)
+            for i, preset in ipairs(presetColors) do
+                local presetButton = make("TextButton", {
+                    Position = UDim2.fromOffset(PAD + 70 + ((i - 1) % 8) * 18, presetY),
+                    Size = UDim2.fromOffset(14, 14),
+                    BackgroundColor3 = preset,
+                    Text = "",
+                    AutoButtonColor = false,
+                    ZIndex = 525
+                }, popup)
+                corner(presetButton, 7)
+                stroke(presetButton, Color3.new(1, 1, 1), 0.65, 1)
+                presetButton.MouseButton1Click:Connect(function() setPickerColor(preset) end)
+            end
+
+            local actionY = presetY + 28
+            local function pickerAction(name, text, x, callback)
+                local button = make("TextButton", {
+                    Position = UDim2.fromOffset(x, actionY),
+                    Size = UDim2.fromOffset(66, 24),
+                    BackgroundColor3 = theme.Surface,
+                    BackgroundTransparency = 0.15,
+                    Text = text,
+                    Font = Enum.Font.GothamMedium,
+                    TextSize = 10,
+                    TextColor3 = theme.Text,
+                    AutoButtonColor = false,
+                    Name = name,
+                    ZIndex = 525
+                }, popup)
+                corner(button, 6)
+                button.MouseButton1Click:Connect(callback)
+                return button
+            end
+            pickerAction("CopyColor", "Copy HEX", PAD, function()
+                local value = hexBox.Text
+                pcall(function()
+                    if setclipboard then setclipboard(value) elseif toclipboard then toclipboard(value) end
+                end)
+            end)
+            pickerAction("PasteColor", "Paste HEX", PAD + 72, function()
+                local value
+                pcall(function()
+                    if getclipboard then value = getclipboard() end
+                end)
+                local parsed = value and normalizeColor(value, nil)
+                if parsed then setPickerColor(parsed) end
+            end)
+            pickerAction("SaveColor", "Save", PAD + 144, function()
+                table.insert(favoriteColors, 1, color)
+                while #favoriteColors > 4 do table.remove(favoriteColors) end
+                for index, button in ipairs(favoriteButtons) do
+                    button.BackgroundColor3 = favoriteColors[index] or theme.Surface
+                end
+            end)
+
+            local favoriteY = actionY + 32
+            local favoriteLabel = make("TextLabel", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(PAD, favoriteY),
+                Size = UDim2.fromOffset(70, 18),
+                Text = "Favorites",
+                Font = Enum.Font.GothamBold,
+                TextSize = 10,
+                TextColor3 = theme.Muted,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 524
+            }, popup)
+            for i = 1, 4 do
+                local favoriteButton = make("TextButton", {
+                    Position = UDim2.fromOffset(PAD + 70 + (i - 1) * 28, favoriteY),
+                    Size = UDim2.fromOffset(20, 18),
+                    BackgroundColor3 = theme.Surface,
+                    Text = "",
+                    AutoButtonColor = false,
+                    ZIndex = 525
+                }, popup)
+                corner(favoriteButton, 6)
+                favoriteButton.MouseButton1Click:Connect(function()
+                    if favoriteColors[i] then setPickerColor(favoriteColors[i]) end
+                end)
+                favoriteButtons[i] = favoriteButton
             end
 
             local function positionPopup()

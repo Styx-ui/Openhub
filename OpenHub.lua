@@ -564,33 +564,55 @@ function OpenHubUI:CreateWindow(config)
 
     local openButton = make("TextButton", {
         Name = "OpenButton",
-        AnchorPoint = Vector2.new(0, 0.5),
-        Position = UDim2.new(0, 16, 0.5, 0),
-        Size = UDim2.fromOffset(44, 44),
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 0, 0, 16),
+        Size = UDim2.fromOffset(158, 46),
         BackgroundColor3 = theme.Panel,
-        BackgroundTransparency = 0.15,
+        BackgroundTransparency = 0.08,
         Text = "",
         AutoButtonColor = false,
         Visible = config.OpenButton ~= false,
         ZIndex = 20
     }, gui)
-    corner(openButton, 14)
+    corner(openButton, 13)
     stroke(openButton, theme.Accent, 0.35, 1.2)
 
-    local openIcon = make("ImageLabel", {
+    local openIcon = make("ImageButton", {
         Name = "Icon",
         BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.fromScale(0.5, 0.5),
-        Size = UDim2.fromOffset(22, 22),
+        Position = UDim2.fromOffset(10, 9),
+        Size = UDim2.fromOffset(28, 28),
         Image = assetId(config.OpenButtonIcon or config.Icon or "6031097225"),
-        ImageColor3 = theme.Text,
+        ImageColor3 = theme.Accent,
+        AutoButtonColor = false,
+        Active = true,
+        ZIndex = 22
+    }, openButton)
+
+    local openTitle = make("TextLabel", {
+        Name = "OpenTitle",
+        BackgroundTransparency = 1,
+        Position = UDim2.fromOffset(48, 0),
+        Size = UDim2.new(1, -58, 1, 0),
+        Text = "Open Window",
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextColor3 = theme.Text,
+        TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 21
     }, openButton)
 
+    local minimized = false
     local function setOpen(value)
         state.Open = value
         if value then
+            if minimized then
+                minimized = false
+                content.Visible = true
+                nav.Visible = true
+                divider.Visible = true
+                minimizeIcon.Image = assetId("minus")
+            end
             root.Visible = true
             root.Size = UDim2.fromOffset(winW * 0.94, winH * 0.94)
             tween(root, 0.3, {Size = UDim2.fromOffset(winW, winH)}, Enum.EasingStyle.Back)
@@ -605,17 +627,43 @@ function OpenHubUI:CreateWindow(config)
     end
 
     openButton.MouseButton1Click:Connect(function() setOpen(not state.Open) end)
+    openIcon.MouseButton1Click:Connect(function() setOpen(not state.Open) end)
     close.MouseButton1Click:Connect(function() setOpen(false) end)
 
     minimize.MouseButton1Click:Connect(function()
-        local hidden = content.Visible
-        content.Visible = not hidden
-        nav.Visible = not hidden
-        divider.Visible = not hidden
+        minimized = not minimized
+        content.Visible = not minimized
+        nav.Visible = not minimized
+        divider.Visible = not minimized
         tween(root, 0.22, {
-            Size = hidden and UDim2.fromOffset(winW, 54) or UDim2.fromOffset(winW, winH)
+            Size = minimized and UDim2.fromOffset(winW, 54) or UDim2.fromOffset(winW, winH)
         })
-        minimizeIcon.Image = assetId(hidden and "plus" or "minus")
+        minimizeIcon.Image = assetId(minimized and "plus" or "minus")
+    end)
+
+    local openDragging = false
+    local openDragStart
+    local openStartPosition
+    openIcon.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            openDragging = true
+            openDragStart = input.Position
+            openStartPosition = openButton.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then openDragging = false end
+            end)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if openDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - openDragStart
+            openButton.Position = UDim2.new(
+                openStartPosition.X.Scale,
+                openStartPosition.X.Offset + delta.X,
+                openStartPosition.Y.Scale,
+                openStartPosition.Y.Offset + delta.Y
+            )
+        end
     end)
 
     local dragging, dragStart, startPos
@@ -751,13 +799,15 @@ function OpenHubUI:CreateWindow(config)
         minimize.TextColor3 = theme.Text
         closeIcon.ImageColor3 = theme.Text
         minimizeIcon.ImageColor3 = theme.Text
+        openTitle.TextColor3 = theme.Text
+        openIcon.ImageColor3 = theme.Accent
         nav.ScrollBarImageColor3 = theme.Accent
         content.BackgroundColor3 = theme.Panel
         content.BackgroundTransparency = state.Glass
         nav.BackgroundColor3 = theme.Panel
         nav.BackgroundTransparency = state.Glass
         openButton.BackgroundColor3 = theme.Panel
-        openIcon.ImageColor3 = theme.Text
+        openIcon.ImageColor3 = theme.Accent
         logo.ImageColor3 = theme.Accent
         for _, grip in ipairs(resizeVisuals) do
             grip.BackgroundColor3 = theme.Text
@@ -1770,26 +1820,54 @@ function OpenHubUI:CreateWindow(config)
             corner(swatch, 7)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
-            local PW, PH = 220, 268
+            local PW, PH = 238, 300
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
                 Size = UDim2.fromOffset(PW, PH),
                 BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.05,
+                BackgroundTransparency = 0.02,
                 BorderSizePixel = 0,
                 Visible = false,
                 ZIndex = 1000,
                 ClipsDescendants = false
             }, gui)
             corner(popup, 12)
-            stroke(popup, Color3.new(1, 1, 1), 0.78, 1)
+            stroke(popup, theme.Accent, 0.55, 1.1)
+
+            local pickerHeader = make("Frame", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(12, 8),
+                Size = UDim2.new(1, -24, 0, 22),
+                ZIndex = 525
+            }, popup)
+            local pickerTitle = make("TextLabel", {
+                BackgroundTransparency = 1,
+                Position = UDim2.fromOffset(0, 0),
+                Size = UDim2.new(1, -28, 1, 0),
+                Text = cfg.Name or "Color",
+                Font = Enum.Font.GothamBold,
+                TextSize = 12,
+                TextColor3 = theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 526
+            }, pickerHeader)
+            local pickerClose = make("ImageButton", {
+                AnchorPoint = Vector2.new(1, 0.5),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, 0, 0.5, 0),
+                Size = UDim2.fromOffset(18, 18),
+                Image = assetId("x"),
+                ImageColor3 = theme.Muted,
+                AutoButtonColor = false,
+                ZIndex = 526
+            }, pickerHeader)
 
             local PAD = 12
             local SVW = PW - PAD * 2
-            local SVH = 130
+            local SVH = 108
 
             local svBox = make("Frame", {
-                Position = UDim2.fromOffset(PAD, PAD),
+                Position = UDim2.fromOffset(PAD, 38),
                 Size = UDim2.fromOffset(SVW, SVH),
                 BackgroundColor3 = Color3.fromHSV(h, 1, 1),
                 BorderSizePixel = 0,
@@ -1847,7 +1925,7 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 526
             }, svBox)
 
-            local HUE_Y = PAD + SVH + 10
+            local HUE_Y = 38 + SVH + 8
             local hueTrack = make("Frame", {
                 Position = UDim2.fromOffset(PAD, HUE_Y),
                 Size = UDim2.fromOffset(SVW, 14),
@@ -1889,7 +1967,7 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 523
             }, hueTrack)
 
-            local ALPHA_Y = HUE_Y + 24
+            local ALPHA_Y = HUE_Y + 20
             local alphaTrack = make("Frame", {
                 Position = UDim2.fromOffset(PAD, ALPHA_Y),
                 Size = UDim2.fromOffset(SVW, 14),
@@ -1942,7 +2020,7 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 524
             }, alphaTrack)
 
-            local PREVIEW_Y = ALPHA_Y + 24
+            local PREVIEW_Y = ALPHA_Y + 22
             local previewRow = make("Frame", {
                 Position = UDim2.fromOffset(PAD, PREVIEW_Y),
                 Size = UDim2.fromOffset(SVW, 28),
@@ -1978,7 +2056,7 @@ function OpenHubUI:CreateWindow(config)
             corner(hexBox, 6)
             pad(hexBox, 8, 8, 0, 0)
 
-            local RGB_Y = PREVIEW_Y + 36
+            local RGB_Y = PREVIEW_Y + 34
             local rBox = make("TextBox", {
                 Position = UDim2.fromOffset(PAD, RGB_Y),
                 Size = UDim2.fromOffset(SVW / 3 - 4, 22),
@@ -2045,19 +2123,20 @@ function OpenHubUI:CreateWindow(config)
             end
 
             local function positionPopup()
-                local abs = swatch.AbsolutePosition
-                local absSize = swatch.AbsoluteSize
                 local rAbs = root.AbsolutePosition
                 local rSz = root.AbsoluteSize
-                local px = abs.X + absSize.X - PW
-                local py = abs.Y + absSize.Y + 8
-                if py + PH > rAbs.Y + rSz.Y - 8 then py = abs.Y - PH - 8 end
-                px = math.clamp(px, rAbs.X + 4, rAbs.X + rSz.X - PW - 4)
-                py = math.clamp(py, rAbs.Y + 54, rAbs.Y + rSz.Y - PH - 4)
+                local px = rAbs.X + (rSz.X - PW) / 2
+                local py = rAbs.Y + (rSz.Y - PH) / 2
+                px = math.clamp(px, rAbs.X + 6, rAbs.X + rSz.X - PW - 6)
+                py = math.clamp(py, rAbs.Y + 6, rAbs.Y + rSz.Y - PH - 6)
                 popup.Position = UDim2.fromOffset(px, py)
             end
 
             local open = false
+            pickerClose.MouseButton1Click:Connect(function()
+                open = false
+                popup.Visible = false
+            end)
             swatch.MouseButton1Click:Connect(function()
                 open = not open
                 popup.Visible = open
@@ -2185,6 +2264,8 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 popup.BackgroundColor3 = t.Panel
+                pickerTitle.TextColor3 = t.Text
+                pickerClose.ImageColor3 = t.Muted
                 hexBox.TextColor3 = t.Text
                 rBox.TextColor3 = t.Text
                 gBox.TextColor3 = t.Text

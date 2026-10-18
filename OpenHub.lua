@@ -206,6 +206,10 @@ end
 local function resolveAsset(path)
     if typeof(path) ~= "string" then return nil end
     if path:match("^rbxassetid://") or path:match("^https?://") then return path end
+    if getsynasset then
+        local ok, result = pcall(getsynasset, path)
+        if ok and result and result ~= "" then return result end
+    end
     if getcustomasset then
         local ok, result = pcall(getcustomasset, path)
         if ok and result and result ~= "" then return result end
@@ -217,8 +221,38 @@ local function resolveAsset(path)
     return nil
 end
 
+local function downloadAsset(path)
+    if typeof(path) ~= "string" or not path:match("^https?://") then return nil end
+    local data
+    local requestFunction = request or http_request or (syn and syn.request)
+    if requestFunction then
+        local ok, response = pcall(requestFunction, {Url = path, Method = "GET"})
+        if ok and type(response) == "table" and (response.Success == nil or response.Success) then
+            data = response.Body
+        end
+    end
+    if not data and game and game.HttpGet then
+        local ok, response = pcall(function() return game:HttpGet(path) end)
+        if ok then data = response end
+    end
+    if not data or not writefile then return nil end
+    local extension = path:match("%.([%a%d]+)") or "jpg"
+    extension = extension:lower()
+    if extension ~= "png" and extension ~= "jpg" and extension ~= "jpeg" and extension ~= "gif" and extension ~= "webp" then
+        extension = "jpg"
+    end
+    local filename = "OpenHubUI_" .. HttpService:GenerateGUID(false):gsub("-", "") .. "." .. extension
+    local ok = pcall(writefile, filename, data)
+    if not ok then return nil end
+    return resolveAsset(filename)
+end
+
 local function loadLocalImage(path, data)
+    if typeof(path) == "number" then return assetId(path) end
     if typeof(path) ~= "string" then return "" end
+    if path:match("^https?://") then
+        return downloadAsset(path) or path
+    end
     if path:match("^rbxassetid://") then return path end
     if path:match("%.png$") or path:match("%.jpg$") or path:match("%.jpeg$") or path:match("%.gif$") then
         if data and writefile then
@@ -430,15 +464,21 @@ function OpenHubUI:CreateWindow(config)
         Size = UDim2.fromOffset(28, 28),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 0.92,
-        Text = "×",
-        TextSize = 18,
-        Font = Enum.Font.GothamMedium,
-        TextColor3 = theme.Text,
+        Text = "",
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
     corner(close, 8)
     stroke(close, Color3.new(1, 1, 1), 0.88, 1)
+    local closeIcon = make("ImageLabel", {
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
+        Size = UDim2.fromOffset(15, 15),
+        Image = assetId("x"),
+        ImageColor3 = theme.Text,
+        ZIndex = 6
+    }, close)
 
     local minimize = make("TextButton", {
         Name = "Minimize",
@@ -447,15 +487,21 @@ function OpenHubUI:CreateWindow(config)
         Size = UDim2.fromOffset(28, 28),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 0.92,
-        Text = "−",
-        TextSize = 18,
-        Font = Enum.Font.GothamMedium,
-        TextColor3 = theme.Text,
+        Text = "",
         AutoButtonColor = false,
         ZIndex = 5
     }, header)
     corner(minimize, 8)
     stroke(minimize, Color3.new(1, 1, 1), 0.88, 1)
+    local minimizeIcon = make("ImageLabel", {
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
+        Size = UDim2.fromOffset(15, 15),
+        Image = assetId("minus"),
+        ImageColor3 = theme.Text,
+        ZIndex = 6
+    }, minimize)
 
     close.MouseEnter:Connect(function()
         tween(close, 0.15, {BackgroundColor3 = Color3.fromRGB(255, 80, 90), BackgroundTransparency = 0.15})
@@ -569,7 +615,7 @@ function OpenHubUI:CreateWindow(config)
         tween(root, 0.22, {
             Size = hidden and UDim2.fromOffset(winW, 54) or UDim2.fromOffset(winW, winH)
         })
-        minimize.Text = hidden and "+" or "−"
+        minimizeIcon.Image = assetId(hidden and "plus" or "minus")
     end)
 
     local dragging, dragStart, startPos
@@ -703,6 +749,8 @@ function OpenHubUI:CreateWindow(config)
         subtitle.TextColor3 = theme.Muted
         close.TextColor3 = theme.Text
         minimize.TextColor3 = theme.Text
+        closeIcon.ImageColor3 = theme.Text
+        minimizeIcon.ImageColor3 = theme.Text
         nav.ScrollBarImageColor3 = theme.Accent
         content.BackgroundColor3 = theme.Panel
         content.BackgroundTransparency = state.Glass
@@ -756,11 +804,7 @@ function OpenHubUI:CreateWindow(config)
     function state:SetBackground(source, options)
         options = options or {}
         local image
-        if options.Local then
-            image = loadLocalImage(source, options.Data)
-        else
-            image = assetId(source)
-        end
+        image = loadLocalImage(source, options.Data)
         bg.Image = image or ""
         bg.ImageTransparency = math.clamp(tonumber(options.Transparency) or 0.7, 0, 1)
         bg.ScaleType = options.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop
@@ -801,26 +845,50 @@ function OpenHubUI:CreateWindow(config)
 
         local card = make("Frame", {
             BackgroundColor3 = theme.Panel,
-            BackgroundTransparency = 0.12,
+            BackgroundTransparency = 0.08,
             Size = UDim2.fromOffset(280, 0),
             ClipsDescendants = true,
             ZIndex = 401
         }, holder)
         corner(card, 12)
-        stroke(card, Color3.new(1, 1, 1), 0.85, 1)
+        make("UIGradient", {
+            Rotation = 90,
+            Color = ColorSequence.new(theme.Surface, theme.Panel),
+            Transparency = NumberSequence.new(0.08)
+        }, card)
 
-        local accentBar = make("Frame", {
-            BackgroundColor3 = theme.Accent,
-            Size = UDim2.new(0, 3, 1, 0),
-            Position = UDim2.fromOffset(0, 0),
-            BorderSizePixel = 0,
+        local noticeIcon = make("ImageLabel", {
+            BackgroundTransparency = 1,
+            Position = UDim2.fromOffset(14, 13),
+            Size = UDim2.fromOffset(22, 22),
+            Image = assetId(notice.Icon or "bell"),
+            ImageColor3 = theme.Accent,
             ZIndex = 402
         }, card)
 
+        local dismiss = make("ImageButton", {
+            BackgroundTransparency = 1,
+            AnchorPoint = Vector2.new(1, 0),
+            Position = UDim2.new(1, -12, 0, 12),
+            Size = UDim2.fromOffset(20, 20),
+            Image = assetId("x"),
+            ImageColor3 = theme.Muted,
+            AutoButtonColor = false,
+            ZIndex = 403
+        }, card)
+        dismiss.MouseButton1Click:Connect(function()
+            if card.Parent then
+                tween(card, 0.2, {BackgroundTransparency = 1, Size = UDim2.fromOffset(280, 0)})
+                task.delay(0.22, function()
+                    if card.Parent then card:Destroy() end
+                end)
+            end
+        end)
+
         local titleLbl = make("TextLabel", {
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(16, 12),
-            Size = UDim2.new(1, -40, 0, 18),
+            Position = UDim2.fromOffset(46, 10),
+            Size = UDim2.new(1, -82, 0, 22),
             Text = notice.Title or "OpenHub",
             Font = Enum.Font.GothamBold,
             TextSize = 13,
@@ -831,8 +899,8 @@ function OpenHubUI:CreateWindow(config)
 
         local bodyLbl = make("TextLabel", {
             BackgroundTransparency = 1,
-            Position = UDim2.fromOffset(16, 34),
-            Size = UDim2.new(1, -32, 0, 0),
+            Position = UDim2.fromOffset(46, 34),
+            Size = UDim2.new(1, -62, 0, 0),
             Text = notice.Content or notice.Text or "",
             Font = Enum.Font.Gotham,
             TextSize = 12,
@@ -844,29 +912,12 @@ function OpenHubUI:CreateWindow(config)
             ZIndex = 402
         }, card)
 
-        local progressTrack = make("Frame", {
-            BackgroundColor3 = Color3.new(1, 1, 1),
-            BackgroundTransparency = 0.9,
-            Position = UDim2.new(0, 0, 1, -3),
-            Size = UDim2.new(1, 0, 0, 3),
-            BorderSizePixel = 0,
-            ZIndex = 403
-        }, card)
-
-        local progressFill = make("Frame", {
-            BackgroundColor3 = theme.Accent,
-            Size = UDim2.new(1, 0, 1, 0),
-            BorderSizePixel = 0,
-            ZIndex = 404
-        }, progressTrack)
-
         task.defer(function()
             local textH = math.max(bodyLbl.TextBounds.Y, 16)
-            local totalH = 34 + textH + 18
+            local totalH = 48 + textH
             card.Size = UDim2.fromOffset(280, 0)
             card.BackgroundTransparency = 1
-            tween(card, 0.35, {Size = UDim2.fromOffset(280, totalH), BackgroundTransparency = 0.12}, Enum.EasingStyle.Quint)
-            tween(progressFill, duration, {Size = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Linear)
+            tween(card, 0.3, {Size = UDim2.fromOffset(280, totalH), BackgroundTransparency = 0.08}, Enum.EasingStyle.Quint)
         end)
 
         task.delay(duration, function()
@@ -889,6 +940,7 @@ function OpenHubUI:CreateWindow(config)
 
     local Window = {Instance = root, GUI = gui, State = state}
     local layoutOrder = 0
+    local currentGroup
 
     function Window:CreateTabGroup(cfg)
         cfg = type(cfg) == "table" and cfg or {Name = tostring(cfg or "Group")}
@@ -902,24 +954,66 @@ function OpenHubUI:CreateWindow(config)
             ZIndex = 4
         }, nav)
 
-        local lbl = make("TextLabel", {
+        local button = make("TextButton", {
+            BackgroundTransparency = 1,
+            Size = UDim2.fromScale(1, 1),
+            Text = "",
+            AutoButtonColor = false,
+            Active = true,
+            ZIndex = 5
+        }, frame)
+
+        local groupIcon = make("ImageLabel", {
             BackgroundTransparency = 1,
             Position = UDim2.fromOffset(4, 6),
-            Size = UDim2.new(1, -20, 0, 16),
-            Text = string.upper(cfg.Name or "GROUP") .. "  ↓",
+            Size = UDim2.fromOffset(16, 16),
+            Image = assetId(cfg.Icon or "folder-open"),
+            ImageColor3 = theme.Muted,
+            ZIndex = 6
+        }, button)
+
+        local lbl = make("TextLabel", {
+            BackgroundTransparency = 1,
+            Position = UDim2.fromOffset(26, 6),
+            Size = UDim2.new(1, -52, 0, 16),
+            Text = string.upper(cfg.Name or "GROUP"),
             Font = Enum.Font.GothamBold,
             TextSize = 10,
             TextColor3 = theme.Muted,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTransparency = 0.15,
             ZIndex = 5
-        }, frame)
+        }, button)
 
-        local item = {Instance = frame, Label = lbl}
+        local arrow = make("ImageLabel", {
+            AnchorPoint = Vector2.new(1, 0),
+            BackgroundTransparency = 1,
+            Position = UDim2.new(1, -5, 0, 6),
+            Size = UDim2.fromOffset(16, 16),
+            Image = assetId("chevron-up"),
+            ImageColor3 = theme.Muted,
+            ZIndex = 6
+        }, button)
+
+        local item = {Instance = frame, Button = button, Label = lbl, Icon = groupIcon, Arrow = arrow, Tabs = {}, Expanded = true}
+        function item:SetExpanded(value)
+            item.Expanded = value == true
+            arrow.Image = assetId(item.Expanded and "chevron-up" or "chevron-down")
+            for _, tab in ipairs(item.Tabs) do
+                tab.Button.Visible = item.Expanded
+            end
+        end
+        button.MouseButton1Click:Connect(function()
+            item:SetExpanded(not item.Expanded)
+        end)
         function item:UpdateTheme(t)
             lbl.TextColor3 = t.Muted
+            groupIcon.ImageColor3 = t.Muted
+            arrow.ImageColor3 = t.Muted
         end
+        table.insert(state.Groups, item)
         table.insert(state.Elements, item)
+        currentGroup = item
         return item
     end
 
@@ -991,7 +1085,14 @@ function OpenHubUI:CreateWindow(config)
             Elements = {}
         }
 
+        tab.Group = currentGroup
+        if currentGroup then
+            table.insert(currentGroup.Tabs, tab)
+            button.Visible = currentGroup.Expanded
+        end
+
         local function selectTab()
+            state.SelectedTab = tabName
             for _, other in ipairs(state.Tabs) do
                 other.Page.Visible = false
                 tween(other.Button, 0.18, {BackgroundTransparency = 1})
@@ -1158,15 +1259,13 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 7
             }, btn)
-            local arrow = make("TextLabel", {
+            local arrow = make("ImageLabel", {
                 BackgroundTransparency = 1,
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
                 Size = UDim2.fromOffset(16, 18),
-                Text = "›",
-                Font = Enum.Font.Gotham,
-                TextSize = 18,
-                TextColor3 = theme.Muted,
+                Image = assetId("arrow-right"),
+                ImageColor3 = theme.Muted,
                 ZIndex = 7
             }, btn)
             btn.MouseEnter:Connect(function()
@@ -1436,7 +1535,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.new(0.55, 0, 0, 28),
                 BackgroundColor3 = Color3.new(0, 0, 0),
                 BackgroundTransparency = 0.55,
-                Text = tostring(selected) .. "  ▾",
+                Text = tostring(selected),
                 Font = Enum.Font.Gotham,
                 TextSize = 11,
                 TextColor3 = theme.Text,
@@ -1444,6 +1543,15 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 6
             }, frame)
             corner(chosen, 7)
+            local chosenArrow = make("ImageLabel", {
+                AnchorPoint = Vector2.new(1, 0.5),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -16, 0.5, 0),
+                Size = UDim2.fromOffset(14, 14),
+                Image = assetId("chevron-down"),
+                ImageColor3 = theme.Muted,
+                ZIndex = 7
+            }, frame)
 
             local list = make("Frame", {
                 Name = "DropdownPopup",
@@ -1508,7 +1616,7 @@ function OpenHubUI:CreateWindow(config)
                     end)
                     b.MouseButton1Click:Connect(function()
                         selected = opt
-                        chosen.Text = tostring(opt) .. "  ▾"
+                        chosen.Text = tostring(opt)
                         closeList()
                         if cfg.Callback then task.spawn(cfg.Callback, opt) end
                     end)
@@ -1557,7 +1665,7 @@ function OpenHubUI:CreateWindow(config)
             local item = {Instance = frame}
             function item:Set(v)
                 selected = v
-                chosen.Text = tostring(v) .. "  ▾"
+                chosen.Text = tostring(v)
                 if cfg.Callback then task.spawn(cfg.Callback, v) end
             end
             function item:Get() return selected end
@@ -1569,6 +1677,7 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 chosen.TextColor3 = t.Text
+                chosenArrow.ImageColor3 = t.Muted
                 list.BackgroundColor3 = t.Panel
             end
             return addElement(item)
@@ -2160,7 +2269,7 @@ function OpenHubUI:CreateWindow(config)
         function tab:CreateImage(cfg)
             cfg = type(cfg) == "table" and cfg or {Image = cfg}
             local imgSrc = cfg.Image or ""
-            local resolved = (cfg.Local and loadLocalImage(imgSrc, cfg.Data)) or assetId(imgSrc)
+            local resolved = loadLocalImage(imgSrc, cfg.Data)
             local frame = elementFrame(cfg.Name or "Image", cfg.Height or 130)
             local image = make("ImageLabel", {
                 BackgroundTransparency = 1,
@@ -2173,7 +2282,7 @@ function OpenHubUI:CreateWindow(config)
             corner(image, 8)
             local item = {Instance = frame}
             function item:Set(v, local_)
-                image.Image = local_ and loadLocalImage(v) or assetId(v)
+                image.Image = loadLocalImage(v)
             end
             function item:UpdateTheme(t) frame.BackgroundColor3 = t.Surface end
             return addElement(item)
@@ -2239,7 +2348,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.new(0.55, 0, 0, 28),
                 BackgroundColor3 = Color3.new(0, 0, 0),
                 BackgroundTransparency = 0.55,
-                Text = "Select  ▾",
+                Text = "Select",
                 Font = Enum.Font.Gotham,
                 TextSize = 10,
                 TextColor3 = theme.Text,
@@ -2247,6 +2356,15 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 6
             }, frame)
             corner(chosen, 7)
+            local chosenArrow = make("ImageLabel", {
+                AnchorPoint = Vector2.new(1, 0.5),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -16, 0.5, 0),
+                Size = UDim2.fromOffset(14, 14),
+                Image = assetId("chevron-down"),
+                ImageColor3 = theme.Muted,
+                ZIndex = 7
+            }, frame)
 
             local popup = make("Frame", {
                 BackgroundColor3 = theme.Panel,
@@ -2293,7 +2411,7 @@ function OpenHubUI:CreateWindow(config)
 
             local function refresh()
                 local vals = values()
-                chosen.Text = (#vals == 0 and "Select" or table.concat(vals, ", ")) .. "  ▾"
+                chosen.Text = #vals == 0 and "Select" or table.concat(vals, ", ")
                 for _, b in ipairs(scroll:GetChildren()) do
                     if b:IsA("TextButton") then b:Destroy() end
                 end
@@ -2303,7 +2421,7 @@ function OpenHubUI:CreateWindow(config)
                         Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = isOn and theme.Accent or theme.Surface,
                         BackgroundTransparency = isOn and 0.25 or 0.4,
-                        Text = (isOn and "  ✓  " or "  ○  ") .. tostring(opt),
+                        Text = tostring(opt),
                         Font = Enum.Font.Gotham,
                         TextSize = 11,
                         TextColor3 = theme.Text,
@@ -2313,6 +2431,15 @@ function OpenHubUI:CreateWindow(config)
                         ZIndex = 502
                     }, scroll)
                     corner(b, 6)
+                    pad(b, 28, 8, 0, 0)
+                    make("ImageLabel", {
+                        BackgroundTransparency = 1,
+                        Position = UDim2.fromOffset(8, 7),
+                        Size = UDim2.fromOffset(14, 14),
+                        Image = assetId(isOn and "check" or "circle"),
+                        ImageColor3 = isOn and theme.Accent or theme.Muted,
+                        ZIndex = 503
+                    }, b)
                     b.MouseButton1Click:Connect(function()
                         selected[tostring(opt)] = not selected[tostring(opt)]
                         refresh()
@@ -2360,6 +2487,7 @@ function OpenHubUI:CreateWindow(config)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 chosen.TextColor3 = t.Text
+                chosenArrow.ImageColor3 = t.Muted
                 popup.BackgroundColor3 = t.Panel
                 refresh()
             end

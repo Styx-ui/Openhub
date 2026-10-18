@@ -1879,14 +1879,13 @@ function OpenHubUI:CreateWindow(config)
         function tab:CreateColorPicker(cfg)
             cfg = type(cfg) == "table" and cfg or {Name = tostring(cfg or "Color")}
             local color = normalizeColor(cfg.Color or cfg.Default or cfg.Value, theme.Accent)
-            local h, s, v = color:ToHSV()
-            local a = 1
-
+            local h, sat, val = color:ToHSV()
+            local alpha = 1
             local frame = elementFrame(cfg.Name or "Color", 44)
             local label = make("TextLabel", {
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(12, 0),
-                Size = UDim2.new(1, -64, 1, 0),
+                Size = UDim2.new(1, -68, 1, 0),
                 Text = cfg.Name or "Color",
                 Font = Enum.Font.GothamMedium,
                 TextSize = 12,
@@ -1894,20 +1893,19 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 6
             }, frame)
-
             local swatch = make("TextButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
                 Position = UDim2.new(1, -12, 0.5, 0),
-                Size = UDim2.fromOffset(44, 24),
+                Size = UDim2.fromOffset(46, 24),
                 BackgroundColor3 = color,
                 Text = "",
                 AutoButtonColor = false,
                 ZIndex = 6
             }, frame)
-            corner(swatch, 7)
+            corner(swatch, 8)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
-            local PW, PH = 238, 370
+            local PW, PH = 244, 286
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
                 Size = UDim2.fromOffset(PW, PH),
@@ -1918,423 +1916,333 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 1000,
                 ClipsDescendants = false
             }, gui)
-            corner(popup, 12)
-            stroke(popup, theme.Accent, 0.55, 1.1)
+            corner(popup, 14)
+            stroke(popup, theme.Accent, 0.5, 1)
 
-            local pickerHeader = make("Frame", {
+            local header = make("Frame", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(12, 8),
-                Size = UDim2.new(1, -24, 0, 22),
-                ZIndex = 525
+                Position = UDim2.fromOffset(14, 10),
+                Size = UDim2.new(1, -28, 0, 22),
+                ZIndex = 1001
             }, popup)
-            local pickerTitle = make("TextLabel", {
+            local headerTitle = make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(0, 0),
                 Size = UDim2.new(1, -28, 1, 0),
                 Text = cfg.Name or "Color",
                 Font = Enum.Font.GothamBold,
                 TextSize = 12,
                 TextColor3 = theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 526
-            }, pickerHeader)
-            local pickerClose = make("ImageButton", {
+                ZIndex = 1002
+            }, header)
+            local closeButton = make("ImageButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
-                BackgroundTransparency = 1,
                 Position = UDim2.new(1, 0, 0.5, 0),
                 Size = UDim2.fromOffset(18, 18),
+                BackgroundTransparency = 1,
                 Image = assetId("x"),
                 ImageColor3 = theme.Muted,
                 AutoButtonColor = false,
-                ZIndex = 526
-            }, pickerHeader)
+                ZIndex = 1002
+            }, header)
 
-            local PAD = 12
-            local SVW = PW - PAD * 2
-            local SVH = 108
-
+            local PAD = 14
+            local SVW, SVH = PW - PAD * 2, 118
             local svBox = make("Frame", {
-                Position = UDim2.fromOffset(PAD, 38),
+                Position = UDim2.fromOffset(PAD, 40),
                 Size = UDim2.fromOffset(SVW, SVH),
                 BackgroundColor3 = Color3.fromHSV(h, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 521
+                ZIndex = 1001
             }, popup)
-            corner(svBox, 8)
-
-            local whiteG = make("Frame", {
+            corner(svBox, 9)
+            local whiteLayer = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 522
+                ZIndex = 1002
             }, svBox)
-            corner(whiteG, 8)
+            corner(whiteLayer, 9)
             make("UIGradient", {
-                Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 0),
-                    NumberSequenceKeypoint.new(1, 1)
-                })
-            }, whiteG)
-
-            local blackG = make("Frame", {
+                Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1)})
+            }, whiteLayer)
+            local blackLayer = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(0, 0, 0),
                 BorderSizePixel = 0,
-                ZIndex = 523
+                ZIndex = 1003
             }, svBox)
-            corner(blackG, 8)
+            corner(blackLayer, 9)
             make("UIGradient", {
                 Rotation = 90,
-                Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 1),
-                    NumberSequenceKeypoint.new(1, 0)
-                })
-            }, blackG)
-
+                Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0)})
+            }, blackLayer)
             local svKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.new(s, 0, 1 - v, 0),
+                Position = UDim2.new(sat, 0, 1 - val, 0),
                 Size = UDim2.fromOffset(16, 16),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 524
+                ZIndex = 1004
             }, svBox)
             corner(svKnob, 8)
-            stroke(svKnob, Color3.new(0, 0, 0), 0.25, 1.5)
-
+            stroke(svKnob, Color3.new(0, 0, 0), 0.2, 1.5)
             local svHit = make("TextButton", {
-                BackgroundColor3 = Color3.new(0, 0, 0),
-                BackgroundTransparency = 0.999,
                 Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 526
+                ZIndex = 1005
             }, svBox)
 
-            local HUE_Y = 38 + SVH + 8
+            local hueY = 168
             local hueTrack = make("Frame", {
-                Position = UDim2.fromOffset(PAD, HUE_Y),
-                Size = UDim2.fromOffset(SVW, 14),
+                Position = UDim2.fromOffset(PAD, hueY),
+                Size = UDim2.fromOffset(SVW, 12),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 521
+                ZIndex = 1001
             }, popup)
-            corner(hueTrack, 5)
+            corner(hueTrack, 6)
             make("UIGradient", {
                 Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0,    Color3.fromRGB(255, 0, 0)),
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
                     ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
                     ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
-                    ColorSequenceKeypoint.new(0.5,  Color3.fromRGB(0, 255, 255)),
+                    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
                     ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
                     ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
-                    ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 0, 0))
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
                 })
             }, hueTrack)
-
             local hueKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.new(h, 0, 0.5, 0),
-                Size = UDim2.fromOffset(10, 20),
+                Size = UDim2.fromOffset(10, 18),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 522
+                ZIndex = 1002
             }, hueTrack)
-            corner(hueKnob, 4)
+            corner(hueKnob, 5)
             stroke(hueKnob, Color3.new(0, 0, 0), 0.2, 1)
-
             local hueHit = make("TextButton", {
-                BackgroundColor3 = Color3.new(0, 0, 0),
-                BackgroundTransparency = 0.999,
                 Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 523
+                ZIndex = 1003
             }, hueTrack)
 
-            local ALPHA_Y = HUE_Y + 20
+            local alphaY = 190
             local alphaTrack = make("Frame", {
-                Position = UDim2.fromOffset(PAD, ALPHA_Y),
-                Size = UDim2.fromOffset(SVW, 14),
-                BackgroundColor3 = Color3.new(1, 1, 1),
+                Position = UDim2.fromOffset(PAD, alphaY),
+                Size = UDim2.fromOffset(SVW, 12),
+                BackgroundColor3 = Color3.fromRGB(155, 155, 155),
                 BorderSizePixel = 0,
-                ZIndex = 521
+                ZIndex = 1001
             }, popup)
-            corner(alphaTrack, 5)
-
-            local alphaChecker = make("Frame", {
-                Size = UDim2.fromScale(1, 1),
-                BackgroundColor3 = Color3.fromRGB(180, 180, 180),
-                BorderSizePixel = 0,
-                ZIndex = 521
-            }, alphaTrack)
-            corner(alphaChecker, 5)
-
+            corner(alphaTrack, 6)
             local alphaFill = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = color,
                 BorderSizePixel = 0,
-                ZIndex = 522
+                ZIndex = 1002
             }, alphaTrack)
-            corner(alphaFill, 5)
+            corner(alphaFill, 6)
             make("UIGradient", {
-                Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 1),
-                    NumberSequenceKeypoint.new(1, 0)
-                })
+                Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0)})
             }, alphaFill)
-
             local alphaKnob = make("Frame", {
                 AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.new(a, 0, 0.5, 0),
-                Size = UDim2.fromOffset(10, 20),
+                Position = UDim2.new(alpha, 0, 0.5, 0),
+                Size = UDim2.fromOffset(10, 18),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 523
+                ZIndex = 1003
             }, alphaTrack)
-            corner(alphaKnob, 4)
+            corner(alphaKnob, 5)
             stroke(alphaKnob, Color3.new(0, 0, 0), 0.2, 1)
-
             local alphaHit = make("TextButton", {
-                BackgroundColor3 = Color3.new(0, 0, 0),
-                BackgroundTransparency = 0.999,
                 Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 524
+                ZIndex = 1004
             }, alphaTrack)
 
-            local PREVIEW_Y = ALPHA_Y + 22
-            local previewRow = make("Frame", {
-                Position = UDim2.fromOffset(PAD, PREVIEW_Y),
-                Size = UDim2.fromOffset(SVW, 28),
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                ZIndex = 521
-            }, popup)
-
-            local previewSwatch = make("Frame", {
-                Size = UDim2.fromOffset(36, 28),
+            local preview = make("Frame", {
+                Position = UDim2.fromOffset(PAD, 216),
+                Size = UDim2.fromOffset(42, 26),
                 BackgroundColor3 = color,
                 BorderSizePixel = 0,
-                ZIndex = 522
-            }, previewRow)
-            corner(previewSwatch, 6)
-            stroke(previewSwatch, Color3.new(1, 1, 1), 0.75, 1)
-
+                ZIndex = 1002
+            }, popup)
+            corner(preview, 7)
+            stroke(preview, Color3.new(1, 1, 1), 0.7, 1)
             local hexBox = make("TextBox", {
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromOffset(44, 14),
-                Size = UDim2.fromOffset(SVW - 44, 24),
-                BackgroundColor3 = Color3.new(0, 0, 0),
-                BackgroundTransparency = 0.6,
-                Text = string.format("#%02X%02X%02X", math.floor(color.R*255), math.floor(color.G*255), math.floor(color.B*255)),
+                Position = UDim2.fromOffset(PAD + 52, 216),
+                Size = UDim2.fromOffset(SVW - 52, 26),
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 0.1,
+                Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)),
                 Font = Enum.Font.GothamMedium,
-                TextSize = 12,
-                TextColor3 = theme.Text,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                ClearTextOnFocus = false,
-                BorderSizePixel = 0,
-                ZIndex = 523
-            }, previewRow)
-            corner(hexBox, 6)
-            pad(hexBox, 8, 8, 0, 0)
-
-            local RGB_Y = PREVIEW_Y + 34
-            local rBox = make("TextBox", {
-                Position = UDim2.fromOffset(PAD, RGB_Y),
-                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
-                BackgroundColor3 = Color3.new(0,0,0),
-                BackgroundTransparency = 0.6,
-                Text = tostring(math.floor(color.R * 255)),
-                Font = Enum.Font.Gotham,
                 TextSize = 11,
                 TextColor3 = theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Center,
                 ClearTextOnFocus = false,
                 BorderSizePixel = 0,
-                ZIndex = 523
+                ZIndex = 1002
             }, popup)
-            corner(rBox, 5)
+            corner(hexBox, 7)
 
-            local gBox = make("TextBox", {
-                Position = UDim2.fromOffset(PAD + SVW/3 + 2, RGB_Y),
-                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
-                BackgroundColor3 = Color3.new(0,0,0),
-                BackgroundTransparency = 0.6,
-                Text = tostring(math.floor(color.G * 255)),
-                Font = Enum.Font.Gotham,
-                TextSize = 11,
-                TextColor3 = theme.Text,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                ClearTextOnFocus = false,
-                BorderSizePixel = 0,
-                ZIndex = 523
-            }, popup)
-            corner(gBox, 5)
-
-            local bBox = make("TextBox", {
-                Position = UDim2.fromOffset(PAD + (SVW/3)*2 + 4, RGB_Y),
-                Size = UDim2.fromOffset(SVW / 3 - 4, 22),
-                BackgroundColor3 = Color3.new(0,0,0),
-                BackgroundTransparency = 0.6,
-                Text = tostring(math.floor(color.B * 255)),
-                Font = Enum.Font.Gotham,
-                TextSize = 11,
-                TextColor3 = theme.Text,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                ClearTextOnFocus = false,
-                BorderSizePixel = 0,
-                ZIndex = 523
-            }, popup)
-            corner(bBox, 5)
-
-            local function applyColor(fire)
-                color = Color3.fromHSV(h, s, v)
-                swatch.BackgroundColor3 = color
-                previewSwatch.BackgroundColor3 = color
-                svBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-                svKnob.Position = UDim2.new(s, 0, 1 - v, 0)
-                hueKnob.Position = UDim2.new(h, 0, 0.5, 0)
-                alphaKnob.Position = UDim2.new(a, 0, 0.5, 0)
-                alphaFill.BackgroundColor3 = color
-                local hex = string.format("#%02X%02X%02X", math.floor(color.R*255), math.floor(color.G*255), math.floor(color.B*255))
-                hexBox.Text = hex
-                rBox.Text = tostring(math.floor(color.R * 255))
-                gBox.Text = tostring(math.floor(color.G * 255))
-                bBox.Text = tostring(math.floor(color.B * 255))
-                if fire and cfg.Callback then task.spawn(cfg.Callback, color, a) end
-            end
-
-            local function setPickerColor(value, fire)
-                if typeof(value) ~= "Color3" then return end
-                color = value
-                h, s, v = color:ToHSV()
-                applyColor(fire ~= false)
-            end
-
+            local applyColor
             local presetColors = {
-                Color3.fromRGB(235, 87, 87),
-                Color3.fromRGB(255, 168, 76),
-                Color3.fromRGB(255, 219, 92),
-                Color3.fromRGB(76, 201, 120),
-                Color3.fromRGB(76, 170, 255),
-                Color3.fromRGB(130, 105, 255),
-                Color3.fromRGB(210, 93, 255),
-                Color3.fromRGB(245, 247, 255)
+                Color3.fromRGB(235, 87, 87), Color3.fromRGB(255, 168, 76),
+                Color3.fromRGB(255, 219, 92), Color3.fromRGB(76, 201, 120),
+                Color3.fromRGB(76, 170, 255), Color3.fromRGB(130, 105, 255),
+                Color3.fromRGB(210, 93, 255), Color3.fromRGB(245, 247, 255)
             }
-            local favoriteColors = {}
-            local favoriteButtons = {}
-            local presetY = RGB_Y + 30
-            local presetLabel = make("TextLabel", {
-                BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(PAD, presetY),
-                Size = UDim2.fromOffset(70, 18),
-                Text = "Presets",
-                Font = Enum.Font.GothamBold,
-                TextSize = 10,
-                TextColor3 = theme.Muted,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 524
-            }, popup)
-            for i, preset in ipairs(presetColors) do
+            local presetY = 256
+            for index, preset in ipairs(presetColors) do
                 local presetButton = make("TextButton", {
-                    Position = UDim2.fromOffset(PAD + 70 + ((i - 1) % 8) * 18, presetY),
-                    Size = UDim2.fromOffset(14, 14),
+                    Position = UDim2.fromOffset(PAD + (index - 1) * 26, presetY),
+                    Size = UDim2.fromOffset(20, 20),
                     BackgroundColor3 = preset,
                     Text = "",
                     AutoButtonColor = false,
-                    ZIndex = 525
+                    ZIndex = 1002
                 }, popup)
-                corner(presetButton, 7)
-                stroke(presetButton, Color3.new(1, 1, 1), 0.65, 1)
-                presetButton.MouseButton1Click:Connect(function() setPickerColor(preset) end)
+                corner(presetButton, 10)
+                stroke(presetButton, Color3.new(1, 1, 1), 0.7, 1)
+                presetButton.MouseButton1Click:Connect(function()
+                    color = preset
+                    h, sat, val = color:ToHSV()
+                    applyColor(true)
+                end)
             end
 
-            local actionY = presetY + 28
-            local function pickerAction(name, text, x, callback)
-                local button = make("TextButton", {
-                    Position = UDim2.fromOffset(x, actionY),
-                    Size = UDim2.fromOffset(66, 24),
-                    BackgroundColor3 = theme.Surface,
-                    BackgroundTransparency = 0.15,
-                    Text = text,
-                    Font = Enum.Font.GothamMedium,
-                    TextSize = 10,
-                    TextColor3 = theme.Text,
-                    AutoButtonColor = false,
-                    Name = name,
-                    ZIndex = 525
-                }, popup)
-                corner(button, 6)
-                button.MouseButton1Click:Connect(callback)
-                return button
-            end
-            pickerAction("CopyColor", "Copy HEX", PAD, function()
-                local value = hexBox.Text
+            local copyButton = make("TextButton", {
+                Position = UDim2.fromOffset(PAD, 322),
+                Size = UDim2.fromOffset(96, 24),
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 0.1,
+                Text = "Copy HEX",
+                Font = Enum.Font.GothamMedium,
+                TextSize = 10,
+                TextColor3 = theme.Text,
+                AutoButtonColor = false,
+                ZIndex = 1002
+            }, popup)
+            corner(copyButton, 7)
+            local pasteButton = copyButton:Clone()
+            pasteButton.Name = "PasteHEX"
+            pasteButton.Position = UDim2.fromOffset(PAD + 108, 322)
+            pasteButton.Text = "Paste HEX"
+            pasteButton.Parent = popup
+            copyButton.MouseButton1Click:Connect(function()
                 pcall(function()
-                    if setclipboard then setclipboard(value) elseif toclipboard then toclipboard(value) end
+                    if setclipboard then setclipboard(hexBox.Text) elseif toclipboard then toclipboard(hexBox.Text) end
                 end)
             end)
-            pickerAction("PasteColor", "Paste HEX", PAD + 72, function()
+            pasteButton.MouseButton1Click:Connect(function()
                 local value
-                pcall(function()
-                    if getclipboard then value = getclipboard() end
-                end)
+                pcall(function() if getclipboard then value = getclipboard() end end)
                 local parsed = value and normalizeColor(value, nil)
-                if parsed then setPickerColor(parsed) end
-            end)
-            pickerAction("SaveColor", "Save", PAD + 144, function()
-                table.insert(favoriteColors, 1, color)
-                while #favoriteColors > 4 do table.remove(favoriteColors) end
-                for index, button in ipairs(favoriteButtons) do
-                    button.BackgroundColor3 = favoriteColors[index] or theme.Surface
+                if parsed then
+                    color = parsed
+                    h, sat, val = color:ToHSV()
+                    applyColor(true)
                 end
             end)
 
-            local favoriteY = actionY + 32
-            local favoriteLabel = make("TextLabel", {
-                BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(PAD, favoriteY),
-                Size = UDim2.fromOffset(70, 18),
-                Text = "Favorites",
-                Font = Enum.Font.GothamBold,
-                TextSize = 10,
-                TextColor3 = theme.Muted,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 524
-            }, popup)
-            for i = 1, 4 do
-                local favoriteButton = make("TextButton", {
-                    Position = UDim2.fromOffset(PAD + 70 + (i - 1) * 28, favoriteY),
-                    Size = UDim2.fromOffset(20, 18),
-                    BackgroundColor3 = theme.Surface,
-                    Text = "",
-                    AutoButtonColor = false,
-                    ZIndex = 525
-                }, popup)
-                corner(favoriteButton, 6)
-                favoriteButton.MouseButton1Click:Connect(function()
-                    if favoriteColors[i] then setPickerColor(favoriteColors[i]) end
-                end)
-                favoriteButtons[i] = favoriteButton
+            applyColor = function(fire)
+                color = Color3.fromHSV(h, sat, val)
+                swatch.BackgroundColor3 = color
+                preview.BackgroundColor3 = color
+                svBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                svKnob.Position = UDim2.new(sat, 0, 1 - val, 0)
+                hueKnob.Position = UDim2.new(h, 0, 0.5, 0)
+                alphaKnob.Position = UDim2.new(alpha, 0, 0.5, 0)
+                alphaFill.BackgroundColor3 = color
+                hexBox.Text = string.format("#%02X%02X%02X", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
+                if fire and cfg.Callback then task.spawn(cfg.Callback, color, alpha) end
             end
 
-            local function positionPopup()
-                local rAbs = root.AbsolutePosition
-                local rSz = root.AbsoluteSize
-                local px = rAbs.X + (rSz.X - PW) / 2
-                local py = rAbs.Y + (rSz.Y - PH) / 2
-                px = math.clamp(px, rAbs.X + 6, rAbs.X + rSz.X - PW - 6)
-                py = math.clamp(py, rAbs.Y + 6, rAbs.Y + rSz.Y - PH - 6)
-                popup.Position = UDim2.fromOffset(px, py)
+            local function updateFromColor(value, fire)
+                color = value
+                h, sat, val = color:ToHSV()
+                applyColor(fire ~= false)
             end
+            local function pointer(input)
+                return Vector2.new(input.Position.X, input.Position.Y)
+            end
+            local svDrag, hueDrag, alphaDrag = false, false, false
+            svHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    svDrag = true
+                    local rel = pointer(input) - svBox.AbsolutePosition
+                    sat = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
+                    val = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
+                    applyColor(true)
+                end
+            end)
+            hueHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    hueDrag = true
+                    local rel = pointer(input) - hueTrack.AbsolutePosition
+                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
+                end
+            end)
+            alphaHit.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    alphaDrag = true
+                    local rel = pointer(input) - alphaTrack.AbsolutePosition
+                    alpha = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
+                if svDrag then
+                    local rel = pointer(input) - svBox.AbsolutePosition
+                    sat = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
+                    val = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
+                    applyColor(true)
+                elseif hueDrag then
+                    local rel = pointer(input) - hueTrack.AbsolutePosition
+                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
+                elseif alphaDrag then
+                    local rel = pointer(input) - alphaTrack.AbsolutePosition
+                    alpha = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
+                    applyColor(true)
+                end
+            end)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    svDrag, hueDrag, alphaDrag = false, false, false
+                end
+            end)
+            hexBox.FocusLost:Connect(function()
+                local parsed = normalizeColor(hexBox.Text, nil)
+                if parsed then updateFromColor(parsed) else applyColor(false) end
+            end)
 
             local open = false
-            pickerClose.MouseButton1Click:Connect(function()
+            local function positionPopup()
+                local rAbs, rSize = root.AbsolutePosition, root.AbsoluteSize
+                local px = rAbs.X + (rSize.X - PW) / 2
+                local py = rAbs.Y + (rSize.Y - PH) / 2
+                popup.Position = UDim2.fromOffset(
+                    math.clamp(px, rAbs.X + 6, rAbs.X + rSize.X - PW - 6),
+                    math.clamp(py, rAbs.Y + 6, rAbs.Y + rSize.Y - PH - 6)
+                )
+            end
+            closeButton.MouseButton1Click:Connect(function()
                 open = false
                 popup.Visible = false
             end)
@@ -2343,134 +2251,39 @@ function OpenHubUI:CreateWindow(config)
                 popup.Visible = open
                 if open then positionPopup() end
             end)
-
-            local svDrag, hueDrag, alphaDrag = false, false, false
-
-            local function pointerPosition(input)
-                local p = input.Position
-                return Vector2.new(p.X, p.Y)
-            end
-
-            svHit.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    svDrag = true
-                    local rel = pointerPosition(input) - svBox.AbsolutePosition
-                    s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
-                    v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
-                    applyColor(true)
-                end
-            end)
-
-            hueHit.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    hueDrag = true
-                    local rel = pointerPosition(input) - hueTrack.AbsolutePosition
-                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
-                    applyColor(true)
-                end
-            end)
-
-            alphaHit.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    alphaDrag = true
-                    local rel = pointerPosition(input) - alphaTrack.AbsolutePosition
-                    a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
-                    applyColor(true)
-                end
-            end)
-
-            UserInputService.InputChanged:Connect(function(input)
-                if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
-                if svDrag then
-                    local rel = pointerPosition(input) - svBox.AbsolutePosition
-                    s = math.clamp(rel.X / math.max(svBox.AbsoluteSize.X, 1), 0, 1)
-                    v = 1 - math.clamp(rel.Y / math.max(svBox.AbsoluteSize.Y, 1), 0, 1)
-                    applyColor(true)
-                elseif hueDrag then
-                    local rel = pointerPosition(input) - hueTrack.AbsolutePosition
-                    h = math.clamp(rel.X / math.max(hueTrack.AbsoluteSize.X, 1), 0, 1)
-                    applyColor(true)
-                elseif alphaDrag then
-                    local rel = pointerPosition(input) - alphaTrack.AbsolutePosition
-                    a = math.clamp(rel.X / math.max(alphaTrack.AbsoluteSize.X, 1), 0, 1)
-                    applyColor(true)
-                end
-            end)
-
-            UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    svDrag = false
-                    hueDrag = false
-                    alphaDrag = false
-                end
-            end)
-
-            hexBox.FocusLost:Connect(function()
-                local hex = hexBox.Text:gsub("#", ""):gsub("%s", "")
-                if #hex == 6 then
-                    local r = tonumber(hex:sub(1,2), 16)
-                    local g = tonumber(hex:sub(3,4), 16)
-                    local b = tonumber(hex:sub(5,6), 16)
-                    if r and g and b then
-                        color = Color3.fromRGB(r, g, b)
-                        h, s, v = color:ToHSV()
-                        applyColor(true)
-                    end
-                end
-            end)
-
-            local function parseRGB()
-                local r = math.clamp(tonumber(rBox.Text) or 0, 0, 255)
-                local g = math.clamp(tonumber(gBox.Text) or 0, 0, 255)
-                local b = math.clamp(tonumber(bBox.Text) or 0, 0, 255)
-                color = Color3.fromRGB(r, g, b)
-                h, s, v = color:ToHSV()
-                applyColor(true)
-            end
-            rBox.FocusLost:Connect(parseRGB)
-            gBox.FocusLost:Connect(parseRGB)
-            bBox.FocusLost:Connect(parseRGB)
-
             local outsideConn = UserInputService.InputBegan:Connect(function(input)
                 if not open then return end
                 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     local pos = input.Position
                     local function inside(obj)
-                        local a2, sz = obj.AbsolutePosition, obj.AbsoluteSize
-                        return pos.X >= a2.X and pos.X <= a2.X + sz.X and pos.Y >= a2.Y and pos.Y <= a2.Y + sz.Y
+                        local aPos, aSize = obj.AbsolutePosition, obj.AbsoluteSize
+                        return pos.X >= aPos.X and pos.X <= aPos.X + aSize.X and pos.Y >= aPos.Y and pos.Y <= aPos.Y + aSize.Y
                     end
                     if not inside(popup) and not inside(swatch) then
-                        task.defer(function()
-                            if not svDrag and not hueDrag and not alphaDrag then
-                                open = false
-                                popup.Visible = false
-                            end
-                        end)
+                        open = false
+                        popup.Visible = false
                     end
                 end
             end)
             table.insert(state.Connections, outsideConn)
-
             local item = {Instance = frame}
-            function item:Set(c)
-                if typeof(c) == "Color3" then
-                    color = c
-                    h, s, v = c:ToHSV()
-                    applyColor(false)
-                end
+            function item:Set(value)
+                if typeof(value) == "Color3" then updateFromColor(value, false) end
             end
             function item:Get() return color end
-            function item:GetAlpha() return a end
+            function item:GetAlpha() return alpha end
             function item:UpdateTheme(t)
                 frame.BackgroundColor3 = t.Surface
                 label.TextColor3 = t.Text
                 popup.BackgroundColor3 = t.Panel
-                pickerTitle.TextColor3 = t.Text
-                pickerClose.ImageColor3 = t.Muted
+                headerTitle.TextColor3 = t.Text
+                closeButton.ImageColor3 = t.Muted
+                hexBox.BackgroundColor3 = t.Surface
                 hexBox.TextColor3 = t.Text
-                rBox.TextColor3 = t.Text
-                gBox.TextColor3 = t.Text
-                bBox.TextColor3 = t.Text
+                copyButton.BackgroundColor3 = t.Surface
+                pasteButton.BackgroundColor3 = t.Surface
+                copyButton.TextColor3 = t.Text
+                pasteButton.TextColor3 = t.Text
             end
             return addElement(item)
         end

@@ -183,6 +183,31 @@ local function deepCopy(source)
     return out
 end
 
+local function normalizeColor(value, fallback)
+    if typeof(value) == "Color3" then return value end
+    if type(value) == "table" then
+        local r = tonumber(value.R or value[1])
+        local g = tonumber(value.G or value[2])
+        local b = tonumber(value.B or value[3])
+        if r and g and b then
+            if r <= 1 and g <= 1 and b <= 1 then
+                return Color3.new(math.clamp(r, 0, 1), math.clamp(g, 0, 1), math.clamp(b, 0, 1))
+            end
+            return Color3.fromRGB(math.clamp(r, 0, 255), math.clamp(g, 0, 255), math.clamp(b, 0, 255))
+        end
+    end
+    if type(value) == "string" then
+        local hex = value:gsub("#", ""):gsub("%s", "")
+        if #hex == 6 then
+            local r = tonumber(hex:sub(1, 2), 16)
+            local g = tonumber(hex:sub(3, 4), 16)
+            local b = tonumber(hex:sub(5, 6), 16)
+            if r and g and b then return Color3.fromRGB(r, g, b) end
+        end
+    end
+    return fallback
+end
+
 function OpenHubUI:CreateWindow(config)
     config = config or {}
     local themeName = config.Theme or "Midnight"
@@ -199,7 +224,8 @@ function OpenHubUI:CreateWindow(config)
         Name = "OpenHubUI_" .. HttpService:GenerateGUID(false):gsub("-", ""),
         IgnoreGuiInset = true,
         ResetOnSpawn = false,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        DisplayOrder = 1000
     }, guiParent)
 
     local state = {
@@ -519,7 +545,6 @@ function OpenHubUI:CreateWindow(config)
     local resizeVisuals = {}
     local _drag = nil
 
-    -- Visuales estilo Xero: cápsulas diagonales en esquinas + cápsulas laterales
     local function addResizeVisual(name, position, anchor, size, rotation)
         local grip = make("Frame", {
             Name = name,
@@ -538,12 +563,10 @@ function OpenHubUI:CreateWindow(config)
         return grip
     end
 
-    -- Esquinas inferiores
     addResizeVisual("ResizeGuideBL_Outer", UDim2.new(0, 13, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(16, 3), -45)
     addResizeVisual("ResizeGuideBL_Inner", UDim2.new(0, 20, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(10, 3), -45)
     addResizeVisual("ResizeGuideBR_Outer", UDim2.new(1, -13, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(16, 3), 45)
     addResizeVisual("ResizeGuideBR_Inner", UDim2.new(1, -20, 1, -10), Vector2.new(.5, .5), UDim2.fromOffset(10, 3), 45)
-    -- Laterales
     addResizeVisual("ResizeGuideLeft",  UDim2.new(0,    6, .5, 0), Vector2.new(.5, .5), UDim2.fromOffset(3, 36), 0)
     addResizeVisual("ResizeGuideRight", UDim2.new(1,   -6, .5, 0), Vector2.new(.5, .5), UDim2.fromOffset(3, 36), 0)
 
@@ -563,12 +586,10 @@ function OpenHubUI:CreateWindow(config)
         return hit
     end
 
-    -- Esquinas
     addResizeHandle("ResizeTL", UDim2.fromScale(0, 0), Vector2.new(0, 0), UDim2.fromOffset(28, 28), -1, -1)
     addResizeHandle("ResizeTR", UDim2.fromScale(1, 0), Vector2.new(1, 0), UDim2.fromOffset(28, 28),  1, -1)
     addResizeHandle("ResizeBL", UDim2.fromScale(0, 1), Vector2.new(0, 1), UDim2.fromOffset(28, 28), -1,  1)
     addResizeHandle("ResizeBR", UDim2.fromScale(1, 1), Vector2.new(1, 1), UDim2.fromOffset(28, 28),  1,  1)
-    -- Bordes
     addResizeHandle("ResizeTop",    UDim2.fromScale(.5, 0), Vector2.new(.5, 0), UDim2.new(.34, 0, 0, 12),  0, -1)
     addResizeHandle("ResizeBottom", UDim2.fromScale(.5, 1), Vector2.new(.5, 1), UDim2.new(.34, 0, 0, 14),  0,  1)
     addResizeHandle("ResizeLeft",   UDim2.fromScale(0, .5), Vector2.new(0, .5), UDim2.new(0, 12, .34, 0), -1,  0)
@@ -1557,11 +1578,10 @@ function OpenHubUI:CreateWindow(config)
         end
 
         function tab:CreateColorPicker(cfg)
-            cfg = cfg or {}
-            local color = cfg.Color or theme.Accent
-            local h, s, v, a = color:ToHSV(), 1
-            h, s, v = color:ToHSV()
-            a = 1
+            cfg = type(cfg) == "table" and cfg or {Name = tostring(cfg or "Color")}
+            local color = normalizeColor(cfg.Color or cfg.Default or cfg.Value, theme.Accent)
+            local h, s, v = color:ToHSV()
+            local a = 1
 
             local frame = elementFrame(cfg.Name or "Color", 44)
             local label = make("TextLabel", {
@@ -1596,7 +1616,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 0.05,
                 BorderSizePixel = 0,
                 Visible = false,
-                ZIndex = 520,
+                ZIndex = 1000,
                 ClipsDescendants = false
             }, gui)
             corner(popup, 12)
@@ -1970,7 +1990,6 @@ function OpenHubUI:CreateWindow(config)
                         return pos.X >= a2.X and pos.X <= a2.X + sz.X and pos.Y >= a2.Y and pos.Y <= a2.Y + sz.Y
                     end
                     if not inside(popup) and not inside(swatch) then
-                        -- defer so drag handlers on svHit/hueHit/alphaHit fire first
                         task.defer(function()
                             if not svDrag and not hueDrag and not alphaDrag then
                                 open = false

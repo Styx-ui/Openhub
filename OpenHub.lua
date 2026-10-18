@@ -129,6 +129,19 @@ OpenHubUI.Themes = {
         Acrylic = 0.42,
         Glass = 0.52
     },
+    Light = {
+        Background = Color3.fromRGB(244, 246, 250),
+        Panel = Color3.fromRGB(255, 255, 255),
+        Surface = Color3.fromRGB(235, 238, 245),
+        Accent = Color3.fromRGB(76, 105, 220),
+        Accent2 = Color3.fromRGB(92, 170, 238),
+        Text = Color3.fromRGB(28, 32, 45),
+        Muted = Color3.fromRGB(108, 115, 132),
+        Stroke = Color3.fromRGB(120, 128, 150),
+        Transparency = 0.08,
+        Acrylic = 0.18,
+        Glass = 0.16
+    },
     Ember = {
         Background = Color3.fromRGB(13, 8, 4),
         Panel = Color3.fromRGB(22, 14, 8),

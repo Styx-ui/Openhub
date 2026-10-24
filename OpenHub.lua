@@ -865,12 +865,9 @@ function OpenHubUI:CreateWindow(config)
         if openDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - openDragStart
             if delta.Magnitude > 4 then openDragMoved = true end
-            local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
             local size = openButton.AbsoluteSize
             local x = openStartAbsolute.X + size.X / 2 + delta.X
             local y = openStartAbsolute.Y + delta.Y
-            x = math.clamp(x, size.X / 2, math.max(size.X / 2, viewport.X - size.X / 2))
-            y = math.clamp(y, 0, math.max(0, viewport.Y - size.Y))
             openButton.Position = UDim2.fromOffset(x, y)
             if openDragMoved then suppressOpenClick = true end
         end
@@ -892,12 +889,9 @@ function OpenHubUI:CreateWindow(config)
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
             local size = root.AbsoluteSize
             local x = rootStartAbsolute.X + size.X / 2 + delta.X
             local y = rootStartAbsolute.Y + size.Y / 2 + delta.Y
-            x = math.clamp(x, size.X / 2, math.max(size.X / 2, viewport.X - size.X / 2))
-            y = math.clamp(y, size.Y / 2, math.max(size.Y / 2, viewport.Y - size.Y / 2))
             root.Position = UDim2.fromOffset(x, y)
         end
     end)

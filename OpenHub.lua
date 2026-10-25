@@ -444,6 +444,7 @@ function OpenHubUI:CreateWindow(config)
         Name = "Header",
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 0, 54),
+        Active = true,
         ZIndex = 3
     }, root)
 
@@ -738,6 +739,7 @@ function OpenHubUI:CreateWindow(config)
         BackgroundTransparency = 0.08,
         Text = "",
         AutoButtonColor = false,
+        Active = true,
         Visible = config.OpenButton ~= false,
         ZIndex = 20
     }, gui)

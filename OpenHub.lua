@@ -60,9 +60,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(245, 247, 255),
         Muted = Color3.fromRGB(155, 160, 185),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.16,
-        Acrylic = 0.62,
-        Glass = 0.68
+        Transparency = 0.22,
+        Acrylic = 0.45,
+        Glass = 0.55
     },
     Obsidian = {
         Background = Color3.fromRGB(4, 5, 7),
@@ -73,9 +73,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(250, 250, 252),
         Muted = Color3.fromRGB(145, 147, 155),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.14,
-        Acrylic = 0.58,
-        Glass = 0.66
+        Transparency = 0.18,
+        Acrylic = 0.40,
+        Glass = 0.50
     },
     Aurora = {
         Background = Color3.fromRGB(4, 12, 14),
@@ -86,9 +86,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(235, 255, 250),
         Muted = Color3.fromRGB(130, 170, 165),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.15,
-        Acrylic = 0.60,
-        Glass = 0.68
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Crimson = {
         Background = Color3.fromRGB(14, 5, 8),
@@ -99,9 +99,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(255, 245, 248),
         Muted = Color3.fromRGB(180, 140, 150),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.15,
-        Acrylic = 0.60,
-        Glass = 0.68
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Sapphire = {
         Background = Color3.fromRGB(4, 7, 15),
@@ -112,9 +112,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(240, 247, 255),
         Muted = Color3.fromRGB(130, 155, 190),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.15,
-        Acrylic = 0.60,
-        Glass = 0.68
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Sakura = {
         Background = Color3.fromRGB(14, 7, 13),
@@ -125,9 +125,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(255, 245, 252),
         Muted = Color3.fromRGB(185, 145, 175),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.15,
-        Acrylic = 0.60,
-        Glass = 0.68
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     },
     Light = {
         Background = Color3.fromRGB(244, 246, 250),
@@ -138,9 +138,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(28, 32, 45),
         Muted = Color3.fromRGB(108, 115, 132),
         Stroke = Color3.fromRGB(120, 128, 150),
-        Transparency = 0.04,
-        Acrylic = 0.72,
-        Glass = 0.64
+        Transparency = 0.08,
+        Acrylic = 0.18,
+        Glass = 0.16
     },
     Ember = {
         Background = Color3.fromRGB(13, 8, 4),
@@ -151,9 +151,9 @@ OpenHubUI.Themes = {
         Text = Color3.fromRGB(255, 248, 235),
         Muted = Color3.fromRGB(185, 155, 125),
         Stroke = Color3.fromRGB(255, 255, 255),
-        Transparency = 0.15,
-        Acrylic = 0.60,
-        Glass = 0.68
+        Transparency = 0.20,
+        Acrylic = 0.42,
+        Glass = 0.52
     }
 }
 
@@ -383,47 +383,17 @@ function OpenHubUI:CreateWindow(config)
     }, gui)
     scale.Parent = root
     corner(root, 16)
-    local rootStroke = stroke(root, theme.Stroke, 0.62, 1.2)
+    local rootStroke = stroke(root, Color3.new(1, 1, 1), 0.82, 1.2)
 
     local glassLayer = make("Frame", {
         Name = "GlassLayer",
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = theme.Panel,
-        BackgroundTransparency = math.clamp(glass + 0.18, 0, 0.94),
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundTransparency = 0.94,
         BorderSizePixel = 0,
         ZIndex = 0
     }, root)
     corner(glassLayer, 16)
-    make("UIGradient", {
-        Rotation = 125,
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-            ColorSequenceKeypoint.new(0.42, Color3.new(1, 1, 1)),
-            ColorSequenceKeypoint.new(1, theme.Accent)
-        }),
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.9),
-            NumberSequenceKeypoint.new(0.42, 0.97),
-            NumberSequenceKeypoint.new(1, 0.98)
-        })
-    }, glassLayer)
-
-    local glassSheen = make("Frame", {
-        Name = "GlassSheen",
-        Size = UDim2.new(1, 0, 0, 86),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BackgroundTransparency = 0.96,
-        BorderSizePixel = 0,
-        ZIndex = 2
-    }, root)
-    corner(glassSheen, 16)
-    make("UIGradient", {
-        Rotation = 90,
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.1),
-            NumberSequenceKeypoint.new(1, 1)
-        })
-    }, glassSheen)
 
     local rootGradient = make("UIGradient", {
         Rotation = 140,
@@ -847,15 +817,13 @@ function OpenHubUI:CreateWindow(config)
     local openDragging = false
     local openDragMoved = false
     local openDragStart
-    local openStartPosition
-    local openStartAbsolute
+    local openDragOffset
     openIcon.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             openDragging = true
             openDragMoved = false
             openDragStart = input.Position
-            openStartPosition = openButton.Position
-            openStartAbsolute = openButton.AbsolutePosition
+            openDragOffset = input.Position - openButton.AbsolutePosition
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then openDragging = false end
             end)
@@ -866,20 +834,20 @@ function OpenHubUI:CreateWindow(config)
             local delta = input.Position - openDragStart
             if delta.Magnitude > 4 then openDragMoved = true end
             local size = openButton.AbsoluteSize
-            local x = openStartAbsolute.X + size.X / 2 + delta.X
-            local y = openStartAbsolute.Y + delta.Y
+            local topLeft = input.Position - openDragOffset
+            local x = topLeft.X + size.X / 2
+            local y = topLeft.Y
             openButton.Position = UDim2.fromOffset(x, y)
             if openDragMoved then suppressOpenClick = true end
         end
     end)
 
-    local dragging, dragStart, startPos, rootStartAbsolute
+    local dragging, dragStart, dragOffset
     header.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = root.Position
-            rootStartAbsolute = root.AbsolutePosition
+            dragOffset = input.Position - root.AbsolutePosition
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
@@ -888,10 +856,10 @@ function OpenHubUI:CreateWindow(config)
 
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
             local size = root.AbsoluteSize
-            local x = rootStartAbsolute.X + size.X / 2 + delta.X
-            local y = rootStartAbsolute.Y + size.Y / 2 + delta.Y
+            local topLeft = input.Position - dragOffset
+            local x = topLeft.X + size.X / 2
+            local y = topLeft.Y + size.Y / 2
             root.Position = UDim2.fromOffset(x, y)
         end
     end)
@@ -1001,9 +969,6 @@ function OpenHubUI:CreateWindow(config)
         darkOverlay.BackgroundColor3 = theme.Background
         darkOverlay.BackgroundTransparency = state.Acrylic
         rootStroke.Color = theme.Stroke or Color3.new(1, 1, 1)
-        glassLayer.BackgroundColor3 = theme.Panel
-        glassLayer.BackgroundTransparency = math.clamp(state.Glass + 0.18, 0, 0.94)
-        glassSheen.BackgroundColor3 = theme.Accent
         title.TextColor3 = theme.Text
         subtitle.TextColor3 = theme.Muted
         close.TextColor3 = theme.Text
@@ -1434,12 +1399,12 @@ function OpenHubUI:CreateWindow(config)
                 Name = name or "Element",
                 Size = UDim2.new(1, 0, 0, height or 48),
                 BackgroundColor3 = theme.Surface,
-                BackgroundTransparency = 0.38,
+                BackgroundTransparency = 0.25,
                 BorderSizePixel = 0,
                 ZIndex = 5
             }, page)
             corner(frame, 10)
-            stroke(frame, theme.Stroke, 0.78, 1)
+            stroke(frame, Color3.new(1, 1, 1), 0.9, 1)
             return frame
         end
 

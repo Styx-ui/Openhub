@@ -582,6 +582,15 @@ function OpenHubUI:CreateWindow(config)
         Visible = false,
         ZIndex = 7
     }, header)
+    local dragSurface = make("TextButton", {
+        Name = "DragSurface",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, -112, 1, 0),
+        Text = "",
+        AutoButtonColor = false,
+        Active = true,
+        ZIndex = 4
+    }, header)
     local searchStatus = make("TextLabel", {
         BackgroundColor3 = theme.Panel,
         BackgroundTransparency = 0.04,
@@ -845,7 +854,7 @@ function OpenHubUI:CreateWindow(config)
     end)
 
     local dragging, dragStart, dragOffset
-    header.InputBegan:Connect(function(input)
+    dragSurface.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
@@ -1435,6 +1444,83 @@ function OpenHubUI:CreateWindow(config)
             }, frame)
             local item = {Instance = frame}
             function item:UpdateTheme(t) lbl.TextColor3 = t.Accent end
+            return addElement(item)
+        end
+
+        function tab:CreateBanner(cfg)
+            cfg = type(cfg) == "table" and cfg or {Image = cfg}
+            local height = math.clamp(tonumber(cfg.Height) or 148, 86, 280)
+            local frame = make("Frame", {
+                Name = cfg.Name or "Banner",
+                Size = UDim2.new(1, 0, 0, height),
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 0.08,
+                BorderSizePixel = 0,
+                ClipsDescendants = true,
+                ZIndex = 5
+            }, page)
+            corner(frame, 12)
+            stroke(frame, Color3.new(1, 1, 1), 0.82, 1)
+            local image = make("ImageLabel", {
+                Name = "Image",
+                Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
+                Image = loadLocalImage(cfg.Image or cfg.ImageUrl or "", cfg.Data) or "",
+                ImageTransparency = math.clamp(tonumber(cfg.ImageTransparency) or 0.08, 0, 1),
+                ScaleType = cfg.ScaleType == "Fit" and Enum.ScaleType.Fit or Enum.ScaleType.Crop,
+                ZIndex = 5
+            }, frame)
+            corner(image, 12)
+            local shade = make("Frame", {
+                Name = "Shade",
+                Size = UDim2.fromScale(1, 1),
+                BackgroundColor3 = theme.Background,
+                BackgroundTransparency = 0.18,
+                BorderSizePixel = 0,
+                ZIndex = 6
+            }, frame)
+            corner(shade, 12)
+            make("UIGradient", {
+                Rotation = 90,
+                Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),
+                    NumberSequenceKeypoint.new(0.48, 0.9),
+                    NumberSequenceKeypoint.new(1, 0.05)
+                })
+            }, shade)
+            local titleLabel = make("TextLabel", {
+                Name = "Title",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 14, 1, -48),
+                Size = UDim2.new(1, -28, 0, 22),
+                Text = tostring(cfg.Title or ""),
+                Font = Enum.Font.GothamBold,
+                TextSize = tonumber(cfg.TitleSize) or 16,
+                TextColor3 = theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextTruncate = Enum.TextTruncate.AtEnd,
+                ZIndex = 7
+            }, frame)
+            local descriptionLabel = make("TextLabel", {
+                Name = "Description",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 14, 1, -26),
+                Size = UDim2.new(1, -28, 0, 16),
+                Text = tostring(cfg.Description or ""),
+                Font = Enum.Font.Gotham,
+                TextSize = tonumber(cfg.DescriptionSize) or 11,
+                TextColor3 = theme.Muted,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextTruncate = Enum.TextTruncate.AtEnd,
+                Visible = cfg.Description ~= nil and tostring(cfg.Description) ~= "",
+                ZIndex = 7
+            }, frame)
+            local item = {Instance = frame, Image = image, Title = titleLabel, Description = descriptionLabel}
+            function item:UpdateTheme(t)
+                shade.BackgroundColor3 = t.Background
+                titleLabel.TextColor3 = t.Text
+                descriptionLabel.TextColor3 = t.Muted
+            end
             return addElement(item)
         end
 

@@ -635,6 +635,13 @@ function OpenHubUI:CreateWindow(config)
         corner(frame, 8)
         stroke(frame, color, 0.55, 1)
         pad(frame, 7, 7, 0, 0)
+        make("UIListLayout", {
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+            VerticalAlignment = Enum.VerticalAlignment.Center,
+            Padding = UDim.new(0, 4),
+            SortOrder = Enum.SortOrder.LayoutOrder
+        }, frame)
         local iconName = data.Icon
         if iconName then
             make("ImageLabel", {
@@ -1542,6 +1549,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundColor3 = theme.Surface,
                 BackgroundTransparency = 0.25,
                 BorderSizePixel = 0,
+                ClipsDescendants = true,
                 ZIndex = 5
             }, page)
             corner(frame, 10)
@@ -2105,7 +2113,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 0.08,
                 ClipsDescendants = true,
                 Visible = false,
-                ZIndex = 500,
+                ZIndex = 8,
                 Position = UDim2.new(0, 4, 0, baseHeight + 6),
                 Size = UDim2.new(1, -8, 0, 0)
             }, frame)
@@ -2120,7 +2128,7 @@ function OpenHubUI:CreateWindow(config)
                 AutomaticCanvasSize = Enum.AutomaticSize.Y,
                 ScrollBarThickness = 2,
                 ScrollBarImageColor3 = theme.Accent,
-                ZIndex = 501
+                ZIndex = 9
             }, list)
             pad(scroll, 6, 6, 6, 6)
             make("UIListLayout", {
@@ -2153,7 +2161,7 @@ function OpenHubUI:CreateWindow(config)
                         TextXAlignment = Enum.TextXAlignment.Left,
                         AutoButtonColor = false,
                         LayoutOrder = i,
-                        ZIndex = 502
+                        ZIndex = 10
                     }, scroll)
                     corner(b, 6)
                     b.MouseEnter:Connect(function()
@@ -2328,7 +2336,7 @@ function OpenHubUI:CreateWindow(config)
             corner(swatch, 8)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
-            local PW, PH = 244, 286
+            local PW, PH = 300, 282
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
                 Size = UDim2.fromOffset(PW, PH),
@@ -2336,7 +2344,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 0.02,
                 BorderSizePixel = 0,
                 Visible = false,
-                ZIndex = 1000,
+                ZIndex = 8,
                 ClipsDescendants = false,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, baseHeight + 6)
@@ -2348,7 +2356,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 1,
                 Position = UDim2.fromOffset(14, 10),
                 Size = UDim2.new(1, -28, 0, 22),
-                ZIndex = 1001
+                ZIndex = 9
             }, popup)
             local headerTitle = make("TextLabel", {
                 BackgroundTransparency = 1,
@@ -2358,7 +2366,7 @@ function OpenHubUI:CreateWindow(config)
                 TextSize = 12,
                 TextColor3 = theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 1002
+                ZIndex = 10
             }, header)
             local closeButton = make("ImageButton", {
                 AnchorPoint = Vector2.new(1, 0.5),
@@ -2368,7 +2376,7 @@ function OpenHubUI:CreateWindow(config)
                 Image = assetId("x"),
                 ImageColor3 = theme.Muted,
                 AutoButtonColor = false,
-                ZIndex = 1002
+                ZIndex = 10
             }, header)
 
             local PAD = 14
@@ -2378,14 +2386,14 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(SVW, SVH),
                 BackgroundColor3 = Color3.fromHSV(h, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1001
+                ZIndex = 9
             }, popup)
             corner(svBox, 9)
             local whiteLayer = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1002
+                ZIndex = 10
             }, svBox)
             corner(whiteLayer, 9)
             make("UIGradient", {
@@ -2395,7 +2403,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = Color3.new(0, 0, 0),
                 BorderSizePixel = 0,
-                ZIndex = 1003
+                ZIndex = 11
             }, svBox)
             corner(blackLayer, 9)
             make("UIGradient", {
@@ -2408,7 +2416,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(16, 16),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1004
+                ZIndex = 12
             }, svBox)
             corner(svKnob, 8)
             stroke(svKnob, Color3.new(0, 0, 0), 0.2, 1.5)
@@ -2418,7 +2426,7 @@ function OpenHubUI:CreateWindow(config)
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 1005
+                ZIndex = 13
             }, svBox)
 
             make("TextLabel", {
@@ -2430,7 +2438,7 @@ function OpenHubUI:CreateWindow(config)
                 TextSize = 8,
                 TextColor3 = theme.Muted,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 1002
+                ZIndex = 10
             }, popup)
             local hueY = 168
             local hueTrack = make("Frame", {
@@ -2438,7 +2446,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(SVW, 12),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1001
+                ZIndex = 9
             }, popup)
             corner(hueTrack, 6)
             make("UIGradient", {
@@ -2458,7 +2466,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(10, 18),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1002
+                ZIndex = 10
             }, hueTrack)
             corner(hueKnob, 5)
             stroke(hueKnob, Color3.new(0, 0, 0), 0.2, 1)
@@ -2468,7 +2476,7 @@ function OpenHubUI:CreateWindow(config)
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 1003
+                ZIndex = 11
             }, hueTrack)
 
             make("TextLabel", {
@@ -2480,7 +2488,7 @@ function OpenHubUI:CreateWindow(config)
                 TextSize = 8,
                 TextColor3 = theme.Muted,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 1002
+                ZIndex = 10
             }, popup)
             local alphaY = 190
             local alphaTrack = make("Frame", {
@@ -2488,14 +2496,14 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(SVW, 12),
                 BackgroundColor3 = Color3.fromRGB(155, 155, 155),
                 BorderSizePixel = 0,
-                ZIndex = 1001
+                ZIndex = 9
             }, popup)
             corner(alphaTrack, 6)
             local alphaFill = make("Frame", {
                 Size = UDim2.fromScale(1, 1),
                 BackgroundColor3 = color,
                 BorderSizePixel = 0,
-                ZIndex = 1002
+                ZIndex = 10
             }, alphaTrack)
             corner(alphaFill, 6)
             make("UIGradient", {
@@ -2507,7 +2515,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(10, 18),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
-                ZIndex = 1003
+                ZIndex = 11
             }, alphaTrack)
             corner(alphaKnob, 5)
             stroke(alphaKnob, Color3.new(0, 0, 0), 0.2, 1)
@@ -2517,7 +2525,7 @@ function OpenHubUI:CreateWindow(config)
                 Text = "",
                 AutoButtonColor = false,
                 Active = true,
-                ZIndex = 1004
+                ZIndex = 12
             }, alphaTrack)
 
             local preview = make("Frame", {
@@ -2525,7 +2533,7 @@ function OpenHubUI:CreateWindow(config)
                 Size = UDim2.fromOffset(42, 26),
                 BackgroundColor3 = color,
                 BorderSizePixel = 0,
-                ZIndex = 1002
+                ZIndex = 10
             }, popup)
             corner(preview, 7)
             stroke(preview, Color3.new(1, 1, 1), 0.7, 1)
@@ -2541,7 +2549,7 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Center,
                 ClearTextOnFocus = false,
                 BorderSizePixel = 0,
-                ZIndex = 1002
+                ZIndex = 10
             }, popup)
             corner(hexBox, 7)
 
@@ -2561,7 +2569,7 @@ function OpenHubUI:CreateWindow(config)
                 TextSize = 8,
                 TextColor3 = theme.Muted,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                ZIndex = 1002
+                ZIndex = 10
             }, popup)
             local presetY = 256
             for index, preset in ipairs(presetColors) do
@@ -2571,7 +2579,7 @@ function OpenHubUI:CreateWindow(config)
                     BackgroundColor3 = preset,
                     Text = "",
                     AutoButtonColor = false,
-                    ZIndex = 1002
+                    ZIndex = 10
                 }, popup)
                 corner(presetButton, 10)
                 stroke(presetButton, Color3.new(1, 1, 1), 0.7, 1)
@@ -2883,7 +2891,7 @@ function OpenHubUI:CreateWindow(config)
                 BackgroundTransparency = 0.08,
                 ClipsDescendants = true,
                 Visible = false,
-                ZIndex = 500,
+                ZIndex = 8,
                 Position = UDim2.new(0, 4, 0, baseHeight + 6),
                 Size = UDim2.new(1, -8, 0, 0)
             }, frame)
@@ -2897,7 +2905,7 @@ function OpenHubUI:CreateWindow(config)
                 CanvasSize = UDim2.new(),
                 AutomaticCanvasSize = Enum.AutomaticSize.Y,
                 ScrollBarThickness = 2,
-                ZIndex = 501
+                ZIndex = 9
             }, popup)
             pad(scroll, 6, 6, 6, 6)
             make("UIListLayout", {
@@ -2942,7 +2950,7 @@ function OpenHubUI:CreateWindow(config)
                         TextXAlignment = Enum.TextXAlignment.Left,
                         AutoButtonColor = false,
                         LayoutOrder = i,
-                        ZIndex = 502
+                        ZIndex = 10
                     }, scroll)
                     corner(b, 6)
                     pad(b, 28, 8, 0, 0)
@@ -2952,7 +2960,7 @@ function OpenHubUI:CreateWindow(config)
                         Size = UDim2.fromOffset(14, 14),
                         Image = assetId(isOn and "check" or "circle"),
                         ImageColor3 = isOn and theme.Accent or theme.Muted,
-                        ZIndex = 503
+                        ZIndex = 11
                     }, b)
                     b.MouseButton1Click:Connect(function()
                         selected[tostring(opt)] = not selected[tostring(opt)]

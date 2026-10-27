@@ -2109,16 +2109,15 @@ function OpenHubUI:CreateWindow(config)
 
             local list = make("Frame", {
                 Name = "DropdownPopup",
-                BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.08,
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 1,
                 ClipsDescendants = true,
                 Visible = false,
                 ZIndex = 8,
-                Position = UDim2.new(0, 4, 0, baseHeight + 6),
-                Size = UDim2.new(1, -8, 0, 0)
+                Position = UDim2.new(0, 10, 0, baseHeight + 6),
+                Size = UDim2.new(1, -20, 0, 0)
             }, frame)
-            corner(list, 10)
-            stroke(list, Color3.new(1, 1, 1), 0.8, 1)
+
 
             local scroll = make("ScrollingFrame", {
                 BackgroundTransparency = 1,
@@ -2139,7 +2138,7 @@ function OpenHubUI:CreateWindow(config)
             local function closeList()
                 expanded = false
                 tween(frame, 0.18, {Size = UDim2.new(1, 0, 0, baseHeight)})
-                tween(list, 0.18, {Size = UDim2.new(1, -8, 0, 0)})
+                tween(list, 0.18, {Size = UDim2.new(1, -20, 0, 0)})
                 task.delay(0.19, function()
                     if not expanded then list.Visible = false end
                 end)
@@ -2152,8 +2151,8 @@ function OpenHubUI:CreateWindow(config)
                 for i, opt in ipairs(options) do
                     local b = make("TextButton", {
                         Size = UDim2.new(1, 0, 0, 28),
-                        BackgroundColor3 = theme.Accent,
-                        BackgroundTransparency = 0.92,
+                        BackgroundColor3 = theme.Surface,
+                        BackgroundTransparency = 0.18,
                         Text = "  " .. tostring(opt),
                         Font = Enum.Font.Gotham,
                         TextSize = 12,
@@ -2165,10 +2164,10 @@ function OpenHubUI:CreateWindow(config)
                     }, scroll)
                     corner(b, 6)
                     b.MouseEnter:Connect(function()
-                        tween(b, 0.1, {BackgroundTransparency = 0.75})
+                        tween(b, 0.14, {BackgroundTransparency = 0.02})
                     end)
                     b.MouseLeave:Connect(function()
-                        tween(b, 0.1, {BackgroundTransparency = 0.92})
+                        tween(b, 0.14, {BackgroundTransparency = 0.18})
                     end)
                     b.MouseButton1Click:Connect(function()
                         selected = opt
@@ -2183,11 +2182,11 @@ function OpenHubUI:CreateWindow(config)
             local function openList()
                 expanded = true
                 local popupH = math.min(#options, 6) * 31 + 14
-                list.Position = UDim2.new(0, 4, 0, baseHeight + 6)
-                list.Size = UDim2.new(1, -8, 0, 0)
+                list.Position = UDim2.new(0, 10, 0, baseHeight + 6)
+                list.Size = UDim2.new(1, -20, 0, 0)
                 list.Visible = true
                 tween(frame, 0.22, {Size = UDim2.new(1, 0, 0, baseHeight + popupH + 6)})
-                tween(list, 0.22, {Size = UDim2.new(1, -8, 0, popupH)})
+                tween(list, 0.22, {Size = UDim2.new(1, -20, 0, popupH)})
             end
 
             chosen.MouseButton1Click:Connect(function()
@@ -2211,7 +2210,7 @@ function OpenHubUI:CreateWindow(config)
                 label.TextColor3 = t.Text
                 chosen.TextColor3 = t.Text
                 chosenArrow.ImageColor3 = t.Muted
-                list.BackgroundColor3 = t.Panel
+                list.BackgroundColor3 = t.Surface
                 if desc then desc.TextColor3 = t.Muted end
             end
             return addElement(item)
@@ -2336,12 +2335,12 @@ function OpenHubUI:CreateWindow(config)
             corner(swatch, 8)
             stroke(swatch, Color3.new(1, 1, 1), 0.7, 1)
 
-            local PW, PH = 300, 282
+            local PW, PH = 280, 258
             local popup = make("Frame", {
                 Name = "ColorPickerPopup",
                 Size = UDim2.fromOffset(PW, PH),
-                BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.02,
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 Visible = false,
                 ZIndex = 8,
@@ -2350,7 +2349,7 @@ function OpenHubUI:CreateWindow(config)
                 Position = UDim2.new(0.5, 0, 0, baseHeight + 6)
             }, frame)
             corner(popup, 14)
-            stroke(popup, theme.Accent, 0.5, 1)
+
 
             local header = make("Frame", {
                 BackgroundTransparency = 1,
@@ -2379,8 +2378,8 @@ function OpenHubUI:CreateWindow(config)
                 ZIndex = 10
             }, header)
 
-            local PAD = 14
-            local SVW, SVH = PW - PAD * 2, 118
+            local PAD = 12
+            local SVW, SVH = PW - PAD * 2, 102
             local svBox = make("Frame", {
                 Position = UDim2.fromOffset(PAD, 40),
                 Size = UDim2.fromOffset(SVW, SVH),
@@ -2431,7 +2430,7 @@ function OpenHubUI:CreateWindow(config)
 
             make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(PAD, 157),
+                Position = UDim2.fromOffset(PAD, 133),
                 Size = UDim2.fromOffset(SVW, 10),
                 Text = "HUE",
                 Font = Enum.Font.GothamBold,
@@ -2440,7 +2439,7 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 10
             }, popup)
-            local hueY = 168
+            local hueY = 144
             local hueTrack = make("Frame", {
                 Position = UDim2.fromOffset(PAD, hueY),
                 Size = UDim2.fromOffset(SVW, 12),
@@ -2481,7 +2480,7 @@ function OpenHubUI:CreateWindow(config)
 
             make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(PAD, 179),
+                Position = UDim2.fromOffset(PAD, 155),
                 Size = UDim2.fromOffset(SVW, 10),
                 Text = "OPACITY",
                 Font = Enum.Font.GothamBold,
@@ -2490,7 +2489,7 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 10
             }, popup)
-            local alphaY = 190
+            local alphaY = 166
             local alphaTrack = make("Frame", {
                 Position = UDim2.fromOffset(PAD, alphaY),
                 Size = UDim2.fromOffset(SVW, 12),
@@ -2529,7 +2528,7 @@ function OpenHubUI:CreateWindow(config)
             }, alphaTrack)
 
             local preview = make("Frame", {
-                Position = UDim2.fromOffset(PAD, 216),
+                Position = UDim2.fromOffset(PAD, 192),
                 Size = UDim2.fromOffset(42, 26),
                 BackgroundColor3 = color,
                 BorderSizePixel = 0,
@@ -2538,7 +2537,7 @@ function OpenHubUI:CreateWindow(config)
             corner(preview, 7)
             stroke(preview, Color3.new(1, 1, 1), 0.7, 1)
             local hexBox = make("TextBox", {
-                Position = UDim2.fromOffset(PAD + 52, 216),
+                Position = UDim2.fromOffset(PAD + 52, 192),
                 Size = UDim2.fromOffset(SVW - 52, 26),
                 BackgroundColor3 = theme.Surface,
                 BackgroundTransparency = 0.1,
@@ -2562,7 +2561,7 @@ function OpenHubUI:CreateWindow(config)
             }
             make("TextLabel", {
                 BackgroundTransparency = 1,
-                Position = UDim2.fromOffset(PAD, 246),
+                Position = UDim2.fromOffset(PAD, 222),
                 Size = UDim2.fromOffset(SVW, 10),
                 Text = "PRESETS",
                 Font = Enum.Font.GothamBold,
@@ -2571,7 +2570,7 @@ function OpenHubUI:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 10
             }, popup)
-            local presetY = 256
+            local presetY = 232
             for index, preset in ipairs(presetColors) do
                 local presetButton = make("TextButton", {
                     Position = UDim2.fromOffset(PAD + (index - 1) * 26, presetY),
@@ -2887,16 +2886,15 @@ function OpenHubUI:CreateWindow(config)
             }, frame)
 
             local popup = make("Frame", {
-                BackgroundColor3 = theme.Panel,
-                BackgroundTransparency = 0.08,
+                BackgroundColor3 = theme.Surface,
+                BackgroundTransparency = 1,
                 ClipsDescendants = true,
                 Visible = false,
                 ZIndex = 8,
-                Position = UDim2.new(0, 4, 0, baseHeight + 6),
-                Size = UDim2.new(1, -8, 0, 0)
+                Position = UDim2.new(0, 10, 0, baseHeight + 6),
+                Size = UDim2.new(1, -20, 0, 0)
             }, frame)
-            corner(popup, 10)
-            stroke(popup, Color3.new(1, 1, 1), 0.8, 1)
+
 
             local scroll = make("ScrollingFrame", {
                 BackgroundTransparency = 1,
@@ -2925,7 +2923,7 @@ function OpenHubUI:CreateWindow(config)
             local function closePopup()
                 expanded = false
                 tween(frame, 0.18, {Size = UDim2.new(1, 0, 0, baseHeight)})
-                tween(popup, 0.18, {Size = UDim2.new(1, -8, 0, 0)})
+                tween(popup, 0.18, {Size = UDim2.new(1, -20, 0, 0)})
                 task.delay(0.19, function()
                     if not expanded then popup.Visible = false end
                 end)
@@ -2976,11 +2974,11 @@ function OpenHubUI:CreateWindow(config)
                 else
                     expanded = true
                     local popupH = math.min(#options, 6) * 31 + 14
-                    popup.Position = UDim2.new(0, 4, 0, baseHeight + 6)
-                    popup.Size = UDim2.new(1, -8, 0, 0)
+                    popup.Position = UDim2.new(0, 10, 0, baseHeight + 6)
+                    popup.Size = UDim2.new(1, -20, 0, 0)
                     popup.Visible = true
                     tween(frame, 0.22, {Size = UDim2.new(1, 0, 0, baseHeight + popupH + 6)})
-                    tween(popup, 0.22, {Size = UDim2.new(1, -8, 0, popupH)})
+                    tween(popup, 0.22, {Size = UDim2.new(1, -20, 0, popupH)})
                 end
             end)
 
@@ -3001,7 +2999,7 @@ function OpenHubUI:CreateWindow(config)
                 label.TextColor3 = t.Text
                 chosen.TextColor3 = t.Text
                 chosenArrow.ImageColor3 = t.Muted
-                popup.BackgroundColor3 = t.Panel
+                popup.BackgroundColor3 = t.Surface
                 refresh()
             end
             return addElement(item)
